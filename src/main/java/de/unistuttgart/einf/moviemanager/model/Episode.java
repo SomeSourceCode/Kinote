@@ -20,7 +20,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 		if (episodeNumber < 1) {
 			throw new IllegalArgumentException("Episode number must be at least 1");
 		}
-		setIndex(episodeNumber);
+		setNumber(episodeNumber);
 		setTitle(title);
 		setDescription(description);
 		this.watched = watched;
@@ -74,7 +74,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 	 * @return the episode number
 	 */
 	public int getEpisodeNumber() {
-		return getIndex();
+		return getNumber();
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 	 * @param episodeNumber the episode number
 	 */
 	public void setEpisodeNumber(int episodeNumber) {
-		setIndex(episodeNumber);
+		setNumber(episodeNumber);
 	}
 
 	@Override

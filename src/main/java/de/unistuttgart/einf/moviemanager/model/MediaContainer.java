@@ -42,30 +42,30 @@ public class MediaContainer<P extends ParentMedia<C>, C extends ChildMedia<P, C>
 	 * Adds a child to this container.
 	 *
 	 * @param child the child to add
-	 * @throws IllegalArgumentException if a child with the same index already exists in the container
+	 * @throws IllegalArgumentException if a child with the same number already exists in the container
 	 */
 	public void addChild(C child) {
 		if (child == null) {
 			return;
 		}
-		if (children.containsKey(child.getIndex())) {
-			throw new IllegalArgumentException("Child with number " + child.getIndex() + " already exists in container " + parent.getTitle());
+		if (children.containsKey(child.getNumber())) {
+			throw new IllegalArgumentException("Child with number " + child.getNumber() + " already exists in container " + parent.getTitle());
 		}
 		if (child.getParent() != null && child.getParent() != parent) {
-			child.getParent().removeChild(child.getIndex());
+			child.getParent().removeChild(child.getNumber());
 		}
-		children.put(child.getIndex(), child);
+		children.put(child.getNumber(), child);
 		child.setParent(parent);
 	}
 
 	/**
-	 * Removes a child from this container by its index.
-	 * If no child with the given index exists, this is a no-op.
+	 * Removes a child from this container by its number.
+	 * If no child with the given number exists, this is a no-op.
 	 *
-	 * @param index the index of the child to remove
+	 * @param number the number of the child to remove
 	 */
-	public void removeChild(int index) {
-		final ChildMedia<P, C> child = children.remove(index);
+	public void removeChild(int number) {
+		final ChildMedia<P, C> child = children.remove(number);
 		if (child == null) {
 			return;
 		}
@@ -73,13 +73,13 @@ public class MediaContainer<P extends ParentMedia<C>, C extends ChildMedia<P, C>
 	}
 
 	/**
-	 * Returns the child with the given index.
+	 * Returns the child with the given number.
 	 *
-	 * @param index the index of the child
-	 * @return the child, or null if no child with the given index exists
+	 * @param number the number of the child
+	 * @return the child, or null if no child with the given number exists
 	 */
-	public C getChild(int index) {
-		return children.get(index);
+	public C getChild(int number) {
+		return children.get(number);
 	}
 
 	@Override

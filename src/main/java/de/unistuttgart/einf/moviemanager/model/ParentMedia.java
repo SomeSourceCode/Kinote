@@ -18,36 +18,36 @@ public interface ParentMedia<C extends ChildMedia<?, C>> extends Media, Iterable
 	List<C> getChildren();
 
 	/**
-	 * Returns the child with the given index.
+	 * Returns the child with the given number.
 	 *
-	 * @param index the index of the child
-	 * @return the child, or null if no child with the given index exists
+	 * @param number the number of the child
+	 * @return the child, or null if no child with the given number exists
 	 */
-	C getChild(int index);
+	C getChild(int number);
 
 	/**
-	 * Returns whether this media item has a child with the given index.
+	 * Returns whether this media item has a child with the given number.
 	 *
-	 * @param index the index of the child
-	 * @return true if a child with the given index exists, false otherwise
+	 * @param number the number of the child
+	 * @return true if a child with the given number exists, false otherwise
 	 */
-	default boolean hasChild(int index) {
-		return getChild(index) != null;
+	default boolean hasChild(int number) {
+		return getChild(number) != null;
 	}
 
 	/**
 	 * Adds a child to this media item.
 	 *
 	 * @param child the child to add
-	 * @throws IllegalArgumentException if a child with the same index already exists
+	 * @throws IllegalArgumentException if a child with the same number already exists
 	 */
 	void addChild(C child);
 
 	/**
-	 * Removes the child with the given index from this media item.
+	 * Removes the child with the given number from this media item.
 	 *
-	 * @param index the index of the child to remove
+	 * @param number the number of the child to remove
 	 */
-	void removeChild(int index);
+	void removeChild(int number);
 
 }

@@ -39,61 +39,14 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 		this(null, null);
 	}
 
-	/**
-	 * Returns an immutable list of all seasons in this series.
-	 *
-	 * @return the list of seasons
-	 */
-	public List<Season> getSeasons() {
-		return getChildren();
-	}
-
-	/**
-	 * Adds a season to this series.
-	 *
-	 * @param season the season to add
-	 */
-	public void addSeason(Season season) {
-		addChild(season);
-	}
-
-	/**
-	 * Removes the season with the given season number from this series.
-	 *
-	 * @param seasonNumber the season number
-	 */
-	public void removeSeason(int seasonNumber) {
-		removeChild(seasonNumber);
-	}
-
-	/**
-	 * Returns the season with the given season number.
-	 *
-	 * @param seasonNumber the season number
-	 * @return the season, or null if no season with the given season number exists
-	 */
-	public Season getSeason(int seasonNumber) {
-		return getChild(seasonNumber);
-	}
-
-	/**
-	 * Returns whether this series has a season with the given season number.
-	 *
-	 * @param seasonNumber the season number
-	 * @return true if the season exists, false otherwise
-	 */
-	public boolean hasSeason(int seasonNumber) {
-		return hasChild(seasonNumber);
-	}
-
 	@Override
 	public List<Season> getChildren() {
 		return seasons.getChildren();
 	}
 
 	@Override
-	public Season getChild(int index) {
-		return seasons.getChild(index);
+	public Season getChild(int number) {
+		return seasons.getChild(number);
 	}
 
 	@Override
@@ -102,8 +55,8 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	}
 
 	@Override
-	public void removeChild(int index) {
-		seasons.removeChild(index);
+	public void removeChild(int number) {
+		seasons.removeChild(number);
 	}
 
 	@Override

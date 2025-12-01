@@ -10,7 +10,7 @@ package de.unistuttgart.einf.moviemanager.model;
 public abstract class ChildMedia<P extends ParentMedia<S>, S extends ChildMedia<P, S>> extends MediaBase {
 
 	private P parent;
-	private int index;
+	private int number;
 
 	/**
 	 * Returns the parent of this child.
@@ -18,7 +18,7 @@ public abstract class ChildMedia<P extends ParentMedia<S>, S extends ChildMedia<
 	 *
 	 * @return the parent
 	 */
-	protected P getParent() {
+	public P getParent() {
 		return parent;
 	}
 
@@ -34,39 +34,39 @@ public abstract class ChildMedia<P extends ParentMedia<S>, S extends ChildMedia<
 	}
 
 	/**
-	 * Returns the index of this child inside its parent.
+	 * Returns the number of this child inside its parent.
 	 *
-	 * @return the index
+	 * @return the number
 	 */
-	protected int getIndex() {
-		return index;
+	public int getNumber() {
+		return number;
 	}
 
 	/**
-	 * Sets the index of this child inside its parent.
+	 * Sets the number of this child inside its parent.
 	 * This also updates the parent's child mapping accordingly.
 	 *
-	 * @param index the index
-	 * @throws IllegalArgumentException if the index is less than 1 or if the parent already has a child with the given index
+	 * @param number the number
+	 * @throws IllegalArgumentException if the number is less than 1 or if the parent already has a child with the given number
 	 */
 	@SuppressWarnings("unchecked")
-	protected void setIndex(int index) {
-		if (index < 1) {
-			throw new IllegalArgumentException("Index must be at least 1");
+	public void setNumber(int number) {
+		if (number < 1) {
+			throw new IllegalArgumentException("number must be at least 1");
 		}
-		if (this.index == index) {
+		if (this.number == number) {
 			return;
 		}
-		if (this.parent != null && this.parent.getChild(index) != null) {
-			throw new IllegalArgumentException("Child with index " + index + " already exists in parent " + this.parent.getTitle());
+		if (this.parent != null && this.parent.getChild(number) != null) {
+			throw new IllegalArgumentException("Child with number " + number + " already exists in parent " + this.parent.getTitle());
 		}
 		if (this.parent != null) {
 			final P parent = this.parent;
-			parent.removeChild(this.index);
-			this.index = index;
+			parent.removeChild(this.number);
+			this.number = number;
 			parent.addChild((S) this);
 		} else {
-			this.index = index;
+			this.number = number;
 		}
 	}
 
