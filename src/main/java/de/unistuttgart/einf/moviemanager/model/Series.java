@@ -83,11 +83,26 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 
 	@Override
 	public Status getStatus() {
-		final int watchedSeasonsCount = (int) seasons.getChildren().stream().filter(Season::isWatched).count();
-		if (watchedSeasonsCount == 0) {
+		if (getChildren().isEmpty()) {
 			return Status.UNWATCHED;
 		}
-		if (watchedSeasonsCount == seasons.getChildren().size()) {
+
+		int watched = 0;
+		int unwatched = 0;
+		for (Season season : this) {
+			final Status seasonStatus = season.getStatus();
+			if (seasonStatus == Status.WATCHED) {
+				watched++;
+			} else if (seasonStatus == Status.UNWATCHED) {
+				unwatched++;
+			}
+		}
+
+		final int seasons = getChildren().size();
+		if (unwatched == seasons) {
+			return Status.UNWATCHED;
+		}
+		if (watched == seasons) {
 			return Status.WATCHED;
 		}
 		return Status.WATCHING;
