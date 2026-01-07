@@ -1,5 +1,9 @@
 package de.unistuttgart.einf.moviemanager.io;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -19,6 +23,11 @@ public class FileRepository<T> {
 	 * @param serializer the serializer
 	 */
 	public FileRepository(Path path, DataSerializer<T> serializer) {
+		if (path == null)
+			throw new IllegalArgumentException("path must not be null");
+		if (serializer == null)
+			throw new IllegalArgumentException("serializer must not be null");
+
 		this.path = path;
 		this.serializer = serializer;
 	}
@@ -29,7 +38,16 @@ public class FileRepository<T> {
 	 * @param data the data
 	 */
 	public void save(T data) {
-		// TODO: implement save logic
+		try {
+			if (path.getParent() != null) {
+				Files.createDirectories(path.getParent());
+			}
+			try (OutputStream out = Files.newOutputStream(path)) {
+				serializer.serialize(out, data);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to save data to: " + path, e);
+		}
 	}
 
 	/**
@@ -38,7 +56,14 @@ public class FileRepository<T> {
 	 * @return the data
 	 */
 	public T load() {
-		return null;
+		if (!Files.exists(path)) {
+			return null;
+		}
+		try (InputStream in = Files.newInputStream(path)) {
+			return serializer.deserialize(in);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to load data from: " + path, e);
+		}
 	}
 
 }
