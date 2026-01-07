@@ -5,12 +5,14 @@ import de.unistuttgart.einf.moviemanager.model.*;
 
 import java.lang.reflect.Type;
 
+import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.getAsStringOrNull;
+
 public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<Series> {
 
 	/**
 	 * Serializes a series object to JSON.
 	 *
-	 * The resulting JSON contains the series title, description,
+	 * The resulting JSON contains the properties,
 	 * and a list of seasons.
 	 *
 	 * @param src the series to serialize
@@ -64,10 +66,4 @@ public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<S
 		return series;
 	}
 
-	private static String getAsStringOrNull(JsonObject obj, String key) {
-		if (!obj.has(key) || obj.get(key).isJsonNull())
-			return null;
-
-		return obj.get(key).getAsString();
-	}
 }

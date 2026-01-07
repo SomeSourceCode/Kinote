@@ -4,13 +4,15 @@ import com.google.gson.*;
 import de.unistuttgart.einf.moviemanager.model.*;
 import java.lang.reflect.Type;
 
+import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.getAsStringOrNull;
+
 public class SeasonAdapter implements JsonSerializer<Season>, JsonDeserializer<Season> {
 
 	/**
 	 * Serializes a season object to JSON.
 	 *
-	 * The resulting JSON contains the season number, title,
-	 * description, and a list of episodes.
+	 * The resulting JSON contains the properties,
+	 * and a list of episodes.
 	 *
 	 * @param src the season to serialize
 	 * @param typeOfSrc the type of the source object
@@ -66,8 +68,5 @@ public class SeasonAdapter implements JsonSerializer<Season>, JsonDeserializer<S
 		return season;
 	}
 
-	private static String getAsStringOrNull(JsonObject obj, String key) {
-		if (!obj.has(key) || obj.get(key).isJsonNull()) return null;
-		return obj.get(key).getAsString();
-	}
+
 }

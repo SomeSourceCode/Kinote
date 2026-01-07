@@ -7,25 +7,7 @@ import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
 
 import java.lang.reflect.Type;
 
-public class TopLevelMediaTypeAdapter implements JsonSerializer<TopLevelMedia>, JsonDeserializer<TopLevelMedia> {
-
-	/**
-	 * Serializes a top-level media object and adds a "type" field
-	 * to indicate the concrete implementation.
-	 *
-	 * @param src the media object to serialize
-	 * @param typeOfSrc the type of the source object
-	 * @param context the JSON serialization context
-	 * @return the serialized JSON element
-	 */
-	@Override
-	public JsonElement serialize(TopLevelMedia src, Type typeOfSrc, JsonSerializationContext context) {
-		JsonObject object = context.serialize(src, src.getClass()).getAsJsonObject();
-		if (src instanceof Movie) {
-			object.addProperty("type", "movie");
-		}
-		return object;
-	}
+public class TopLevelMediaTypeAdapter implements JsonDeserializer<TopLevelMedia> {
 
 	/**
 	 * Deserializes a top-level media object based on the "type" field.
