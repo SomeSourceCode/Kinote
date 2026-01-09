@@ -13,6 +13,25 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	private final UUID id;
 
 	/**
+	 * Constructs a new Movie with the given UUID, title, description and watched status.
+	 *
+	 * @param title the title
+	 * @param description the description
+	 * @param watched whether the movie has been watched
+	 */
+	public Movie(UUID id, String title, String description, boolean watched) {
+		setTitle(title);
+		setDescription(description);
+		this.watched = watched;
+
+
+		if (id == null)
+			this.id = UUID.randomUUID();
+		else
+			this.id = id;
+	}
+
+	/**
 	 * Constructs a new Movie with the given title, description and watched status.
 	 *
 	 * @param title the title
@@ -20,11 +39,7 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	 * @param watched whether the movie has been watched
 	 */
 	public Movie(String title, String description, boolean watched) {
-		setTitle(title);
-		setDescription(description);
-		this.watched = watched;
-
-		this.id = UUID.randomUUID();
+		this(null, title, description, watched);
 	}
 
 	/**
@@ -34,7 +49,7 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	 * @param description the description
 	 */
 	public Movie(String title, String description) {
-		this(title, description, false);
+		this(null, title, description, false);
 	}
 
 	/**
@@ -43,14 +58,14 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	 * @param title the title
 	 */
 	public Movie(String title) {
-		this(title, null, false);
+		this(null, title, null, false);
 	}
 
 	/**
 	 * Constructs a new Movie with no title or description.
 	 */
 	public Movie() {
-		this(null, null, false);
+		this(null, null, null, false);
 	}
 
 	public UUID getId() {

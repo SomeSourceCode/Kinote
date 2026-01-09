@@ -16,16 +16,29 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	private final UUID id;
 
 	/**
+	 * Constructs a new Series with the given UUID, title and description.
+	 *
+	 * @param title the title
+	 * @param description the description
+	 */
+	public Series(UUID id, String title, String description) {
+		setTitle(title);
+		setDescription(description);
+
+		if (id == null)
+			this.id = UUID.randomUUID();
+		else
+			this.id = id;
+	}
+
+	/**
 	 * Constructs a new Series with the given title and description.
 	 *
 	 * @param title the title
 	 * @param description the description
 	 */
 	public Series(String title, String description) {
-		setTitle(title);
-		setDescription(description);
-
-		this.id = UUID.randomUUID();
+		this(null, title, description);
 	}
 
 	/**
@@ -34,21 +47,21 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	 * @param title the title
 	 */
 	public Series(String title) {
-		this(title, null);
+		this(null, title, null);
 	}
 
 	/**
 	 * Constructs a new Series with no title or description.
 	 */
 	public Series() {
-		this(null, null);
+		this(null, null, null);
 	}
 
 	public UUID getId() {
 		return this.id;
 
 	}
-	
+
 	@Override
 	public List<Season> getChildren() {
 		return seasons.getChildren();

@@ -107,7 +107,7 @@ public class FileRepositoryJsonTest {
 		assertEquals("Dark", ls.getTitle());
 		assertEquals("Time travel", ls.getDescription());
 
-		// structure preserved
+		assertEquals(s.getId(), ls.getId());
 		assertEquals(1, ls.getChildren().size());
 		Season lSeason1 = ls.getChild(1);
 		assertNotNull(lSeason1);
@@ -125,13 +125,12 @@ public class FileRepositoryJsonTest {
 		assertFalse(le2.isWatched());
 
 		// parent links restored after load
-		// ChildMedia has getParent(); Episode.getSeason() returns getParent(). :contentReference[oaicite:1]{index=1}
 		assertSame(lSeason1, le1.getSeason());
 		assertSame(lSeason1, le2.getSeason());
-		assertSame(ls, lSeason1.getParent()); // Season extends ChildMedia<Series,...> :contentReference[oaicite:2]{index=2}
+		assertSame(ls, lSeason1.getParent());
 	}
 
-	@Disabled
+
 	@Test
 	void roundtripMixedMovieAndSeries() {
 		Path file = tempDir.resolve("media.json");
