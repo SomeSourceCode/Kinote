@@ -6,6 +6,7 @@ import de.unistuttgart.einf.moviemanager.model.*;
 import java.lang.reflect.Type;
 
 import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.getAsStringOrNull;
+import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.getAsUUIDOrNull;
 
 public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<Series> {
 
@@ -24,6 +25,8 @@ public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<S
 	public JsonElement serialize(Series src, Type typeOfSrc, JsonSerializationContext context) {
 		JsonObject object = new JsonObject();
 		object.addProperty("type", "series");
+
+		object.addProperty("id", src.getId().toString());
 		object.addProperty("title", src.getTitle());
 		object.addProperty("description", src.getDescription());
 
@@ -51,6 +54,7 @@ public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<S
 	public Series deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		JsonObject object = json.getAsJsonObject();
 		Series series = new Series(
+				getAsUUIDOrNull(object, "id"),
 				getAsStringOrNull(object, "title"),
 				getAsStringOrNull(object, "description")
 		);

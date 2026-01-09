@@ -1,5 +1,7 @@
 package de.unistuttgart.einf.moviemanager.model;
 
+import java.util.UUID;
+
 /**
  * A movie.
  *
@@ -8,6 +10,7 @@ package de.unistuttgart.einf.moviemanager.model;
 public final class Movie extends MediaBase implements TopLevelMedia {
 
 	private boolean watched;
+	private final UUID id;
 
 	/**
 	 * Constructs a new Movie with the given title, description and watched status.
@@ -20,6 +23,8 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 		setTitle(title);
 		setDescription(description);
 		this.watched = watched;
+
+		this.id = UUID.randomUUID();
 	}
 
 	/**
@@ -46,6 +51,11 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	 */
 	public Movie() {
 		this(null, null, false);
+	}
+
+	public UUID getId() {
+		return this.id;
+
 	}
 
 	@Override
