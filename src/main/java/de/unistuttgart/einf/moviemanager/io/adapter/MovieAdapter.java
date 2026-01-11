@@ -24,6 +24,7 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 		JsonObject object = new JsonObject();
 		object.addProperty("type", "movie");
 
+		object.addProperty("id", src.getId().toString());
 		object.addProperty("title", src.getTitle());
 		object.addProperty("description", src.getDescription());
 		object.addProperty("watched", src.isWatched());
@@ -46,6 +47,7 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 		JsonObject object = json.getAsJsonObject();
 
 		Movie movie = new Movie(
+				getAsUUIDOrNull(object, "id"),
 				getAsStringOrNull(object, "title"),
 				getAsStringOrNull(object, "description"),
 				getAsBooleanOrFalse(object, "watched")
