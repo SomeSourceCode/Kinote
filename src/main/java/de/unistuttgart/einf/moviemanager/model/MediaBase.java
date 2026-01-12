@@ -7,6 +7,8 @@ public abstract class MediaBase implements Media {
 
 	private String title;
 	private String description;
+	private int duration; // duration in minutes
+	private Category category;
 
 	@Override
 	public String getTitle() {
@@ -28,4 +30,23 @@ public abstract class MediaBase implements Media {
 		this.description = description;
 	}
 
+	@Override
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	@Override
+	public int getDuration() {
+		return duration;
+	}
+
+	@Override
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    @Override
+    public Category getCategory() {
+        return category;
+    }
 }

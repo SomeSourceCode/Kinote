@@ -17,10 +17,12 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	 *
 	 * @param title the title
 	 * @param description the description
+	 * @param category the category
 	 */
-	public Series(String title, String description) {
+	public Series(String title, String description, Category category) {
 		setTitle(title);
 		setDescription(description);
+		setCategory(category);
 	}
 
 	/**
@@ -29,14 +31,14 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	 * @param title the title
 	 */
 	public Series(String title) {
-		this(title, null);
+		this(title, null, null);
 	}
 
 	/**
 	 * Constructs a new Series with no title or description.
 	 */
 	public Series() {
-		this(null, null);
+		this(null, null, null);
 	}
 
 	@Override

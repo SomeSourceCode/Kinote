@@ -14,9 +14,10 @@ public class Episode extends ChildMedia<Season, Episode> {
 	 * @param title the title
 	 * @param description the description
 	 * @param watched whether the episode has been watched
+	 * @param duration the duration
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
-	public Episode(int episodeNumber, String title, String description, boolean watched) {
+	public Episode(int episodeNumber, String title, String description, boolean watched, int duration) {
 		if (episodeNumber < 1) {
 			throw new IllegalArgumentException("Episode number must be at least 1");
 		}
@@ -24,6 +25,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 		setTitle(title);
 		setDescription(description);
 		this.watched = watched;
+		setDuration(duration);
 	}
 
 	/**
@@ -35,7 +37,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
 	public Episode(int episodeNumber, String title, String description) {
-		this(episodeNumber, title, description, false);
+		this(episodeNumber, title, description, false, 0);
 	}
 
 	/**
@@ -46,7 +48,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
 	public Episode(int episodeNumber, String title) {
-		this(episodeNumber, title, null, false);
+		this(episodeNumber, title, null, false, 0);
 	}
 
 	/**
@@ -56,7 +58,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
 	public Episode(int episodeNumber) {
-		this(episodeNumber, null, null, false);
+		this(episodeNumber, null, null, false,0);
 	}
 
 	/**

@@ -10,16 +10,21 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	private boolean watched;
 
 	/**
-	 * Constructs a new Movie with the given title, description and watched status.
+	 * Constructs a new Movie with the given title, description, watched status, duration and category.
 	 *
 	 * @param title the title
 	 * @param description the description
 	 * @param watched whether the movie has been watched
+	 * @param duration the duration of the movie
+	 * @param category the given category of the movie
+	 * 
 	 */
-	public Movie(String title, String description, boolean watched) {
+	public Movie(String title, String description, boolean watched, int duration, Category category ) {
 		setTitle(title);
 		setDescription(description);
 		this.watched = watched;
+		setDuration(duration);
+		setCategory(category);
 	}
 
 	/**
@@ -29,7 +34,7 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	 * @param description the description
 	 */
 	public Movie(String title, String description) {
-		this(title, description, false);
+		this(title, description, false, 0, null);
 	}
 
 	/**
@@ -38,14 +43,14 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	 * @param title the title
 	 */
 	public Movie(String title) {
-		this(title, null, false);
+		this(title, null, false, 0, null);
 	}
 
 	/**
 	 * Constructs a new Movie with no title or description.
 	 */
 	public Movie() {
-		this(null, null, false);
+		this(null, null, false, 0, null);
 	}
 
 	@Override
