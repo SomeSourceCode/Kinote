@@ -108,6 +108,9 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 			rating += episode.getRating();
 			counter++;
 		}
+		if (counter == 0) {
+			return -1;
+		}
 		return rating / counter;
 	}
 

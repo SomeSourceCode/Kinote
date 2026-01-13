@@ -123,6 +123,9 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 				counter++;
 			}
 		}
+		if (counter == 0) {
+			return -1;
+		}
 		return rating / counter;
 	}
 
