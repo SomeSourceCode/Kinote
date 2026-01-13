@@ -111,6 +111,22 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	}
 
 	@Override
+	public int getRating() {
+		int rating = 0;
+		int counter = 0;
+		for (Season season : this) {
+			for (Episode episode : season) {
+				if (episode.getRating() == -1) {
+					continue;
+				}
+				rating += episode.getRating();
+				counter++;
+			}
+		}
+		return rating / counter;
+	}
+
+	@Override
 	public String toString() {
 		final String title = getTitle();
 		if (title != null && !title.isBlank()) {

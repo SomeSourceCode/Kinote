@@ -8,6 +8,7 @@ package de.unistuttgart.einf.moviemanager.model;
 public final class Movie extends MediaBase implements TopLevelMedia {
 
 	private boolean watched;
+	private int rating = -1;
 
 	/**
 	 * Constructs a new Movie with the given title, description, watched status, duration and category.
@@ -66,6 +67,25 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	@Override
 	public Status getStatus() {
 		return watched ? Status.UNWATCHED : Status.WATCHED;
+	}
+
+	@Override
+	public int getRating() {
+		return rating;
+	}
+
+	/**
+	 * Sets the rating of the movie.
+	 * It must be between 0 and 100 or -1 if it does not have a rating.
+	 *
+	 * @param rating an int between 0 and 100 or -1 if it does not have a rating
+	 * @throws IllegalArgumentException if the rating is not within -1 to 100.
+	 */
+	public void setRating(int rating) {
+		if (rating < -1 || rating > 100) {
+			throw new IllegalArgumentException("The rating must be between -1 and 100.");
+		}
+		this.rating = rating;
 	}
 
 	@Override

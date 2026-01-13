@@ -6,6 +6,7 @@ package de.unistuttgart.einf.moviemanager.model;
 public class Episode extends ChildMedia<Season, Episode> {
 
 	private boolean watched;
+	private int rating = -1;
 
 	/**
 	 * Constructs a new Episode with the given episode number, title, description and watched status.
@@ -102,6 +103,25 @@ public class Episode extends ChildMedia<Season, Episode> {
 	@Override
 	public Status getStatus() {
 		return watched ? Status.WATCHED : Status.UNWATCHED;
+	}
+
+	@Override
+	public int getRating() {
+		return rating;
+	}
+
+	/**
+	 * Sets the rating of the episode.
+	 * It must be between 0 and 100 or -1 if it does not have a rating.
+	 *
+	 * @param rating an int between 0 and 100 or -1 if it does not have a rating
+	 * @throws IllegalArgumentException if the rating is not within -1 to 100.
+	 */
+	public void setRating(int rating) {
+		if (rating < -1 || rating > 100) {
+			throw new IllegalArgumentException("The rating must be between -1 and 100.");
+		}
+		this.rating = rating;
 	}
 
 	@Override

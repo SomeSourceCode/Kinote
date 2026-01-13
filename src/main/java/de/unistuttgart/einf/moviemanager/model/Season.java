@@ -98,6 +98,20 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 	}
 
 	@Override
+	public int getRating() {
+		int rating = 0;
+		int counter = 0;
+		for (Episode episode : this) {
+			if (episode.getRating() == -1) {
+				continue;
+			}
+			rating += episode.getRating();
+			counter++;
+		}
+		return rating / counter;
+	}
+
+	@Override
 	public String toString() {
 		final String title = getTitle();
 		if (title != null && !title.isBlank()) {
