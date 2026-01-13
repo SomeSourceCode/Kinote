@@ -18,7 +18,7 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	 * @param watched whether the movie has been watched
 	 * @param duration the duration of the movie
 	 * @param category the given category of the movie
-	 * 
+	 *
 	 */
 	public Movie(String title, String description, boolean watched, int duration, Category category ) {
 		setTitle(title);
@@ -86,6 +86,11 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 			throw new IllegalArgumentException("The rating must be between -1 and 100.");
 		}
 		this.rating = rating;
+	}
+
+	@Override
+	public boolean hasRating() {
+		return rating != -1;
 	}
 
 	@Override

@@ -94,4 +94,12 @@ public interface Media {
 	 * @return the rating
 	 */
 	int getRating();
+
+	/**
+	 * Returns whether this has a rating.
+	 *
+	 * @return true if it has a rating, false otherwise
+	 */
+	boolean hasRating();
+
 }

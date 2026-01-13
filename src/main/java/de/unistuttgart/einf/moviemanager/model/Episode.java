@@ -125,6 +125,11 @@ public class Episode extends ChildMedia<Season, Episode> {
 	}
 
 	@Override
+	public boolean hasRating() {
+		return rating != -1;
+	}
+
+	@Override
 	public String toString() {
 		final String title = getTitle();
 		if (title != null && !title.isBlank()) {

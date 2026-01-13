@@ -115,6 +115,16 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 	}
 
 	@Override
+	public boolean hasRating() {
+		for (Episode episode : this) {
+			if (!episode.hasRating()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
 	public String toString() {
 		final String title = getTitle();
 		if (title != null && !title.isBlank()) {
