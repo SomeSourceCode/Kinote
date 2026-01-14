@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import de.unistuttgart.einf.moviemanager.io.FileRepository;
 import de.unistuttgart.einf.moviemanager.io.GsonDataSerializer;
 import de.unistuttgart.einf.moviemanager.model.*;
@@ -21,9 +22,7 @@ public class FileRepositoryJsonTest {
 	Path tempDir = Path.of("debug1/");
 
 	MediaService mediaService;
-
-
-
+	
 	@Test
 	void loadReturnsNullIfFileDoesNotExist() {
 		Path file = tempDir.resolve("does-not-exist.json");
@@ -162,6 +161,15 @@ public class FileRepositoryJsonTest {
 		boolean hasSeries = loaded.stream().anyMatch(x -> x instanceof Series);
 		assertTrue(hasMovie);
 		assertTrue(hasSeries);
+	}
+
+	@Disabled
+	@Test
+	public void testLoadTopLevelWithoutID() {
+		Path file = tempDir.resolve("media.json");
+
+		FileRepository<Set<TopLevelMedia>> repo = new FileRepository<>(file, new GsonDataSerializer());
+
 	}
 
 }
