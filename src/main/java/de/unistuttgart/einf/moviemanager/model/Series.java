@@ -12,18 +12,20 @@ import java.util.UUID;
 public final class Series extends MediaBase implements ParentMedia<Season>, TopLevelMedia {
 
 	private final MediaContainer<Series, Season> seasons = new MediaContainer<>(this);
+	private Category category;
 
 	private final UUID id;
 
 	/**
-	 * Constructs a new Series with the given UUID, title and description.
+	 * Constructs a new Series with the given id, title, description and category.
 	 *
 	 * @param title the title
 	 * @param description the description
 	 */
-	public Series(UUID id, String title, String description) {
+	public Series(UUID id, String title, String description, Category category) {
 		setTitle(title);
 		setDescription(description);
+		setCategory(category);
 
 		if (id == null)
 			this.id = UUID.randomUUID();
@@ -36,9 +38,10 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	 *
 	 * @param title the title
 	 * @param description the description
+	 * @param category the category
 	 */
 	public Series(String title, String description) {
-		this(null, title, description);
+		this(null, title, description, null);
 	}
 
 	/**
@@ -47,19 +50,18 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	 * @param title the title
 	 */
 	public Series(String title) {
-		this(null, title, null);
+		this(null, title, null, null);
 	}
 
 	/**
 	 * Constructs a new Series with no title or description.
 	 */
 	public Series() {
-		this(null, null, null);
+		this(null, null, null, null);
 	}
 
 	public UUID getId() {
 		return this.id;
-
 	}
 
 	@Override
@@ -129,6 +131,52 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 			return Status.WATCHED;
 		}
 		return Status.WATCHING;
+	}
+
+	@Override
+	public int getRating() {
+		int rating = 0;
+		int counter = 0;
+		for (Season season : this) {
+			for (Episode episode : season) {
+				if (episode.getRating() == -1) {
+					continue;
+				}
+				rating += episode.getRating();
+				counter++;
+			}
+		}
+		if (counter == 0) {
+			return -1;
+		}
+		return rating / counter;
+	}
+
+	@Override
+	public boolean hasRating() {
+		for (Season season : this) {
+			if (!season.hasRating()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public int getDuration() {
+		return getChildren().stream()
+				.mapToInt(Media::getDuration)
+				.sum();
+	}
+
+	@Override
+	public Category getCategory() {
+		return category;
+	}
+
+	@Override
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 
 	@Override

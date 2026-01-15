@@ -3,9 +3,11 @@ package de.unistuttgart.einf.moviemanager.model;
 /**
  * An episode of a season in a series.
  */
-public class Episode extends ChildMedia<Season, Episode> {
+public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 
 	private boolean watched;
+	private int rating = -1;
+	private int duration;
 
 	/**
 	 * Constructs a new Episode with the given episode number, title, description and watched status.
@@ -14,9 +16,10 @@ public class Episode extends ChildMedia<Season, Episode> {
 	 * @param title the title
 	 * @param description the description
 	 * @param watched whether the episode has been watched
+	 * @param duration the duration
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
-	public Episode(int episodeNumber, String title, String description, boolean watched) {
+	public Episode(int episodeNumber, String title, String description, boolean watched, int duration) {
 		if (episodeNumber < 1) {
 			throw new IllegalArgumentException("Episode number must be at least 1");
 		}
@@ -24,6 +27,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 		setTitle(title);
 		setDescription(description);
 		this.watched = watched;
+		setDuration(duration);
 	}
 
 	/**
@@ -35,7 +39,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
 	public Episode(int episodeNumber, String title, String description) {
-		this(episodeNumber, title, description, false);
+		this(episodeNumber, title, description, false, 0);
 	}
 
 	/**
@@ -46,7 +50,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
 	public Episode(int episodeNumber, String title) {
-		this(episodeNumber, title, null, false);
+		this(episodeNumber, title, null, false, 0);
 	}
 
 	/**
@@ -56,7 +60,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
 	public Episode(int episodeNumber) {
-		this(episodeNumber, null, null, false);
+		this(episodeNumber, null, null, false,0);
 	}
 
 	/**
@@ -100,6 +104,40 @@ public class Episode extends ChildMedia<Season, Episode> {
 	@Override
 	public Status getStatus() {
 		return watched ? Status.WATCHED : Status.UNWATCHED;
+	}
+
+	@Override
+	public int getRating() {
+		return rating;
+	}
+
+	@Override
+	public void setRating(int rating) {
+		if (rating < -1 || rating > 100) {
+			throw new IllegalArgumentException("The rating must be between -1 and 100.");
+		}
+		this.rating = rating;
+	}
+
+	@Override
+	public boolean hasRating() {
+		return rating != -1;
+	}
+
+	@Override
+	public int getDuration() {
+		return duration;
+	}
+
+	@Override
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	@Override
+	public Category getCategory() {
+		final Media parent = getParent();
+		return parent == null ? null : parent.getCategory();
 	}
 
 	@Override
