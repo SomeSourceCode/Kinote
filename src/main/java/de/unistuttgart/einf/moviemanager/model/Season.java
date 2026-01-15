@@ -74,20 +74,10 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 	}
 
 	@Override
-	public void setWatched(boolean watched) {
-		for (final Episode episode : episodes.getChildren()) {
-			episode.setWatched(watched);
-		}
-	}
-
-	@Override
-	public boolean isWatched() {
-		return getStatus() == Status.WATCHED;
-	}
-
-	@Override
 	public Status getStatus() {
-		final int watchedEpisodeCount = (int) episodes.getChildren().stream().filter(Episode::isWatched).count();
+		final int watchedEpisodeCount = (int) episodes.getChildren().stream()
+				.filter(episode -> episode.getStatus() == Status.WATCHED)
+				.count();
 		if (watchedEpisodeCount == 0) {
 			return Status.UNWATCHED;
 		}

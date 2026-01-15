@@ -34,24 +34,6 @@ public interface Media {
 	void setDescription(String description);
 
 	/**
-	 * Sets whether the media has been watched.
-	 * If this is a parent media (like {@link Series} or {@link Season}), this method
-	 * sets the watched status for all child media as well.
-	 *
-	 * @param watched whether the media has been watched
-	 */
-	void setWatched(boolean watched);
-
-	/**
-	 * Returns whether the media has been watched.
-	 * If this is a parent media (like {@link Series} or {@link Season}), this method
-	 * returns true only if all child media have been watched.
-	 *
-	 * @return whether the media has been watched
-	 */
-	boolean isWatched();
-
-	/**
 	 * Returns the status of the media.
 	 * The status is derived from the watched status.
 	 *

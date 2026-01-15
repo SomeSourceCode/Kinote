@@ -77,11 +77,6 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	}
 
 	@Override
-	public boolean isWatched() {
-		return watched;
-	}
-
-	@Override
 	public Status getStatus() {
 		return watched ? Status.UNWATCHED : Status.WATCHED;
 	}

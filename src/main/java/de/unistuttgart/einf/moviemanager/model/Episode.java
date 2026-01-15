@@ -97,11 +97,6 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	}
 
 	@Override
-	public boolean isWatched() {
-		return watched;
-	}
-
-	@Override
 	public Status getStatus() {
 		return watched ? Status.WATCHED : Status.UNWATCHED;
 	}
