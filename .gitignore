@@ -4,7 +4,6 @@ target/
 !**/src/test/**/target/
 .kotlin
 
-src/test/java/**/FileRepositoryJsonTest.java
 
 ### IntelliJ IDEA ###
 .idea/

@@ -60,6 +60,7 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 		this(null, null, null, null);
 	}
 
+	@Override
 	public UUID getId() {
 		return this.id;
 	}

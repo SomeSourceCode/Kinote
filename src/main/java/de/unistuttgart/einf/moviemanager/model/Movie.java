@@ -67,6 +67,7 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 		this(null, null, null, false, 0, null);
 	}
 
+	@Override
 	public UUID getId() {
 		return this.id;
 	}

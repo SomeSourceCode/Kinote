@@ -2,6 +2,8 @@ package de.unistuttgart.einf.moviemanager.io.adapter;
 
 import com.google.gson.*;
 import de.unistuttgart.einf.moviemanager.model.Movie;
+import de.unistuttgart.einf.moviemanager.model.Status;
+
 import java.lang.reflect.Type;
 
 import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.*;
@@ -28,13 +30,11 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 		object.addProperty("title", src.getTitle());
 		object.addProperty("description", src.getDescription());
 
-		if (src.getStatus() != null)
-			object.addProperty("watched", src.getStatus().name());
-
+		object.addProperty("watched", src.getStatus() == Status.WATCHED);
 		object.addProperty("duration", src.getDuration());
 
 		if (src.getCategory() != null)
-			object.addProperty("category", src.getCategory().toString());
+			object.addProperty("category", src.getCategory().name());
 
 		object.addProperty("rating", src.getRating());
 
@@ -60,10 +60,10 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 				getAsStringOrNull(object, "title"),
 				getAsStringOrNull(object, "description"),
 				getAsBooleanOrFalse(object, "watched"),
-				getAsIntOrCustomValue(object, "duration", 0),
+				getAsIntOrElse(object, "duration", 0),
 				getAsCategoryOrNull(object, "category")
 		);
-		movie.setRating(getAsIntOrCustomValue(object, "rating", -1));
+		movie.setRating(getAsIntOrElse(object, "rating", -1));
 		return movie;
 	}
 }

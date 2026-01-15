@@ -1,5 +1,7 @@
 package de.unistuttgart.einf.moviemanager.model;
 
+import java.util.UUID;
+
 /**
  * A top-level media item.
  *
@@ -15,4 +17,10 @@ public sealed interface TopLevelMedia extends Media permits Movie, Series {
 	 */
 	void setCategory(Category category);
 
+	/**
+	 * Returns the UUID of the media
+	 *
+	 * @return the uuid
+	 */
+	UUID getId();
 }

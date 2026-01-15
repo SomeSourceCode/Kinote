@@ -3,7 +3,6 @@ package de.unistuttgart.einf.moviemanager.io.adapter;
 import com.google.gson.JsonObject;
 import de.unistuttgart.einf.moviemanager.model.Category;
 
-import java.util.Locale;
 import java.util.UUID;
 
 public class Converter {
@@ -42,7 +41,7 @@ public class Converter {
 		}
 	}
 
-	protected static int getAsIntOrCustomValue(JsonObject obj, String key, int customValue) {
+	protected static int getAsIntOrElse(JsonObject obj, String key, int customValue) {
 		if (!obj.has(key) || obj.get(key).isJsonNull())
 			return customValue;
 
