@@ -68,16 +68,6 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	}
 
 	@Override
-	public boolean isWatched() {
-		for (final Season season : seasons.getChildren()) {
-			if (!season.isWatched()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
 	public Status getStatus() {
 		if (getChildren().isEmpty()) {
 			return Status.UNWATCHED;
