@@ -17,7 +17,7 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	private Category category;
 	
 	/**
-	 * Constructs a new Movie with the given title, description, watched status, duration and category.
+	 * Constructs a new Movie with the given id, title, description, watched status, duration and category.
 	 * 
 	 * @param id the uuid
 	 * @param title the title

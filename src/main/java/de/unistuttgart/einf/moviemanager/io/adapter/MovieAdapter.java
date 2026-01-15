@@ -35,6 +35,9 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 
 		if (src.getCategory() != null)
 			object.addProperty("category", src.getCategory().toString());
+
+		object.addProperty("rating", src.getRating());
+
 		return object;
 	}
 
@@ -57,9 +60,10 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 				getAsStringOrNull(object, "title"),
 				getAsStringOrNull(object, "description"),
 				getAsBooleanOrFalse(object, "watched"),
-				getAsIntOrZero(object, "duration"),
+				getAsIntOrCustomValue(object, "duration", 0),
 				getAsCategoryOrNull(object, "category")
 		);
+		movie.setRating(getAsIntOrCustomValue(object, "rating", -1));
 		return movie;
 	}
 }

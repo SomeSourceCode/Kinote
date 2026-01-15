@@ -42,14 +42,14 @@ public class Converter {
 		}
 	}
 
-	protected static int getAsIntOrZero(JsonObject obj, String key) {
+	protected static int getAsIntOrCustomValue(JsonObject obj, String key, int customValue) {
 		if (!obj.has(key) || obj.get(key).isJsonNull())
-			return 0;
+			return customValue;
 
 		try {
 			return obj.get(key).getAsInt();
 		} catch (IllegalArgumentException e) {
-			return 0;
+			return customValue;
 		}
 	}
 }
