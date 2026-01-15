@@ -21,6 +21,7 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	 *
 	 * @param title the title
 	 * @param description the description
+	 * @param category the category
 	 */
 	public Series(UUID id, String title, String description, Category category) {
 		setTitle(title);
@@ -38,7 +39,6 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	 *
 	 * @param title the title
 	 * @param description the description
-	 * @param category the category
 	 */
 	public Series(String title, String description) {
 		this(null, title, description, null);

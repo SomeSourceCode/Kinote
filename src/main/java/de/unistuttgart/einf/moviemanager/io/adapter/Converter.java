@@ -1,11 +1,13 @@
 package de.unistuttgart.einf.moviemanager.io.adapter;
 
 import com.google.gson.JsonObject;
+import de.unistuttgart.einf.moviemanager.model.Category;
 
+import java.util.Locale;
 import java.util.UUID;
 
 public class Converter {
-
+	
 	  protected static String getAsStringOrNull(JsonObject obj, String key) {
 		  if (!obj.has(key) || obj.get(key).isJsonNull())
 			  return null;
@@ -24,10 +26,30 @@ public class Converter {
 
 		try {
 			return UUID.fromString(obj.get(key).getAsString());
-
 		} catch (IllegalArgumentException e) {
 			return null;
 		}
 	}
 
+	protected static Category getAsCategoryOrNull(JsonObject obj, String key) {
+		if (!obj.has(key) || obj.get(key).isJsonNull())
+			return null;
+
+		try {
+			return Category.valueOf(obj.get(key).getAsString().toUpperCase());
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+	}
+
+	protected static int getAsIntOrZero(JsonObject obj, String key) {
+		if (!obj.has(key) || obj.get(key).isJsonNull())
+			return 0;
+
+		try {
+			return obj.get(key).getAsInt();
+		} catch (IllegalArgumentException e) {
+			return 0;
+		}
+	}
 }

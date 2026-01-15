@@ -5,8 +5,7 @@ import de.unistuttgart.einf.moviemanager.model.*;
 
 import java.lang.reflect.Type;
 
-import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.getAsStringOrNull;
-import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.getAsUUIDOrNull;
+import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.*;
 
 public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<Series> {
 
@@ -29,6 +28,9 @@ public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<S
 		object.addProperty("id", src.getId().toString());
 		object.addProperty("title", src.getTitle());
 		object.addProperty("description", src.getDescription());
+
+		if (src.getCategory() != null)
+			object.addProperty("category", src.getCategory().toString());
 
 		JsonArray seasons = new JsonArray();
 		for (Season s : src.getChildren()) {
@@ -56,7 +58,8 @@ public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<S
 		Series series = new Series(
 				getAsUUIDOrNull(object, "id"),
 				getAsStringOrNull(object, "title"),
-				getAsStringOrNull(object, "description")
+				getAsStringOrNull(object, "description"),
+				getAsCategoryOrNull(object, "category")
 		);
 
 		JsonArray seasons = object.has("seasons") && object.get("seasons").isJsonArray()

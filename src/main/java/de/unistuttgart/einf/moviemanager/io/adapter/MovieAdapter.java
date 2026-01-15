@@ -11,7 +11,7 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 	/**
 	 * Serializes a movie object to JSON.
 	 *
-	 * The resulting JSON contains the properties,s.
+	 * The resulting JSON contains the properties
 	 *
 	 * @param src the movie to serialize
 	 * @param typeOfSrc the type of the source object
@@ -28,7 +28,8 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 		object.addProperty("title", src.getTitle());
 		object.addProperty("description", src.getDescription());
 		object.addProperty("watched", src.isWatched());
-
+		if (src.getCategory() != null)
+			object.addProperty("category", src.getCategory().toString());
 		return object;
 	}
 
@@ -50,7 +51,9 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 				getAsUUIDOrNull(object, "id"),
 				getAsStringOrNull(object, "title"),
 				getAsStringOrNull(object, "description"),
-				getAsBooleanOrFalse(object, "watched")
+				getAsBooleanOrFalse(object, "watched"),
+				getAsIntOrZero(object, "duration"),
+				getAsCategoryOrNull(object, "category")
 		);
 
 
