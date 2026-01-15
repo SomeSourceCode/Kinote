@@ -68,13 +68,6 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	}
 
 	@Override
-	public void setWatched(boolean watched) {
-		for (final Season season : seasons.getChildren()) {
-			season.setWatched(watched);
-		}
-	}
-
-	@Override
 	public boolean isWatched() {
 		for (final Season season : seasons.getChildren()) {
 			if (!season.isWatched()) {

@@ -74,13 +74,6 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 	}
 
 	@Override
-	public void setWatched(boolean watched) {
-		for (final Episode episode : episodes.getChildren()) {
-			episode.setWatched(watched);
-		}
-	}
-
-	@Override
 	public boolean isWatched() {
 		return getStatus() == Status.WATCHED;
 	}
