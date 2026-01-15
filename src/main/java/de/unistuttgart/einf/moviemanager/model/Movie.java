@@ -5,10 +5,12 @@ package de.unistuttgart.einf.moviemanager.model;
  *
  * @see TopLevelMedia
  */
-public final class Movie extends MediaBase implements TopLevelMedia {
+public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 
 	private boolean watched;
 	private int rating = -1;
+	private int duration;
+	private Category category;
 
 	/**
 	 * Constructs a new Movie with the given title, description, watched status, duration and category.
@@ -81,6 +83,7 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	 * @param rating an int between 0 and 100 or -1 if it does not have a rating
 	 * @throws IllegalArgumentException if the rating is not within -1 to 100.
 	 */
+	@Override
 	public void setRating(int rating) {
 		if (rating < -1 || rating > 100) {
 			throw new IllegalArgumentException("The rating must be between -1 and 100.");
@@ -91,6 +94,26 @@ public final class Movie extends MediaBase implements TopLevelMedia {
 	@Override
 	public boolean hasRating() {
 		return rating != -1;
+	}
+
+	@Override
+	public int getDuration() {
+		return duration;
+	}
+
+	@Override
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	@Override
+	public Category getCategory() {
+		return category;
+	}
+
+	@Override
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 
 	@Override

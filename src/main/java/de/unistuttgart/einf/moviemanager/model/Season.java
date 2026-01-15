@@ -125,6 +125,19 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 	}
 
 	@Override
+	public int getDuration() {
+		return getChildren().stream()
+				.mapToInt(Media::getDuration)
+				.sum();
+	}
+
+	@Override
+	public Category getCategory() {
+		final Media parent = getParent();
+		return parent == null ? null : parent.getCategory();
+	}
+
+	@Override
 	public String toString() {
 		final String title = getTitle();
 		if (title != null && !title.isBlank()) {

@@ -60,25 +60,11 @@ public interface Media {
 	Status getStatus();
 
 	/**
-	 * Sets the duration.
-	 * 
-	 * @param duration the duration
-	 */
-	void setDuration(int duration);
-
-	/**
 	 * Returns the duration
 	 * 
 	 * @return the duration
 	*/
 	int getDuration();
-
-	/**
-	 * Sets the category
-	 * 
-	 * @param Category the category
-	*/
-	void setCategory(Category category);
 
 	/**
 	 * Returns the Category

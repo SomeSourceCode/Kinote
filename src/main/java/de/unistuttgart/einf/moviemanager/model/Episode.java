@@ -3,10 +3,11 @@ package de.unistuttgart.einf.moviemanager.model;
 /**
  * An episode of a season in a series.
  */
-public class Episode extends ChildMedia<Season, Episode> {
+public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 
 	private boolean watched;
 	private int rating = -1;
+	private int duration;
 
 	/**
 	 * Constructs a new Episode with the given episode number, title, description and watched status.
@@ -110,13 +111,7 @@ public class Episode extends ChildMedia<Season, Episode> {
 		return rating;
 	}
 
-	/**
-	 * Sets the rating of the episode.
-	 * It must be between 0 and 100 or -1 if it does not have a rating.
-	 *
-	 * @param rating an int between 0 and 100 or -1 if it does not have a rating
-	 * @throws IllegalArgumentException if the rating is not within -1 to 100.
-	 */
+	@Override
 	public void setRating(int rating) {
 		if (rating < -1 || rating > 100) {
 			throw new IllegalArgumentException("The rating must be between -1 and 100.");
@@ -127,6 +122,22 @@ public class Episode extends ChildMedia<Season, Episode> {
 	@Override
 	public boolean hasRating() {
 		return rating != -1;
+	}
+
+	@Override
+	public int getDuration() {
+		return duration;
+	}
+
+	@Override
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	@Override
+	public Category getCategory() {
+		final Media parent = getParent();
+		return parent == null ? null : parent.getCategory();
 	}
 
 	@Override

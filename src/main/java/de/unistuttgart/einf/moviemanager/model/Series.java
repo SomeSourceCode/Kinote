@@ -11,6 +11,7 @@ import java.util.List;
 public final class Series extends MediaBase implements ParentMedia<Season>, TopLevelMedia {
 
 	private final MediaContainer<Series, Season> seasons = new MediaContainer<>(this);
+	private Category category;
 
 	/**
 	 * Constructs a new Series with the given title and description.
@@ -137,6 +138,23 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public int getDuration() {
+		return getChildren().stream()
+				.mapToInt(Media::getDuration)
+				.sum();
+	}
+
+	@Override
+	public Category getCategory() {
+		return category;
+	}
+
+	@Override
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 
 	@Override
