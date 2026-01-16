@@ -1,5 +1,7 @@
 package de.unistuttgart.einf.moviemanager.model;
 
+import java.util.UUID;
+
 /**
  * A movie.
  *
@@ -7,14 +9,17 @@ package de.unistuttgart.einf.moviemanager.model;
  */
 public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 
+	private final UUID id;
+
 	private boolean watched;
 	private int rating = -1;
 	private int duration;
 	private Category category;
-
+	
 	/**
-	 * Constructs a new Movie with the given title, description, watched status, duration and category.
-	 *
+	 * Constructs a new Movie with the given id, title, description, watched status, duration and category.
+	 * 
+	 * @param id the uuid
 	 * @param title the title
 	 * @param description the description
 	 * @param watched whether the movie has been watched
@@ -22,13 +27,19 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	 * @param category the given category of the movie
 	 *
 	 */
-	public Movie(String title, String description, boolean watched, int duration, Category category ) {
+	public Movie(UUID id, String title, String description, boolean watched, int duration, Category category) {
 		setTitle(title);
 		setDescription(description);
 		this.watched = watched;
 		setDuration(duration);
 		setCategory(category);
+
+		if (id == null)
+			this.id = UUID.randomUUID();
+		else
+			this.id = id;
 	}
+
 
 	/**
 	 * Constructs a new Movie with the given title and description.
@@ -37,7 +48,7 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	 * @param description the description
 	 */
 	public Movie(String title, String description) {
-		this(title, description, false, 0, null);
+		this(null, title, description, false, 0, null);
 	}
 
 	/**
@@ -46,14 +57,19 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	 * @param title the title
 	 */
 	public Movie(String title) {
-		this(title, null, false, 0, null);
+		this(null, title, null, false, 0, null);
 	}
 
 	/**
 	 * Constructs a new Movie with no title or description.
 	 */
 	public Movie() {
-		this(null, null, false, 0, null);
+		this(null, null, null, false, 0, null);
+	}
+
+	@Override
+	public UUID getId() {
+		return this.id;
 	}
 
 	@Override

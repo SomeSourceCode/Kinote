@@ -2,6 +2,7 @@ package de.unistuttgart.einf.moviemanager.model;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * A series.
@@ -13,17 +14,34 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	private final MediaContainer<Series, Season> seasons = new MediaContainer<>(this);
 	private Category category;
 
+	private final UUID id;
+
 	/**
-	 * Constructs a new Series with the given title and description.
+	 * Constructs a new Series with the given id, title, description and category.
 	 *
 	 * @param title the title
 	 * @param description the description
 	 * @param category the category
 	 */
-	public Series(String title, String description, Category category) {
+	public Series(UUID id, String title, String description, Category category) {
 		setTitle(title);
 		setDescription(description);
 		setCategory(category);
+
+		if (id == null)
+			this.id = UUID.randomUUID();
+		else
+			this.id = id;
+	}
+
+	/**
+	 * Constructs a new Series with the given title and description.
+	 *
+	 * @param title the title
+	 * @param description the description
+	 */
+	public Series(String title, String description) {
+		this(null, title, description, null);
 	}
 
 	/**
@@ -32,14 +50,19 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	 * @param title the title
 	 */
 	public Series(String title) {
-		this(title, null, null);
+		this(null, title, null, null);
 	}
 
 	/**
 	 * Constructs a new Series with no title or description.
 	 */
 	public Series() {
-		this(null, null, null);
+		this(null, null, null, null);
+	}
+
+	@Override
+	public UUID getId() {
+		return this.id;
 	}
 
 	@Override
