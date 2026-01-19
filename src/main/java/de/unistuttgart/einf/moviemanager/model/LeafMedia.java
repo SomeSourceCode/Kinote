@@ -28,4 +28,13 @@ public interface LeafMedia extends Media {
 	 */
 	void setDuration(int duration);
 
+	/**
+	 * Sets the ageRestriction of the media. A valid restriction is between 0 and 18,
+	 * or -1 if it does not have a restriction.
+	 *
+	 * @param ageRestriction the age restriction
+	 * @throws IllegalArgumentException if the restriction is invalid
+	 */
+	void setAgeRestriction(int ageRestriction);
+
 }

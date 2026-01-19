@@ -15,6 +15,7 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	private int rating = -1;
 	private int duration;
 	private Category category;
+	private int ageRestriction  = -1;
 	
 	/**
 	 * Constructs a new Movie with the given id, title, description, watched status, duration and category.
@@ -134,6 +135,31 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 			return "Movie: " + title;
 		}
 		return "Movie";
+	}
+
+	@Override
+	public int getAgeRestriction() {
+		return ageRestriction;
+	}
+
+	/**
+	 * Sets the rating of the movie.
+	 * It must be between 0 and 100 or -1 if it does not have a rating.
+	 *
+	 * @param ageRestriction an int between 0 and 18 or -1 if it does not have a rating
+	 * @throws IllegalArgumentException if the age restriction is not within -1 to 18.
+	 */
+	@Override
+	public void setAgeRestriction(int ageRestriction) {
+		if (ageRestriction < -1 || ageRestriction > 18) {
+			throw new IllegalArgumentException("The age restriction must be between -1 and 18.");
+		}
+		this.ageRestriction = ageRestriction;
+	}
+
+	@Override
+	public boolean hasAgeRestriction() {
+		return ageRestriction != -1;
 	}
 
 }

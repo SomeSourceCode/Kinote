@@ -37,6 +37,7 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 			object.addProperty("category", src.getCategory().name());
 
 		object.addProperty("rating", src.getRating());
+		object.addProperty("ageRestriction", src.getAgeRestriction());
 
 		return object;
 	}
@@ -64,6 +65,7 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 				getAsCategoryOrNull(object, "category")
 		);
 		movie.setRating(getAsIntOrElse(object, "rating", -1));
+		movie.setAgeRestriction(getAsIntOrElse(object, "ageRestriction", -1));
 		return movie;
 	}
 }

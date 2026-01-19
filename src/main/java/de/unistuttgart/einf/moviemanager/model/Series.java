@@ -118,6 +118,31 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	}
 
 	@Override
+	public int getAgeRestriction() {
+		int ageRestriction = -1;
+		//int counter = 0;
+		for (Season season : this) {
+			for (Episode episode : season) {
+				int episodeRestriction = episode.getAgeRestriction();
+				if (episodeRestriction != -1 && episodeRestriction > ageRestriction) {
+					ageRestriction = episodeRestriction;
+				}
+			}
+		}
+		return ageRestriction;
+	}
+
+	@Override
+	public boolean hasAgeRestriction() {
+		for (Season season : this) {
+			if (!season.hasAgeRestriction()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
 	public int getRating() {
 		int rating = 0;
 		int counter = 0;

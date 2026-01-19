@@ -115,6 +115,29 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 	}
 
 	@Override
+	public int getAgeRestriction() {
+		int ageRestriction = -1;
+		//int counter = 0;
+		for (Episode episode : this) {
+			int episodeRestriction = episode.getAgeRestriction();
+			if (episodeRestriction != -1 && episodeRestriction > ageRestriction) {
+				ageRestriction = episodeRestriction;
+			}
+		}
+		return ageRestriction;
+	}
+
+	@Override
+	public boolean hasAgeRestriction() {
+		for (Episode episode : this) {
+			if (!episode.hasAgeRestriction()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
 	public int getDuration() {
 		return getChildren().stream()
 				.mapToInt(Media::getDuration)

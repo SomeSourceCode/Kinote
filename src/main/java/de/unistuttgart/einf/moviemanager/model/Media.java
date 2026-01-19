@@ -70,4 +70,19 @@ public interface Media {
 	 */
 	boolean hasRating();
 
+	/**
+	 * Returns the age restriction between 0 and 18 or -1 if it does not have a age restriction.
+	 * If this is not a leaf node, the age restriction is the highest age restriction of its children.
+	 *
+	 * @return the age restriction
+	 */
+	int getAgeRestriction();
+
+	/**
+	 * Returns whether this has an age restriction.
+	 *
+	 * @return true if it has an age restriction, false otherwise
+	 */
+	boolean hasAgeRestriction();
+
 }

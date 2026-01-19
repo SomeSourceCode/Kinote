@@ -8,6 +8,7 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	private boolean watched;
 	private int rating = -1;
 	private int duration;
+	private int ageRestriction = -1;
 
 	/**
 	 * Constructs a new Episode with the given episode number, title, description and watched status.
@@ -117,6 +118,24 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	@Override
 	public boolean hasRating() {
 		return rating != -1;
+	}
+
+	@Override
+	public int getAgeRestriction() {
+		return ageRestriction;
+	}
+
+	@Override
+	public void setAgeRestriction(int ageRestriction) {
+		if (rating < -1 || rating > 18) {
+			throw new IllegalArgumentException("The age restriction must be between -1 and 18.");
+		}
+		this.ageRestriction = ageRestriction;
+	}
+
+	@Override
+	public boolean hasAgeRestriction() {
+		return ageRestriction != -1;
 	}
 
 	@Override
