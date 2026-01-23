@@ -1,5 +1,8 @@
 package de.unistuttgart.einf.moviemanager.model;
 
+import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
+import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -115,29 +118,6 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 	}
 
 	@Override
-	public int getAgeRestriction() {
-		int ageRestriction = -1;
-		//int counter = 0;
-		for (Episode episode : this) {
-			int episodeRestriction = episode.getAgeRestriction();
-			if (episodeRestriction != -1 && episodeRestriction > ageRestriction) {
-				ageRestriction = episodeRestriction;
-			}
-		}
-		return ageRestriction;
-	}
-
-	@Override
-	public boolean hasAgeRestriction() {
-		for (Episode episode : this) {
-			if (!episode.hasAgeRestriction()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
 	public int getDuration() {
 		return getChildren().stream()
 				.mapToInt(Media::getDuration)
@@ -148,6 +128,23 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 	public Category getCategory() {
 		final Media parent = getParent();
 		return parent == null ? null : parent.getCategory();
+	}
+
+	@Override
+	public AgeRating getAgeRating(RatingSystem system) {
+		return AgeRating.max(getChildren().stream()
+				.map(episode -> episode.getAgeRating(system))
+				.toList());
+	}
+
+	@Override
+	public boolean hasAgeRating() {
+		return getChildren().stream().anyMatch(Media::hasAgeRating);
+	}
+
+	@Override
+	public boolean hasAgeRating(RatingSystem system) {
+		return getChildren().stream().anyMatch(episode -> episode.hasAgeRating(system));
 	}
 
 	@Override

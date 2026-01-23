@@ -1,5 +1,8 @@
 package de.unistuttgart.einf.moviemanager.model;
 
+import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
+import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
+
 /**
  * A media item that does not have any children.
  */
@@ -29,12 +32,24 @@ public interface LeafMedia extends Media {
 	void setDuration(int duration);
 
 	/**
-	 * Sets the ageRestriction of the media. A valid restriction is between 0 and 18,
-	 * or -1 if it does not have a restriction.
+	 * Sets the given rating. This overrides the current
+	 * rating of the current rating system.
 	 *
-	 * @param ageRestriction the age restriction
-	 * @throws IllegalArgumentException if the restriction is invalid
+	 * @param rating the rating
+	 * @throws IllegalArgumentException if rating is null
 	 */
-	void setAgeRestriction(int ageRestriction);
+	void setAgeRating(AgeRating rating);
+
+	/**
+	 * Unsets the age rating for all rating systems.
+	 */
+	void unsetAgeRating();
+
+	/**
+	 * Unsets the age rating for the given rating system.
+	 *
+	 * @param system the rating system
+	 */
+	void unsetAgeRating(RatingSystem system);
 
 }

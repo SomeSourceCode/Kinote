@@ -1,5 +1,8 @@
 package de.unistuttgart.einf.moviemanager.model;
 
+import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
+import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -15,6 +18,15 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	private Category category;
 
 	private final UUID id;
+
+	/**
+	 * Constructs a new Series with the given id.
+	 *
+	 * @param id the uuid
+	 */
+	public Series(UUID id) {
+		this.id = id != null ? id : UUID.randomUUID();
+	}
 
 	/**
 	 * Constructs a new Series with the given id, title, description and category.
@@ -118,31 +130,6 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	}
 
 	@Override
-	public int getAgeRestriction() {
-		int ageRestriction = -1;
-		//int counter = 0;
-		for (Season season : this) {
-			for (Episode episode : season) {
-				int episodeRestriction = episode.getAgeRestriction();
-				if (episodeRestriction != -1 && episodeRestriction > ageRestriction) {
-					ageRestriction = episodeRestriction;
-				}
-			}
-		}
-		return ageRestriction;
-	}
-
-	@Override
-	public boolean hasAgeRestriction() {
-		for (Season season : this) {
-			if (!season.hasAgeRestriction()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
 	public int getRating() {
 		int rating = 0;
 		int counter = 0;
@@ -186,6 +173,23 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	@Override
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	@Override
+	public AgeRating getAgeRating(RatingSystem system) {
+		return AgeRating.max(getChildren().stream()
+				.map(season -> season.getAgeRating(system))
+				.toList());
+	}
+
+	@Override
+	public boolean hasAgeRating() {
+		return getChildren().stream().anyMatch(Media::hasAgeRating);
+	}
+
+	@Override
+	public boolean hasAgeRating(RatingSystem system) {
+		return getChildren().stream().anyMatch(season -> season.hasAgeRating(system));
 	}
 
 	@Override

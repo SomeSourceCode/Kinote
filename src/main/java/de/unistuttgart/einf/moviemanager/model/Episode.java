@@ -1,5 +1,9 @@
 package de.unistuttgart.einf.moviemanager.model;
 
+import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
+import de.unistuttgart.einf.moviemanager.model.age.AgeRatings;
+import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
+
 /**
  * An episode of a season in a series.
  */
@@ -8,7 +12,7 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	private boolean watched;
 	private int rating = -1;
 	private int duration;
-	private int ageRestriction = -1;
+	private final AgeRatings ageRatings = new AgeRatings();
 
 	/**
 	 * Constructs a new Episode with the given episode number, title, description and watched status.
@@ -121,24 +125,6 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	}
 
 	@Override
-	public int getAgeRestriction() {
-		return ageRestriction;
-	}
-
-	@Override
-	public void setAgeRestriction(int ageRestriction) {
-		if (rating < -1 || rating > 18) {
-			throw new IllegalArgumentException("The age restriction must be between -1 and 18.");
-		}
-		this.ageRestriction = ageRestriction;
-	}
-
-	@Override
-	public boolean hasAgeRestriction() {
-		return ageRestriction != -1;
-	}
-
-	@Override
 	public int getDuration() {
 		return duration;
 	}
@@ -152,6 +138,36 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	public Category getCategory() {
 		final Media parent = getParent();
 		return parent == null ? null : parent.getCategory();
+	}
+
+	@Override
+	public void setAgeRating(AgeRating rating) {
+		ageRatings.set(rating);
+	}
+
+	@Override
+	public void unsetAgeRating() {
+		ageRatings.clear();
+	}
+
+	@Override
+	public void unsetAgeRating(RatingSystem system) {
+		ageRatings.remove(system);
+	}
+
+	@Override
+	public AgeRating getAgeRating(RatingSystem system) {
+		return ageRatings.get(system);
+	}
+
+	@Override
+	public boolean hasAgeRating() {
+		return !ageRatings.isEmpty();
+	}
+
+	@Override
+	public boolean hasAgeRating(RatingSystem system) {
+		return ageRatings.contains(system);
 	}
 
 	@Override

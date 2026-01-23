@@ -1,40 +1,39 @@
 package de.unistuttgart.einf.moviemanager.io.adapter;
 
 import com.google.gson.*;
-import de.unistuttgart.einf.moviemanager.model.Movie;
-import de.unistuttgart.einf.moviemanager.model.age.*;
+import de.unistuttgart.einf.moviemanager.model.Episode;
 
 import java.lang.reflect.Type;
 
 import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.*;
 import static de.unistuttgart.einf.moviemanager.io.adapter.SerializationHelper.*;
 
-public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Movie> {
+public class EpisodeAdapter implements JsonSerializer<Episode>, JsonDeserializer<Episode> {
 
 	/**
-	 * Serializes a movie object to JSON.
+	 * Serializes an episode object to JSON.
 	 *
 	 * The resulting JSON contains the properties
 	 *
-	 * @param src the movie to serialize
+	 * @param src the episode to serialize
 	 * @param typeOfSrc the type of the source object
 	 * @param context the JSON serialization context
 	 * @return the serialized JSON element
 	 */
 	@Override
-	public JsonElement serialize(Movie src, Type typeOfSrc, JsonSerializationContext context) {
+	public JsonElement serialize(Episode src, Type typeOfSrc, JsonSerializationContext context) {
 		JsonObject object = new JsonObject();
 
+		object.addProperty(Keys.NUMBER, src.getNumber());
 		setMediaAttributesOnJson(object, src, context);
-		setTopLevelMediaAttributesOnJson(object, src, context);
 		setLeafMediaAttributesOnJson(object, src, context);
 
 		return object;
 	}
 
 	/**
-	 * Deserializes a movie object from JSON.
-	 * A new Movie instance is created
+	 * Deserializes an episode object from JSON.
+	 * A new Episode instance is created
 	 *
 	 * @param json the JSON element to deserialize
 	 * @param typeOfT the target type
@@ -43,15 +42,14 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 	 * @throws JsonParseException if the JSON structure is invalid
 	 */
 	@Override
-	public Movie deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public Episode deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		JsonObject object = json.getAsJsonObject();
 
-		final Movie movie = new Movie(getAsUUIDOrNull(object, Keys.ID));
+		final Episode episode = new Episode(getAsIntOrElse(object, Keys.NUMBER, 1));
 
-		setMediaAttributesFromJson(movie, object, context);
-		setTopLevelMediaAttributesFromJson(movie, object, context);
-		setLeafMediaAttributesFromJson(movie, object, context);
+		setMediaAttributesFromJson(episode, object, context);
+		setLeafMediaAttributesFromJson(episode, object, context);
 
-		return movie;
+		return episode;
 	}
 }

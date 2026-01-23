@@ -6,6 +6,7 @@ import de.unistuttgart.einf.moviemanager.model.*;
 import java.lang.reflect.Type;
 
 import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.*;
+import static de.unistuttgart.einf.moviemanager.io.adapter.SerializationHelper.*;
 
 public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<Series> {
 
@@ -23,20 +24,15 @@ public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<S
 	@Override
 	public JsonElement serialize(Series src, Type typeOfSrc, JsonSerializationContext context) {
 		JsonObject object = new JsonObject();
-		object.addProperty("type", "series");
 
-		object.addProperty("id", src.getId().toString());
-		object.addProperty("title", src.getTitle());
-		object.addProperty("description", src.getDescription());
-
-		if (src.getCategory() != null)
-			object.addProperty("category", src.getCategory().toString());
+		setMediaAttributesOnJson(object, src, context);
+		setTopLevelMediaAttributesOnJson(object, src, context);
 
 		JsonArray seasons = new JsonArray();
 		for (Season s : src.getChildren()) {
 			seasons.add(context.serialize(s, Season.class));
 		}
-		object.add("seasons", seasons);
+		object.add(Keys.SEASONS, seasons);
 		return object;
 	}
 
@@ -55,15 +51,14 @@ public class SeriesAdapter implements JsonSerializer<Series>, JsonDeserializer<S
 	@Override
 	public Series deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		JsonObject object = json.getAsJsonObject();
-		Series series = new Series(
-				getAsUUIDOrNull(object, "id"),
-				getAsStringOrNull(object, "title"),
-				getAsStringOrNull(object, "description"),
-				getAsCategoryOrNull(object, "category")
-		);
 
-		JsonArray seasons = object.has("seasons") && object.get("seasons").isJsonArray()
-				? object.getAsJsonArray("seasons")
+		final Series series = new Series(getAsUUIDOrNull(object, Keys.ID));
+
+		setMediaAttributesFromJson(series, object, context);
+		setTopLevelMediaAttributesFromJson(series, object, context);
+
+		JsonArray seasons = object.has(Keys.SEASONS) && object.get(Keys.SEASONS).isJsonArray()
+				? object.getAsJsonArray(Keys.SEASONS)
 				: new JsonArray();
 
 		for (JsonElement el : seasons) {

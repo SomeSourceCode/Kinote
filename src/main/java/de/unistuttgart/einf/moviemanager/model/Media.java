@@ -1,5 +1,8 @@
 package de.unistuttgart.einf.moviemanager.model;
 
+import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
+import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
+
 /**
  * The base for all media classes.
  */
@@ -71,18 +74,31 @@ public interface Media {
 	boolean hasRating();
 
 	/**
-	 * Returns the age restriction between 0 and 18 or -1 if it does not have a age restriction.
-	 * If this is not a leaf node, the age restriction is the highest age restriction of its children.
+	 * Returns the age rating associated with the given system.
+	 * <p>
+	 * If no rating has been set for the system, but ratings in other
+	 * systems are available, the rating is estimated based on those.
+	 * If this is a parent media, its rating is determined by the
+	 * highest rated child.
 	 *
-	 * @return the age restriction
+	 * @param system the rating system
+	 * @return the age rating
 	 */
-	int getAgeRestriction();
+	AgeRating getAgeRating(RatingSystem system);
 
 	/**
-	 * Returns whether this has an age restriction.
+	 * Returns whether this has any age rating.
 	 *
-	 * @return true if it has an age restriction, false otherwise
+	 * @return true if a rating of any system is set, false otherwise
 	 */
-	boolean hasAgeRestriction();
+	boolean hasAgeRating();
+
+	/**
+	 * Returns whether this has an age rating for the given system.
+	 *
+	 * @param system the rating system
+	 * @return true if a rating for the given system is set, false otherwise
+	 */
+	boolean hasAgeRating(RatingSystem system);
 
 }

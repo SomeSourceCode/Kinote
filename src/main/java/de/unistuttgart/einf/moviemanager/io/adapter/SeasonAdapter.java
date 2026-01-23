@@ -4,7 +4,8 @@ import com.google.gson.*;
 import de.unistuttgart.einf.moviemanager.model.*;
 import java.lang.reflect.Type;
 
-import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.getAsStringOrNull;
+import static de.unistuttgart.einf.moviemanager.io.adapter.Converter.getAsIntOrElse;
+import static de.unistuttgart.einf.moviemanager.io.adapter.SerializationHelper.*;
 
 public class SeasonAdapter implements JsonSerializer<Season>, JsonDeserializer<Season> {
 
@@ -21,18 +22,17 @@ public class SeasonAdapter implements JsonSerializer<Season>, JsonDeserializer<S
 	 */
 	@Override
 	public JsonElement serialize(Season src, Type typeOfSrc, JsonSerializationContext context) {
-
 		JsonObject object = new JsonObject();
-		object.addProperty("number", src.getNumber());
-		object.addProperty("title", src.getTitle());
-		object.addProperty("description", src.getDescription());
+
+		object.addProperty(Keys.NUMBER, src.getNumber());
+		setMediaAttributesOnJson(object, src, context);
 
 		JsonArray episodeList = new JsonArray();
 		for (Episode e : src.getChildren()) {
 			episodeList.add(context.serialize(e, Episode.class));
 		}
 
-		object.add("episodes", episodeList);
+		object.add(Keys.EPISODES, episodeList);
 		return object;
 	}
 
@@ -52,11 +52,9 @@ public class SeasonAdapter implements JsonSerializer<Season>, JsonDeserializer<S
 	public Season deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 		JsonObject object = json.getAsJsonObject();
 
-		int number = object.get("number").getAsInt();
-		Season season = new Season(
-				number,
-				getAsStringOrNull(object, "title"),
-				getAsStringOrNull(object, "description"));
+		final Season season = new Season(getAsIntOrElse(object, Keys.NUMBER, 1));
+
+		setMediaAttributesFromJson(season, object, context);
 
 		JsonArray episodes = object.has("episodes") && object.get("episodes").isJsonArray()
 				? object.getAsJsonArray("episodes") : new JsonArray();

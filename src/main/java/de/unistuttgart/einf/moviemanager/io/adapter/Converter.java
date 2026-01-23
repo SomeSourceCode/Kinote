@@ -6,7 +6,13 @@ import de.unistuttgart.einf.moviemanager.model.Category;
 import java.util.UUID;
 
 public class Converter {
-	
+
+	protected static JsonObject getAsJsonObjectOrNull(JsonObject obj, String key) {
+		if (!obj.has(key) || obj.get(key).isJsonNull())
+			return null;
+		return obj.getAsJsonObject(key);
+	}
+
 	  protected static String getAsStringOrNull(JsonObject obj, String key) {
 		  if (!obj.has(key) || obj.get(key).isJsonNull())
 			  return null;

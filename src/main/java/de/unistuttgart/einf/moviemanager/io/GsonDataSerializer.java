@@ -2,14 +2,8 @@ package de.unistuttgart.einf.moviemanager.io;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import de.unistuttgart.einf.moviemanager.io.adapter.MovieAdapter;
-import de.unistuttgart.einf.moviemanager.io.adapter.SeasonAdapter;
-import de.unistuttgart.einf.moviemanager.io.adapter.SeriesAdapter;
-import de.unistuttgart.einf.moviemanager.io.adapter.TopLevelMediaTypeAdapter;
-import de.unistuttgart.einf.moviemanager.model.Movie;
-import de.unistuttgart.einf.moviemanager.model.Season;
-import de.unistuttgart.einf.moviemanager.model.Series;
-import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
+import de.unistuttgart.einf.moviemanager.io.adapter.*;
+import de.unistuttgart.einf.moviemanager.model.*;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -35,6 +29,7 @@ public class GsonDataSerializer implements DataSerializer<Set<TopLevelMedia>> {
 				.registerTypeAdapter(Movie.class, new MovieAdapter())
 				.registerTypeAdapter(Series.class, new SeriesAdapter())
 				.registerTypeAdapter(Season.class, new SeasonAdapter())
+				.registerTypeAdapter(Episode.class, new EpisodeAdapter())
 				.addSerializationExclusionStrategy(skipParentField());
 
 		this.gson = builder.create();

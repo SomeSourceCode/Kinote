@@ -2,6 +2,10 @@ package de.unistuttgart.einf.moviemanager.model;
 
 import java.util.UUID;
 
+import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
+import de.unistuttgart.einf.moviemanager.model.age.AgeRatings;
+import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
+
 /**
  * A movie.
  *
@@ -15,11 +19,20 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	private int rating = -1;
 	private int duration;
 	private Category category;
-	private int ageRestriction  = -1;
-	
+	private final AgeRatings ageRatings = new AgeRatings();
+
+	/**
+	 * Constructs a new Movie with the given id.
+	 *
+	 * @param id the uuid
+	 */
+	public Movie(UUID id) {
+		this.id = id != null ? id : UUID.randomUUID();
+	}
+
 	/**
 	 * Constructs a new Movie with the given id, title, description, watched status, duration and category.
-	 * 
+	 *
 	 * @param id the uuid
 	 * @param title the title
 	 * @param description the description
@@ -40,7 +53,6 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 		else
 			this.id = id;
 	}
-
 
 	/**
 	 * Constructs a new Movie with the given title and description.
@@ -129,37 +141,42 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	}
 
 	@Override
+	public void setAgeRating(AgeRating rating) {
+		ageRatings.set(rating);
+	}
+
+	@Override
+	public void unsetAgeRating() {
+		ageRatings.clear();
+	}
+
+	@Override
+	public void unsetAgeRating(RatingSystem system) {
+		ageRatings.remove(system);
+	}
+
+	@Override
+	public AgeRating getAgeRating(RatingSystem system) {
+		return ageRatings.get(system);
+	}
+
+	@Override
+	public boolean hasAgeRating() {
+		return !ageRatings.isEmpty();
+	}
+
+	@Override
+	public boolean hasAgeRating(RatingSystem system) {
+		return ageRatings.contains(system);
+	}
+
+	@Override
 	public String toString() {
 		final String title = getTitle();
 		if (title != null && !title.isBlank()) {
 			return "Movie: " + title;
 		}
 		return "Movie";
-	}
-
-	@Override
-	public int getAgeRestriction() {
-		return ageRestriction;
-	}
-
-	/**
-	 * Sets the rating of the movie.
-	 * It must be between 0 and 100 or -1 if it does not have a rating.
-	 *
-	 * @param ageRestriction an int between 0 and 18 or -1 if it does not have a rating
-	 * @throws IllegalArgumentException if the age restriction is not within -1 to 18.
-	 */
-	@Override
-	public void setAgeRestriction(int ageRestriction) {
-		if (ageRestriction < -1 || ageRestriction > 18) {
-			throw new IllegalArgumentException("The age restriction must be between -1 and 18.");
-		}
-		this.ageRestriction = ageRestriction;
-	}
-
-	@Override
-	public boolean hasAgeRestriction() {
-		return ageRestriction != -1;
 	}
 
 }
