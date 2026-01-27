@@ -159,6 +159,7 @@ public abstract class CommandNode implements Comparable<CommandNode> {
 				throw new IllegalArgumentException("Child command node cannot be null");
 			}
 			final Stack<CommandNode> childrenToCheck = new Stack<>();
+			childrenToCheck.push(child);
 			while (!childrenToCheck.isEmpty()) {
 				final CommandNode childToCheck = childrenToCheck.pop();
 				if (childToCheck.getName().equals(name)) {
