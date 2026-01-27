@@ -96,6 +96,8 @@ public abstract class CommandNode implements Comparable<CommandNode> {
 
 	private static final List<Class<? extends CommandNode>> nodePriority = List.of(
 			Command.class,
+			LiteralArgument.class,
+			MultiLiteralArgument.class,
 	);
 
 	@Override
