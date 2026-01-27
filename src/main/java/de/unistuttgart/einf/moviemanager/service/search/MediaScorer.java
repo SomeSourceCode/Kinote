@@ -8,14 +8,12 @@ import me.xdrop.fuzzywuzzy.FuzzySearch;
 public class MediaScorer {
 
 	private MediaScorer() {
-		//Guten Tag
+
 	}
 
-	public static int score(String rawQuery, TopLevelMedia media) {
-		String query = TextNormalizer.normalize(rawQuery);
-
+	public static int score(String query, TopLevelMedia media) {
 		int titleScore = FuzzySearch.weightedRatio(query, TextNormalizer.normalize(media.getTitle()));
-		int descScore  = scoreTopDescription(query, media.getDescription());
+		int descScore  = scoreTopLevelMediaDescription(query, media.getDescription());
 
 		int bonus = 0;
 		bonus += Bonus.topLevelMediaTypeBonus(query, media);
@@ -36,23 +34,22 @@ public class MediaScorer {
 	}
 
 	private static int scoreSeries(String query, Series series, int titleScore, int descScore, int bonus) {
-		int bestChildScore = ChildMediaScorer.bestChildScore(query, series);
-		int roundedScore = (int) Math.round(0.70 * titleScore + 0.25 * descScore+ 0.10 * bestChildScore) + bonus;
+		int bestChildScore = ChildMediaScorer.calculateBestChildScore(series, query);
+		int roundedScore = (int) Math.round(0.4 * titleScore + 0.2 * descScore + 0.4 * bestChildScore) + bonus;
 		return clamp(roundedScore);
 	}
 
-	private static int scoreTopDescription(String query, String description) {
+	private static int scoreTopLevelMediaDescription(String query, String description) {
 		String normalizedDesc = TextNormalizer.normalize(description);
-		if (normalizedDesc.isBlank())
+		if (normalizedDesc.isEmpty())
 			return 0;
 
 		int base = FuzzySearch.partialRatio(query, normalizedDesc);
 
-		/*
-		optional heuristic: short queries should not be driven by description too much
-		int tokenCount = query.isEmpty() ? 0 : query.split("\\s+").length;
-		if (tokenCount < 3) return (int)Math.round(base * 0.6);
-		*/
+		//short queries should not be driven by description too much
+		int tokenCount = query.split("\\s").length;
+		if (tokenCount < 3)
+			return (int) Math.round(base * 0.3);
 
 		return base;
 	}

@@ -5,18 +5,20 @@ import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.Series;
 import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
 
+import java.util.List;
+
 public class Bonus {
 
-	private static final int BONUS_VALUE = 6;
+	private static final int BONUS = 6;
 
 	public static int topLevelMediaTypeBonus(String query, TopLevelMedia media) {
 		if (media instanceof Movie)
-			if (containsAny(query, "movie", "film"))
-				return BONUS_VALUE;
+			if (containsAny(query, SearchConstants.MOVIE_WORDS))
+				return BONUS;
 
 		if (media instanceof Series)
-			if (containsAny(query, "series", "show", "tv"))
-				return BONUS_VALUE;
+			if (containsAny(query, SearchConstants.SERIES_WORDS))
+				return BONUS;
 
 		return 0;
 	}
@@ -32,12 +34,12 @@ public class Bonus {
 				continue;
 
 			if(query.contains(normalizedKey))
-				return BONUS_VALUE;
+				return BONUS;
 		}
 		return 0;
 	}
 
-	private static boolean containsAny(String query, String... words) {
+	private static boolean containsAny(String query, List<String> words) {
 		for (String w : words)
 			if (query.contains(w))
 				return true;

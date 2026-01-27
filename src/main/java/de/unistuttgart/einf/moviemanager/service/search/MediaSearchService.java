@@ -1,0 +1,25 @@
+package de.unistuttgart.einf.moviemanager.service.search;
+
+import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class MediaSearchService {
+
+	public record ScoredMedia(TopLevelMedia media, int score) {}
+
+	public static Set<ScoredMedia> search(String query, Set<TopLevelMedia> media, int threshold) {
+		String normalizedQuery = TextNormalizer.normalize(query);
+		if (normalizedQuery.isEmpty())
+			return Collections.emptySet();
+
+		return media.stream()
+				.map(m -> new ScoredMedia(m, MediaScorer.score(normalizedQuery, m)))
+				.filter(sm -> sm.score() >= threshold)
+				.collect(Collectors.toSet());
+	}
+}

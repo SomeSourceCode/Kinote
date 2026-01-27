@@ -5,11 +5,11 @@ import de.unistuttgart.einf.moviemanager.model.Season;
 import de.unistuttgart.einf.moviemanager.model.Series;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 
+
 public class ChildMediaScorer {
 
-	private ChildMediaScorer() {}
+	public static int calculateBestChildScore(Series series, String query) {
 
-	public static int bestChildScore(String query, Series series) {
 		int best = 0;
 
 		for (Season season : series.getChildren()) {
