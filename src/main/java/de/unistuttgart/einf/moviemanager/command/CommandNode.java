@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 
 /**
  * The base class for commands and arguments.
+ * <p>
+ * Note: this class has natural ordering that is inconsistent with equals.
  */
 public abstract class CommandNode implements Comparable<CommandNode> {
 
@@ -105,10 +107,14 @@ public abstract class CommandNode implements Comparable<CommandNode> {
 	@Override
 	public int compareTo(CommandNode other) {
 		if (other == null) {
-			return 1;
+			throw new NullPointerException("Cannot compare to null");
 		}
 		int thisPriority = nodePriority.indexOf(this.getClass());
 		int otherPriority = nodePriority.indexOf(other.getClass());
+		if (thisPriority == -1 || otherPriority == -1) {
+			throw new ClassCastException("Cannot compare " + this.getClass().getSimpleName()
+					+ " with " + other.getClass().getSimpleName());
+		}
 		if (thisPriority != otherPriority) {
 			return Integer.compare(thisPriority, otherPriority);
 		}
