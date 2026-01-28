@@ -9,11 +9,11 @@ import java.util.List;
 
 import static de.unistuttgart.einf.moviemanager.service.search.SearchConstants.*;
 
-public class Bonus {
+public class BonusScorer {
 
 	private static final int BONUS = 6;
 
-	public static double topLevelMediaTypeBonus(String query, TopLevelMedia media) {
+	public double topLevelMediaTypeBonus(String query, TopLevelMedia media) {
 		if (media instanceof Movie)
 			if (containsAny(query, MOVIE_WORDS))
 				return BONUS;
@@ -25,7 +25,7 @@ public class Bonus {
 		return 0;
 	}
 
-	public static double genreBonus(String query, Genre genre) {
+	public double genreBonus(String query, Genre genre) {
 		if (genre == null)
 			return 0;
 
@@ -35,13 +35,13 @@ public class Bonus {
 			if (normalizedKey.isEmpty())
 				continue;
 
-			if(query.contains(normalizedKey))
+			if (query.contains(normalizedKey))
 				return BONUS;
 		}
 		return 0;
 	}
 
-	private static boolean containsAny(String query, List<String> words) {
+	private boolean containsAny(String query, List<String> words) {
 		for (String w : words)
 			if (query.contains(w))
 				return true;

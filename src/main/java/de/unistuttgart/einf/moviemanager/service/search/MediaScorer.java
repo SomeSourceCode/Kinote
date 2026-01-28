@@ -12,7 +12,13 @@ import me.xdrop.fuzzywuzzy.FuzzySearch;
 
 public class MediaScorer {
 
-	public MediaScorer() {}
+	private ChildMediaScorer childMediaScorer;
+	private BonusScorer bonusScorer;
+
+	public MediaScorer() {
+		this.childMediaScorer = new ChildMediaScorer();
+		this.bonusScorer = new BonusScorer();
+	}
 
 	public int getScore(String query, TopLevelMedia media) {
 		int titleScore = FuzzySearch.weightedRatio(query, TextNormalizer.normalize(media.getTitle()));
@@ -20,9 +26,9 @@ public class MediaScorer {
 
 		double bonus = 1.0;
 
-		bonus += Bonus.topLevelMediaTypeBonus(query, media);
+		bonus += bonusScorer.topLevelMediaTypeBonus(query, media);
 		bonus += media.getGenres().stream()
-				.mapToDouble(genre -> Bonus.genreBonus(query, genre))
+				.mapToDouble(genre -> bonusScorer.genreBonus(query, genre))
 				.average()
 				.orElse(0);
 
@@ -40,7 +46,7 @@ public class MediaScorer {
 	}
 
 	private int scoreSeries(String query, Series series, int titleScore, int descScore, double bonus) {
-		int bestChildScore = new ChildMediaScorer().calculateBestChildScore(series, query);
+		int bestChildScore = childMediaScorer.calculateBestChildScore(series, query);
 
 		double score = MIXING_COEFFICIENT * (SERIES_WEIGHTS[0] * titleScore + SERIES_WEIGHTS[1] * descScore + SERIES_WEIGHTS[2] * bestChildScore)
 				+ (1-MIXING_COEFFICIENT) * max(titleScore, max(descScore, bestChildScore));
