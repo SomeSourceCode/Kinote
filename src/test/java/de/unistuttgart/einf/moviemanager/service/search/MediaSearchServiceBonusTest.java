@@ -59,11 +59,11 @@ public class MediaSearchServiceBonusTest {
 		return m.getTitle(); // ggf. m.title()
 	}
 
-	@Disabled
+
 	@Test
 	void categoryBonus_shouldPreferHorrorMovie_forMovieHorrorQuery() {
 		// threshold=0 damit nix rausgefiltert wird
-		var results = sorted("movie horror", 0);
+		var results = sorted("movie horror", 40);
 
 		assertFalse(results.isEmpty());
 		assertEquals("The Conjuring", titleOf(results.get(0).media()));
@@ -73,24 +73,23 @@ public class MediaSearchServiceBonusTest {
 	void typeBonus_shouldPreferSeries_whenQueryMentionsSeries() {
 		// "series" + crime -> sollte Series bevorzugen (bonus = 6)
 		System.out.println("------");
-		var results = sorted("crime series break ad", 0);
+		var results = sorted("crime series break ad", 40);
 
 		results.forEach(r -> System.out.println(titleOf(r.media()) + r.score() + ","));
 		assertFalse(results.isEmpty());
 		assertEquals("Breaking Bad", titleOf(results.get(0).media()));
 	}
 
-	@Disabled
+
 	@Test
 	void typeBonus_shouldPreferMovie_whenQueryMentionsMovie() {
 		// "movie" + space -> sollte eher Interstellar liefern als Breaking Bad
-		var results = sorted("space movie", 0);
+		var results = sorted("space movie", 40);
 
 		assertFalse(results.isEmpty());
 		assertEquals("Interstellar", titleOf(results.get(0).media()));
 	}
 
-	@Disabled
 	@Test
 	void categoryBonusValueShouldBeExactlySix_inInfluence() {
 		// Dieser Test prüft indirekt: gleiche Query ohne category keyword sollte schlechter sein.

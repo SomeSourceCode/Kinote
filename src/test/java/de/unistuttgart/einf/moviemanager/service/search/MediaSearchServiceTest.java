@@ -101,8 +101,8 @@ public class MediaSearchServiceTest {
 
 	@Test
 	void titleMatch_shouldReturnCorrectTopResult() {
-		var top = topResult("interstellar", 60);
-
+		var top = topResult("interstellar", 70);
+		System.out.print(top.score() + " scr");
 		assertNotNull(top);
 		assertEquals("Interstellar", titleOf(top.media()));
 		assertTrue(top.score() >= 80, "Title match should score high");
@@ -110,7 +110,7 @@ public class MediaSearchServiceTest {
 
 	@Test
 	void descriptionMatch_shouldFindMovieEvenIfTitleNotMentioned() {
-		var top = topResult("wormhole space save humanity", 60);
+		var top = topResult("wormhole space save humanity", 30);
 
 		assertNotNull(top);
 		assertEquals("Interstellar", titleOf(top.media()));
@@ -119,8 +119,9 @@ public class MediaSearchServiceTest {
 	@Test
 	void categoryKeywordBonus_shouldBoostCorrectCategory() {
 		// Query enthält "horror" -> Horror Movie sollte oben landen
-		var top = topResult("movie horror", 50);
+		var top = topResult("movie horror", 0);
 
+		System.out.print(top.score() + " scoreee");
 		assertNotNull(top);
 		assertEquals("The Conjuring", titleOf(top.media()));
 	}

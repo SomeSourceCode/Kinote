@@ -5,14 +5,16 @@ import de.unistuttgart.einf.moviemanager.model.Series;
 import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
 
 import static de.unistuttgart.einf.moviemanager.service.search.SearchConstants.*;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 
 public class MediaScorer {
 
-	private MediaScorer() {}
+	public MediaScorer() {}
 
-	public static int score(String query, TopLevelMedia media) {
+	public int getScore(String query, TopLevelMedia media) {
 		int titleScore = FuzzySearch.weightedRatio(query, TextNormalizer.normalize(media.getTitle()));
 		int descScore = scoreTopLevelMediaDescription(query, media.getDescription());
 
@@ -30,22 +32,24 @@ public class MediaScorer {
 		};
 	}
 
-	private static int scoreMovie(int titleScore, int descScore, double bonus) {
-		double score = MOVIE_WEIGHTS[0] * titleScore + MOVIE_WEIGHTS[1] * descScore;
+	private int scoreMovie(int titleScore, int descScore, double bonus) {
+		double score = MIXING_COEFFICIENT * (MOVIE_WEIGHTS[0] * titleScore + MOVIE_WEIGHTS[1] * descScore)
+				+ (1 - MIXING_COEFFICIENT) * max(titleScore, descScore);
 		int roundedScore = (int) Math.round(score * bonus);
 		return clamp(roundedScore);
 	}
 
-	private static int scoreSeries(String query, Series series, int titleScore, int descScore, double bonus) {
-		int bestChildScore = ChildMediaScorer.calculateBestChildScore(series, query);
+	private int scoreSeries(String query, Series series, int titleScore, int descScore, double bonus) {
+		int bestChildScore = new ChildMediaScorer().calculateBestChildScore(series, query);
 
-		double score = SERIES_WEIGHTS[0] * titleScore + SERIES_WEIGHTS[1] * descScore + SERIES_WEIGHTS[2] * bestChildScore;
+		double score = MIXING_COEFFICIENT * (SERIES_WEIGHTS[0] * titleScore + SERIES_WEIGHTS[1] * descScore + SERIES_WEIGHTS[2] * bestChildScore)
+				+ (1-MIXING_COEFFICIENT) * max(titleScore, max(descScore, bestChildScore));
+
 		int roundedScore = (int) Math.round(score * bonus);
-
 		return clamp(roundedScore);
 	}
 
-	private static int scoreTopLevelMediaDescription(String query, String description) {
+	private int scoreTopLevelMediaDescription(String query, String description) {
 		String normalizedDesc = TextNormalizer.normalize(description);
 		if (normalizedDesc.isEmpty())
 			return 0;
@@ -60,9 +64,9 @@ public class MediaScorer {
 		return base;
 	}
 
-	private static int clamp(int value) {
+	private int clamp(int value) {
 		final int MIN_VAL = 0, MAX_VAL = 100;
-		return Math.max(MIN_VAL, Math.min(value, MAX_VAL));
+		return max(MIN_VAL, min(value, MAX_VAL));
 	}
 
 }

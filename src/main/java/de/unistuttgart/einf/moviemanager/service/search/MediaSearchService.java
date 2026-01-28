@@ -11,12 +11,14 @@ public class MediaSearchService {
 	public record ScoredMedia(TopLevelMedia media, int score) {}
 
 	public static Set<ScoredMedia> search(String query, Set<TopLevelMedia> media, int threshold) {
+		MediaScorer mediaScorer = new MediaScorer();
+
 		String normalizedQuery = TextNormalizer.normalize(query);
 		if (normalizedQuery.isEmpty())
 			return Collections.emptySet();
 
 		return media.stream()
-				.map(m -> new ScoredMedia(m, MediaScorer.score(normalizedQuery, m)))
+				.map(m -> new ScoredMedia(m, mediaScorer.getScore(normalizedQuery, m)))
 				.filter(sm -> sm.score() >= threshold)
 				.collect(Collectors.toSet());
 	}
