@@ -1,6 +1,5 @@
 package de.unistuttgart.einf.moviemanager.service.search;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -18,9 +17,8 @@ public class TextNormalizer {
 				.trim();
 	}
 
-
 	private static final Pattern INTENT_PATTERN = Pattern.compile(
-			"\\b(" + SearchConstants.TOPLEVELMEDIA_WORDS.stream()
+			"\\b(" + SearchConstants.TOP_LEVEL_MEDIA_WORDS.stream()
 					.map(Pattern::quote)
 					.collect(Collectors.joining("|")) + ")\\b",
 			Pattern.CASE_INSENSITIVE
@@ -32,4 +30,5 @@ public class TextNormalizer {
 				.replaceAll("\\s+", " ")
 				.trim();
 	}
+
 }

@@ -3,22 +3,24 @@ package de.unistuttgart.einf.moviemanager.service.search;
 import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.Series;
 import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
+
+import static de.unistuttgart.einf.moviemanager.service.search.SearchConstants.*;
+
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 
 public class MediaScorer {
 
-	private MediaScorer() {
-
-	}
+	private MediaScorer() {}
 
 	public static int score(String query, TopLevelMedia media) {
 		int titleScore = FuzzySearch.weightedRatio(query, TextNormalizer.normalize(media.getTitle()));
-		int descScore  = scoreTopLevelMediaDescription(query, media.getDescription());
+		int descScore = scoreTopLevelMediaDescription(query, media.getDescription());
 
-		int bonus = 0;
+		double bonus = 1.0;
+
 		bonus += Bonus.topLevelMediaTypeBonus(query, media);
-		bonus += (int) media.getGenres().stream()
-				.mapToInt(genre -> Bonus.genreBonus(query, genre))
+		bonus += media.getGenres().stream()
+				.mapToDouble(genre -> Bonus.genreBonus(query, genre))
 				.average()
 				.orElse(0);
 
@@ -28,14 +30,18 @@ public class MediaScorer {
 		};
 	}
 
-	private static int scoreMovie(int titleScore, int descScore, int bonus) {
-		int roundedScore = (int) Math.round(0.75 * titleScore + 0.25 * descScore) + bonus;
+	private static int scoreMovie(int titleScore, int descScore, double bonus) {
+		double score = MOVIE_WEIGHTS[0] * titleScore + MOVIE_WEIGHTS[1] * descScore;
+		int roundedScore = (int) Math.round(score * bonus);
 		return clamp(roundedScore);
 	}
 
-	private static int scoreSeries(String query, Series series, int titleScore, int descScore, int bonus) {
+	private static int scoreSeries(String query, Series series, int titleScore, int descScore, double bonus) {
 		int bestChildScore = ChildMediaScorer.calculateBestChildScore(series, query);
-		int roundedScore = (int) Math.round(0.4 * titleScore + 0.2 * descScore + 0.4 * bestChildScore) + bonus;
+
+		double score = SERIES_WEIGHTS[0] * titleScore + SERIES_WEIGHTS[1] * descScore + SERIES_WEIGHTS[2] * bestChildScore;
+		int roundedScore = (int) Math.round(score * bonus);
+
 		return clamp(roundedScore);
 	}
 
@@ -56,7 +62,7 @@ public class MediaScorer {
 
 	private static int clamp(int value) {
 		final int MIN_VAL = 0, MAX_VAL = 100;
-
 		return Math.max(MIN_VAL, Math.min(value, MAX_VAL));
 	}
+
 }

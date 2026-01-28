@@ -7,23 +7,25 @@ import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
 
 import java.util.List;
 
+import static de.unistuttgart.einf.moviemanager.service.search.SearchConstants.*;
+
 public class Bonus {
 
 	private static final int BONUS = 6;
 
-	public static int topLevelMediaTypeBonus(String query, TopLevelMedia media) {
+	public static double topLevelMediaTypeBonus(String query, TopLevelMedia media) {
 		if (media instanceof Movie)
-			if (containsAny(query, SearchConstants.MOVIE_WORDS))
+			if (containsAny(query, MOVIE_WORDS))
 				return BONUS;
 
 		if (media instanceof Series)
-			if (containsAny(query, SearchConstants.SERIES_WORDS))
+			if (containsAny(query, SERIES_WORDS))
 				return BONUS;
 
 		return 0;
 	}
 
-	public static int genreBonus(String query, Genre genre) {
+	public static double genreBonus(String query, Genre genre) {
 		if (genre == null)
 			return 0;
 

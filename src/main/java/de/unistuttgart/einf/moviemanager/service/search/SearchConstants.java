@@ -9,15 +9,13 @@ public class SearchConstants {
 	public static final List<String> MOVIE_WORDS = Arrays.asList("movie", "film");
 	public static final List<String> SERIES_WORDS = Arrays.asList("series", "show", "tv");
 
-	public static final List<String> TOPLEVELMEDIA_WORDS =
+	public static final List<String> TOP_LEVEL_MEDIA_WORDS =
 			Stream.concat(MOVIE_WORDS.stream(), SERIES_WORDS.stream()).distinct().toList();
 
-
-	public static int BONUS = 12;
+	public static double BONUS = 0.4;
 
 	//title, description, (bestChildScore)
-	public static double[] MOVIE_WEIGHTS = new double[]{0.75, 0.25};
-	public static double[] SERIES_WEIGHTS = new double[]{0.70, 0.20, 0.10};
-
+	public static double[] MOVIE_WEIGHTS = new double[]{0.5, 0.5};
+	public static double[] SERIES_WEIGHTS = new double[]{0.30, 0.30, 0.40};
 
 }
