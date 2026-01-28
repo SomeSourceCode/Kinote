@@ -104,6 +104,7 @@ public abstract class CommandNode implements Comparable<CommandNode> {
 			EnumArgument.class,
 			IntegerArgument.class,
 			LongArgument.class,
+			CommandArgument.class,
 			StringArgument.class
 	);
 
