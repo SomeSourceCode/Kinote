@@ -111,7 +111,7 @@ public class EpisodeImporter extends MediaImporter {
 					case AGE_RATING -> {
 						for (RatingSystem ratingSystem : RatingSystem.values()) {
 							AgeRating rating = AgeRating.max(getAgeRatingBySystem(ageRatings, ratingSystem));
-							if (overridden.contains(attribute) || episode.getAgeRating(ratingSystem) == null) {
+							if (rating != null && (overridden.contains(attribute) || episode.getAgeRating(ratingSystem) == null)) {
 								episode.setAgeRating(rating);
 							}
 						}
