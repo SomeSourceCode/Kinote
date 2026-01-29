@@ -9,8 +9,12 @@ import info.movito.themoviedbapi.model.tv.season.TvSeasonEpisode;
 import info.movito.themoviedbapi.tools.TmdbException;
 
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EpisodeImporter extends MediaImporter {
+
+	private static final Pattern BAD_TITLE_PATTERN = Pattern.compile("((Episode)|(Folge)) \\d+[:\\-\\s]*");
 
 	/**
 	 * Creates a new EpisodeImporter with the given TMDb API key.
@@ -45,9 +49,14 @@ public class EpisodeImporter extends MediaImporter {
 			switch (attribute) {
 				case TITLE -> {
 					String tmdbTitle = tmdbEpisode.getName();
+					if (tmdbTitle == null) {
+						break;
+					}
+					tmdbTitle = BAD_TITLE_PATTERN.matcher(tmdbTitle).replaceFirst("");
 					String title = episode.getTitle();
-					if (tmdbTitle != null && (overridden.contains(attribute) || title == null || title.isBlank())) {
-						episode.setTitle(tmdbEpisode.getName());
+
+					if (!tmdbTitle.isBlank() && (overridden.contains(attribute) || title == null || title.isBlank())) {
+						episode.setTitle(tmdbTitle);
 					}
 				}
 				case DESCRIPTION -> {
@@ -86,9 +95,13 @@ public class EpisodeImporter extends MediaImporter {
 				switch (attribute) {
 					case TITLE -> {
 						String tmdbTitle = tmdbEpisode.getName();
+						if (tmdbTitle == null) {
+							break;
+						}
+						tmdbTitle = BAD_TITLE_PATTERN.matcher(tmdbTitle).replaceFirst("");
 						String title = episode.getTitle();
 
-						if (tmdbTitle != null && (overridden.contains(attribute) || title == null || title.isBlank())) {
+						if (!tmdbTitle.isBlank() && (overridden.contains(attribute) || title == null || title.isBlank())) {
 							episode.setTitle(tmdbTitle);
 						}
 					}

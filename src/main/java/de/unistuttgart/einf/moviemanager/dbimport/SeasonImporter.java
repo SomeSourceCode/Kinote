@@ -12,10 +12,12 @@ import info.movito.themoviedbapi.tools.TmdbException;
 
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class SeasonImporter extends MediaImporter {
 
 	private EpisodeImporter episodeImporter;
+	private static final Pattern BAD_TITLE_PATTERN = Pattern.compile("((Season)|(Staffel)) \\d+[:\\-\\s]*");
 
 	/**
 	 * Creates a new SeasonImporter with the given TMDb API key.
@@ -94,9 +96,13 @@ public class SeasonImporter extends MediaImporter {
 				switch (attribute) {
 					case TITLE -> {
 						String tmdbTitle = tmdbSeason.getName();
+						if (tmdbTitle == null) {
+							break;
+						}
+						tmdbTitle = BAD_TITLE_PATTERN.matcher(tmdbTitle).replaceFirst("");
 						String title = season.getTitle();
 
-						if (tmdbTitle != null && (overridden.contains(attribute) || title == null || title.isBlank())) {
+						if (!tmdbTitle.isBlank() && (overridden.contains(attribute) || title == null || title.isBlank())) {
 							season.setTitle(tmdbTitle);
 						}
 					}
