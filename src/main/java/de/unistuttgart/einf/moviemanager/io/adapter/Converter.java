@@ -13,11 +13,11 @@ public class Converter {
 		return obj.getAsJsonObject(key);
 	}
 
-	  protected static String getAsStringOrNull(JsonObject obj, String key) {
-		  if (!obj.has(key) || obj.get(key).isJsonNull())
-			  return null;
-		  return obj.get(key).getAsString();
-	  }
+	protected static String getAsStringOrNull(JsonObject obj, String key) {
+		if (!obj.has(key) || obj.get(key).isJsonNull())
+			return null;
+		return obj.get(key).getAsString();
+	}
 
 	protected static Boolean getAsBooleanOrFalse(JsonObject obj, String key) {
 		  if (!obj.has(key) || obj.get(key).isJsonNull())
