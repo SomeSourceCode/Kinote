@@ -48,37 +48,35 @@ These are the concrete implementations for the actual media types. Here's a basi
 import de.unistuttgart.einf.moviemanager.model.*;
 
 void main() {
-    // 1. A standalone Movie
-    Movie movie = new Movie("The Lord of the Strings: Return of the CharArray");
-    movie.setDescription("Frodo tries to cast a Ring into the Fire, but gets a ClassCastException.");
+	// 1. A standalone Movie
+	Movie movie = new Movie("The Lord of the Strings: Return of the CharArray");
+	movie.setDescription("Frodo tries to cast a Ring into the Fire, but gets a ClassCastException.");
 
-    // 2. A Series (TopLevelMedia)
-    Series series = new Series("Breaking Bug");
-    series.setDescription("A high school teacher starts writing untyped JavaScript to pay for his server costs.");
+	// 2. A Series (TopLevelMedia)
+	Series series = new Series("Breaking Bug");
+	series.setDescription("A high school teacher starts writing untyped JavaScript to pay for his server costs.");
 
-    // 3. A Season (Child of Series)
-    Season season1 = new Season("Season 1: The Spaghetti Code");
-    
-    // Connect Season to Series
-    series.addChild(season1);
+	// 3. A Season (Child of Series)
+	Season season1 = new Season("Season 1: The Spaghetti Code");
+	
+	// Connect Season to Series
+	series.addChild(season1);
 
-    // 4. Episodes (Child of Season)
-    Episode ep1 = new Episode("Ep 1: Public Static Void Pain");
-    ep1.setDescription("Walter White forgets a semicolon and crashes the build.");
+	// 4. Episodes (Child of Season)
+	Episode ep1 = new Episode("Ep 1: Public Static Void Pain");
+	ep1.setDescription("Walter White forgets a semicolon and crashes the build.");
 
-    Episode ep2 = new Episode("Ep 2: The Null Pointer");
-    ep2.setDescription("Jesse tries to access a variable that doesn't exist.");
+	Episode ep2 = new Episode("Ep 2: The Null Pointer");
+	ep2.setDescription("Jesse tries to access a variable that doesn't exist.");
 
-    // Connect Episodes to Season
-    season1.addChild(ep1);
-    season1.addChild(ep2);
-    
-    // Now 'series' contains the season, which contains the episodes.
+	// Connect Episodes to Season
+	season1.addChild(ep1);
+	season1.addChild(ep2);
+	
+	// Now 'series' contains the season, which contains the episodes.
 
-	// Getting children:
 	System.out.println("Binge-watching " + series.getTitle() + "...");
 
-	// Assuming ParentMedia exposes a getChildren() method
 	for (Season s : series.getChildren()) {
 		System.out.println("Loading " + s);
 
