@@ -2,7 +2,6 @@ package de.unistuttgart.einf.moviemanager.service;
 
 import de.unistuttgart.einf.moviemanager.model.*;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
-import de.unistuttgart.einf.moviemanager.model.age.AgeRatings;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
 
 import java.util.function.Predicate;
@@ -77,7 +76,7 @@ public class MediaFilter {
 		String description = "isAgeRatingAtLeast(" + rating.getLabel() + ")";
 		return new MediaFilter(predicate, description);
 	}
-	
+
 	public static <E extends Enum<E> & AgeRating> MediaFilter isAgeRatingAtMost(E rating) {
 		Predicate<TopLevelMedia> predicate = media -> {
 			if (!media.hasAgeRating())
