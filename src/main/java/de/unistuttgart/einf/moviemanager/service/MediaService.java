@@ -22,7 +22,7 @@ public class MediaService {
 	 */
 	public MediaService(FileRepository<Set<TopLevelMedia>> repository) {
 		if (repository == null) {
-			throw new IllegalStateException("Repository must not be null");
+			throw new IllegalArgumentException("Repository must not be null");
 		}
 		this.repository = repository;
 		reload();
