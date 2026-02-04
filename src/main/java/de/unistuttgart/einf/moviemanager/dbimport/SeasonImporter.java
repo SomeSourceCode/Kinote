@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class SeasonImporter extends MediaImporter {
 
 	private EpisodeImporter episodeImporter;
-	private static final Pattern BAD_TITLE_PATTERN = Pattern.compile("((Season)|(Staffel)) \\d+[:\\-\\s]*");
+	private static final Pattern TITLE_PREFIX_PATTERN = Pattern.compile("((Season)|(Staffel)) \\d+[:\\-\\s]*");
 
 	/**
 	 * Creates a new SeasonImporter with the given TMDb API key.
@@ -71,7 +71,7 @@ public class SeasonImporter extends MediaImporter {
 
 		try {
 			TvSeriesDb tmdbSeries =  tmdbTvSeries.getDetails(seriesId, language.getCode());
-			importData(season, seriesId, seasonNumber, getAgeRatingsFromSeries(seriesId));
+			importData(season, seriesId, seasonNumber, fetchAgeRatingsFromSeries(seriesId));
 		} catch (TmdbException e) {
 			throw new RuntimeException(e);
 		}
@@ -99,7 +99,7 @@ public class SeasonImporter extends MediaImporter {
 						if (tmdbTitle == null) {
 							break;
 						}
-						tmdbTitle = BAD_TITLE_PATTERN.matcher(tmdbTitle).replaceFirst("");
+						tmdbTitle = TITLE_PREFIX_PATTERN.matcher(tmdbTitle).replaceFirst("");
 						String title = season.getTitle();
 
 						if (!tmdbTitle.isBlank() && (overridden.contains(attribute) || title == null || title.isBlank())) {
@@ -117,22 +117,24 @@ public class SeasonImporter extends MediaImporter {
 				}
 			});
 
-			if (episodeImporter != null) {
-				List<TvSeasonEpisode> tmdbEpisodes = tmdbSeason.getEpisodes();
-				for (TvSeasonEpisode tmdbEpisode : tmdbEpisodes) {
-					if (tmdbEpisode.getEpisodeNumber() < 1) {
-						continue;
-					}
-					int episodeNumber = tmdbEpisode.getEpisodeNumber();
-					Episode episode = season.getChild(episodeNumber);
-					if (episode == null) {
-						episode = new Episode(episodeNumber);
-						season.addChild(episode);
-					}
-					episodeImporter.importData(episode, tmdbEpisode, ageRatings);
-				}
+			if (episodeImporter == null) {
+				return;
 			}
-			
+
+			List<TvSeasonEpisode> tmdbEpisodes = tmdbSeason.getEpisodes();
+			for (TvSeasonEpisode tmdbEpisode : tmdbEpisodes) {
+				if (tmdbEpisode.getEpisodeNumber() < 1) {
+					continue;
+				}
+				int episodeNumber = tmdbEpisode.getEpisodeNumber();
+				Episode episode = season.getChild(episodeNumber);
+				if (episode == null) {
+					episode = new Episode(episodeNumber);
+					season.addChild(episode);
+				}
+				episodeImporter.importData(episode, tmdbEpisode, ageRatings);
+			}
+
 		} catch (TmdbException e) {
 			throw new RuntimeException(e);
 		}

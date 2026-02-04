@@ -9,12 +9,11 @@ import info.movito.themoviedbapi.model.tv.season.TvSeasonEpisode;
 import info.movito.themoviedbapi.tools.TmdbException;
 
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EpisodeImporter extends MediaImporter {
 
-	private static final Pattern BAD_TITLE_PATTERN = Pattern.compile("((Episode)|(Folge)) \\d+[:\\-\\s]*");
+	private static final Pattern TITLE_PREFIX_PATTERN = Pattern.compile("((Episode)|(Folge)) \\d+[:\\-\\s]*");
 
 	/**
 	 * Creates a new EpisodeImporter with the given TMDb API key.
@@ -34,7 +33,7 @@ public class EpisodeImporter extends MediaImporter {
 	 * @param episodeNumber the episode number
 	 */
 	public void importData(Episode episode, int seriesId, int seasonNumber, int episodeNumber) {
-		importData(episode, seriesId, seasonNumber, episodeNumber, getAgeRatingsFromSeries(seriesId));
+		importData(episode, seriesId, seasonNumber, episodeNumber, fetchAgeRatingsFromSeries(seriesId));
 	}
 
 	/**
@@ -52,7 +51,7 @@ public class EpisodeImporter extends MediaImporter {
 					if (tmdbTitle == null) {
 						break;
 					}
-					tmdbTitle = BAD_TITLE_PATTERN.matcher(tmdbTitle).replaceFirst("");
+					tmdbTitle = TITLE_PREFIX_PATTERN.matcher(tmdbTitle).replaceFirst("");
 					String title = episode.getTitle();
 
 					if (!tmdbTitle.isBlank() && (overridden.contains(attribute) || title == null || title.isBlank())) {
@@ -75,10 +74,11 @@ public class EpisodeImporter extends MediaImporter {
 				}
 				case AGE_RATING -> {
 					for (RatingSystem ratingSystem : RatingSystem.values()) {
-						AgeRating rating = AgeRating.max(getAgeRatingBySystem(ageRatings, ratingSystem));
-						if (overridden.contains(attribute) || episode.getAgeRating(ratingSystem) == null) {
-							episode.setAgeRating(rating);
+						if (!overridden.contains(attribute) && episode.getAgeRating(ratingSystem) != null) {
+							continue;
 						}
+						AgeRating rating = AgeRating.max(getAgeRatingsBySystem(ageRatings, ratingSystem));
+						episode.setAgeRating(rating);
 					}
 				}
 			}
@@ -98,7 +98,7 @@ public class EpisodeImporter extends MediaImporter {
 						if (tmdbTitle == null) {
 							break;
 						}
-						tmdbTitle = BAD_TITLE_PATTERN.matcher(tmdbTitle).replaceFirst("");
+						tmdbTitle = TITLE_PREFIX_PATTERN.matcher(tmdbTitle).replaceFirst("");
 						String title = episode.getTitle();
 
 						if (!tmdbTitle.isBlank() && (overridden.contains(attribute) || title == null || title.isBlank())) {
@@ -123,10 +123,11 @@ public class EpisodeImporter extends MediaImporter {
 					}
 					case AGE_RATING -> {
 						for (RatingSystem ratingSystem : RatingSystem.values()) {
-							AgeRating rating = AgeRating.max(getAgeRatingBySystem(ageRatings, ratingSystem));
-							if (rating != null && (overridden.contains(attribute) || episode.getAgeRating(ratingSystem) == null)) {
-								episode.setAgeRating(rating);
+							if (!overridden.contains(attribute) && episode.getAgeRating(ratingSystem) != null) {
+								continue;
 							}
+							AgeRating rating = AgeRating.max(getAgeRatingsBySystem(ageRatings, ratingSystem));
+							episode.setAgeRating(rating);
 						}
 					}
 				}

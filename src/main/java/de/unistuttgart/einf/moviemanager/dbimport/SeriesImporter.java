@@ -2,12 +2,14 @@ package de.unistuttgart.einf.moviemanager.dbimport;
 
 import de.unistuttgart.einf.moviemanager.model.Season;
 import de.unistuttgart.einf.moviemanager.model.Series;
+import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import info.movito.themoviedbapi.TmdbTvSeries;
 import info.movito.themoviedbapi.model.tv.core.TvSeason;
 import info.movito.themoviedbapi.model.tv.series.TvSeriesDb;
 import info.movito.themoviedbapi.tools.TmdbException;
 
 import java.util.List;
+import java.util.Set;
 
 public class SeriesImporter extends MediaImporter {
 
@@ -89,20 +91,23 @@ public class SeriesImporter extends MediaImporter {
 				}
 			});
 
-			if (seasonImporter != null) {
-				List<TvSeason> seasons = tmdbSeries.getSeasons();
-				for (TvSeason tmdbSeason : seasons) {
-					if (tmdbSeason.getSeasonNumber() < 1) {
-						continue;
-					}
-					int seasonNumber = tmdbSeason.getSeasonNumber();
-					Season season = series.getChild(seasonNumber);
-					if (season == null) {
-						season = new Season(seasonNumber);
-						series.addChild(season);
-					}
-					seasonImporter.importData(season, seriesId, seasonNumber, getAgeRatingsFromSeries(seriesId));
+			if (seasonImporter == null) {
+				return;
+			}
+
+			List<TvSeason> seasons = tmdbSeries.getSeasons();
+			Set<AgeRating> ageRatings = fetchAgeRatingsFromSeries(seriesId);
+			for (TvSeason tmdbSeason : seasons) {
+				if (tmdbSeason.getSeasonNumber() < 1) {
+					continue;
 				}
+				int seasonNumber = tmdbSeason.getSeasonNumber();
+				Season season = series.getChild(seasonNumber);
+				if (season == null) {
+					season = new Season(seasonNumber);
+					series.addChild(season);
+				}
+				seasonImporter.importData(season, seriesId, seasonNumber, ageRatings);
 			}
 
 		} catch (TmdbException e) {

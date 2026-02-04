@@ -4,12 +4,11 @@ import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.age.*;
 import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.model.movies.MovieDb;
-import info.movito.themoviedbapi.model.movies.ReleaseDate;
-import info.movito.themoviedbapi.model.movies.ReleaseInfo;
 import info.movito.themoviedbapi.model.movies.ReleaseType;
 import info.movito.themoviedbapi.tools.TmdbException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MovieImporter extends MediaImporter{
 
@@ -34,34 +33,13 @@ public class MovieImporter extends MediaImporter{
 		try {
 			MovieDb tmdbMovie = tmdbMovies.getDetails(tmdbId, language.getCode());
 
-			// calculate age ratings
-			Set<AgeRating> ageRatings = new HashSet<>();
-
-			if (included.contains(ImportableAttribute.AGE_RATING)) {
-				List<ReleaseInfo> countries = tmdbMovies.getReleaseDates(tmdbId).getResults();
-				List<ReleaseInfo> filteredCountries = countries.stream()
-						.filter(releaseInfo -> releaseInfo.getIso31661().equals("DE") || releaseInfo.getIso31661().equals("US") || releaseInfo.getIso31661().equals("GB"))
-						.toList();
-
-				for (ReleaseInfo country : filteredCountries) {
-					List<ReleaseDate> releaseDates = country.getReleaseDates();
-					releaseDates.stream()
-							.filter(releaseDate -> releaseDate.getType() == ReleaseType.THEATRICAL)
-							.forEach(releaseDate -> {
-								if (!releaseDate.getCertification().isBlank()) {
-									ageRatings.add(mapAgeRating(country.getIso31661(), releaseDate.getCertification()));
-								}
-							});
-				}
-			}
-
 			included.forEach(attribute -> {
 				switch (attribute) {
 					case TITLE -> {
 						String tmdbTitle = tmdbMovie.getTitle();
 						String title = movie.getTitle();
 
-						if (tmdbTitle != null && (overridden.contains(attribute) ||title == null || title.isBlank())) {
+						if (tmdbTitle != null && (overridden.contains(attribute) || title == null || title.isBlank())) {
 							movie.setTitle(tmdbTitle);
 						}
 					}
@@ -82,11 +60,28 @@ public class MovieImporter extends MediaImporter{
 						}
 					}
 					case AGE_RATING -> {
+						Set<AgeRating> ageRatings = null;
+						try {
+							ageRatings = tmdbMovies.getReleaseDates(tmdbId).getResults().stream()
+								.flatMap(country -> country.getReleaseDates().stream()
+										.filter(releaseDate -> releaseDate.getType() == ReleaseType.THEATRICAL)
+										.map(releaseDate -> mapAgeRating(country.getIso31661(), releaseDate.getCertification())))
+								.filter(Objects::nonNull)
+								.collect(Collectors.toSet());
+						} catch (TmdbException e) {
+							throw new RuntimeException(e);
+						}
+
+						if (ageRatings.isEmpty()) {
+							return;
+						}
+
 						for (RatingSystem ratingSystem : RatingSystem.values()) {
-							AgeRating rating = AgeRating.max(getAgeRatingBySystem(ageRatings, ratingSystem));
-							if (overridden.contains(attribute) || movie.getAgeRating(ratingSystem) == null) {
-								movie.setAgeRating(rating);
+							if (!overridden.contains(attribute) && movie.getAgeRating(ratingSystem) != null) {
+								continue;
 							}
+							AgeRating rating = AgeRating.max(getAgeRatingsBySystem(ageRatings, ratingSystem));
+							movie.setAgeRating(rating);
 						}
 					}
 					// todo: case CATEGORY ->

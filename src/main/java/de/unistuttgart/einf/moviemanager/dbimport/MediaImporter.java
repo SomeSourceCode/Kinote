@@ -154,7 +154,7 @@ public abstract class MediaImporter {
 	 * @param system the rating system
 	 * @return the list of age ratings
 	 */
-	protected List<AgeRating> getAgeRatingBySystem(Set<AgeRating> ageRatings, RatingSystem system) {
+	protected List<AgeRating> getAgeRatingsBySystem(Set<AgeRating> ageRatings, RatingSystem system) {
 		return ageRatings.stream().filter(rating -> rating.getSystem() == system).toList();
 	}
 
@@ -164,7 +164,7 @@ public abstract class MediaImporter {
 	 * @param seriesId the TMDb series ID
 	 * @return a set of age ratings
 	 */
-	protected Set<AgeRating> getAgeRatingsFromSeries(int seriesId) {
+	protected Set<AgeRating> fetchAgeRatingsFromSeries(int seriesId) {
 		Set<AgeRating> ageRatings = new HashSet<>();
 
 		try (HttpClient client = HttpClient.newHttpClient()) {
