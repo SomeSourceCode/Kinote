@@ -3,8 +3,10 @@ package de.unistuttgart.einf.moviemanager.model;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
 
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A season of a series.
@@ -125,9 +127,15 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 	}
 
 	@Override
-	public Category getCategory() {
+	public Set<Genre> getGenres() {
 		final Media parent = getParent();
-		return parent == null ? null : parent.getCategory();
+		return parent == null ? EnumSet.noneOf(Genre.class) : parent.getGenres();
+	}
+
+	@Override
+	public boolean hasGenre(Genre genre) {
+		final Media parent = getParent();
+		return parent != null && parent.hasGenre(genre);
 	}
 
 	@Override

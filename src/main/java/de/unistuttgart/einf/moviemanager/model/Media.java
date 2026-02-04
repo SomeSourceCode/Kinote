@@ -3,6 +3,8 @@ package de.unistuttgart.einf.moviemanager.model;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
 
+import java.util.Set;
+
 /**
  * The base for all media classes.
  */
@@ -52,11 +54,19 @@ public interface Media {
 	int getDuration();
 
 	/**
-	 * Returns the Category
+	 * Returns the genres assigned to the media.
 	 * 
-	 * @return the Category 
+	 * @return the genres
 	 */
-	Category getCategory();
+	Set<Genre> getGenres();
+
+	/**
+	 * Returns whether this media was assigned the given genre.
+	 *
+	 * @param genre the genre
+	 * @return true if the media has this genre, false otherwise
+	 */
+	boolean hasGenre(Genre genre);
 
 	/**
 	 * Returns the rating between 0 and 100 or -1 if it does not have a rating.

@@ -1,5 +1,7 @@
 package de.unistuttgart.einf.moviemanager.model;
 
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.UUID;
 
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
@@ -18,7 +20,7 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	private boolean watched;
 	private int rating = -1;
 	private int duration;
-	private Category category;
+	private final Set<Genre> genres = EnumSet.noneOf(Genre.class);
 	private final AgeRatings ageRatings = new AgeRatings();
 
 	/**
@@ -31,22 +33,19 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	}
 
 	/**
-	 * Constructs a new Movie with the given id, title, description, watched status, duration and category.
+	 * Constructs a new Movie with the given id, title, description, watched status and duration.
 	 *
 	 * @param id the uuid
 	 * @param title the title
 	 * @param description the description
 	 * @param watched whether the movie has been watched
 	 * @param duration the duration of the movie
-	 * @param category the given category of the movie
-	 *
 	 */
-	public Movie(UUID id, String title, String description, boolean watched, int duration, Category category) {
+	public Movie(UUID id, String title, String description, boolean watched, int duration) {
 		setTitle(title);
 		setDescription(description);
 		this.watched = watched;
 		setDuration(duration);
-		setCategory(category);
 
 		if (id == null)
 			this.id = UUID.randomUUID();
@@ -61,7 +60,7 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	 * @param description the description
 	 */
 	public Movie(String title, String description) {
-		this(null, title, description, false, 0, null);
+		this(null, title, description, false, 0);
 	}
 
 	/**
@@ -70,14 +69,14 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	 * @param title the title
 	 */
 	public Movie(String title) {
-		this(null, title, null, false, 0, null);
+		this(null, title, null, false, 0);
 	}
 
 	/**
 	 * Constructs a new Movie with no title or description.
 	 */
 	public Movie() {
-		this(null, null, null, false, 0, null);
+		this(null, null, null, false, 0);
 	}
 
 	@Override
@@ -131,13 +130,23 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	}
 
 	@Override
-	public Category getCategory() {
-		return category;
+	public Set<Genre> getGenres() {
+		return EnumSet.copyOf(genres);
 	}
 
 	@Override
-	public void setCategory(Category category) {
-		this.category = category;
+	public boolean hasGenre(Genre genre) {
+		return genres.contains(genre);
+	}
+
+	@Override
+	public void addGenre(Genre genre) {
+		genres.add(genre);
+	}
+
+	@Override
+	public void removeGenre(Genre genre) {
+		genres.remove(genre);
 	}
 
 	@Override

@@ -4,6 +4,9 @@ import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRatings;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * An episode of a season in a series.
  */
@@ -134,10 +137,17 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 		this.duration = duration;
 	}
 
+
 	@Override
-	public Category getCategory() {
+	public Set<Genre> getGenres() {
 		final Media parent = getParent();
-		return parent == null ? null : parent.getCategory();
+		return parent == null ? EnumSet.noneOf(Genre.class) : parent.getGenres();
+	}
+
+	@Override
+	public boolean hasGenre(Genre genre) {
+		final Media parent = getParent();
+		return parent != null && parent.hasGenre(genre);
 	}
 
 	@Override

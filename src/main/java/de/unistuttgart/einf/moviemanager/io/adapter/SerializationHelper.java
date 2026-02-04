@@ -1,8 +1,6 @@
 package de.unistuttgart.einf.moviemanager.io.adapter;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.google.gson.*;
 import de.unistuttgart.einf.moviemanager.model.*;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
@@ -18,7 +16,7 @@ public class SerializationHelper {
 
 		public static final String ID = "id";
 		public static final String TYPE = "type";
-		public static final String CATEGORY = "category";
+		public static final String GENRES = "genres";
 
 		public static final String WATCHED = "watched";
 		public static final String DURATION = "duration";
@@ -71,7 +69,7 @@ public class SerializationHelper {
 	 * <ul>
 	 *     <li>{@link Keys#ID}</li>
 	 *     <li>{@link Keys#TYPE}</li>
-	 *     <li>{@link Keys#CATEGORY}</li>
+	 *     <li>{@link Keys#GENRES}</li>
 	 * </ul>
 	 *
 	 * @param object the JSON object
@@ -84,8 +82,12 @@ public class SerializationHelper {
 			case Movie _ -> "movie";
 			case Series _ -> "series";
 		});
-		if (item.getCategory() != null) {
-			object.addProperty(Keys.CATEGORY, item.getCategory().name());
+		final JsonArray genresArray = new JsonArray();
+		for (Genre genre : item.getGenres()) {
+			genresArray.add(genre.name());
+		}
+		if (!genresArray.isEmpty()) {
+			object.add(Keys.GENRES, genresArray);
 		}
 	}
 
@@ -93,7 +95,7 @@ public class SerializationHelper {
 	 * Sets the following attributes on the given media item from
 	 * the provided JSON object:
 	 * <ul>
-	 *     <li>{@link Keys#CATEGORY}</li>
+	 *     <li>{@link Keys#GENRES}</li>
 	 * </ul>
 	 *
 	 * @param item the media item
@@ -101,7 +103,18 @@ public class SerializationHelper {
 	 * @param context the JSON deserialization context
 	 */
 	public static void setTopLevelMediaAttributesFromJson(TopLevelMedia item, JsonObject object, JsonDeserializationContext context) {
-		item.setCategory(getAsCategoryOrNull(object, Keys.CATEGORY));
+		if (!object.has(Keys.GENRES) || !object.get(Keys.GENRES).isJsonArray()) {
+			return;
+		}
+		final JsonArray genresArray = object.getAsJsonArray(Keys.GENRES);
+		for (JsonElement genreElement : genresArray) {
+			try {
+				final Genre genre = Genre.valueOf(genreElement.getAsString());
+				item.addGenre(genre);
+			} catch (IllegalArgumentException ignored) {
+
+			}
+		}
 	}
 
 	/**

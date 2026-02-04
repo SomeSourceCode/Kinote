@@ -11,11 +11,18 @@ import java.util.UUID;
 public sealed interface TopLevelMedia extends Media permits Movie, Series {
 
 	/**
-	 * Sets the category of the media.
+	 * Adds the genre to the media.
 	 *
-	 * @param category the category
+	 * @param genre the genre
 	 */
-	void setCategory(Category category);
+	void addGenre(Genre genre);
+
+	/**
+	 * Removes the genre from the media.
+	 *
+	 * @param genre the genre
+	 */
+	void removeGenre(Genre genre);
 
 	/**
 	 * Returns the UUID of the media

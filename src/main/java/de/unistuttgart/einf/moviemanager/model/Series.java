@@ -3,9 +3,7 @@ package de.unistuttgart.einf.moviemanager.model;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A series.
@@ -15,7 +13,7 @@ import java.util.UUID;
 public final class Series extends MediaBase implements ParentMedia<Season>, TopLevelMedia {
 
 	private final MediaContainer<Series, Season> seasons = new MediaContainer<>(this);
-	private Category category;
+	private final Set<Genre> genres = EnumSet.noneOf(Genre.class);
 
 	private final UUID id;
 
@@ -29,16 +27,14 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	}
 
 	/**
-	 * Constructs a new Series with the given id, title, description and category.
+	 * Constructs a new Series with the given id, title and description.
 	 *
 	 * @param title the title
 	 * @param description the description
-	 * @param category the category
 	 */
-	public Series(UUID id, String title, String description, Category category) {
+	public Series(UUID id, String title, String description) {
 		setTitle(title);
 		setDescription(description);
-		setCategory(category);
 
 		if (id == null)
 			this.id = UUID.randomUUID();
@@ -53,7 +49,7 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	 * @param description the description
 	 */
 	public Series(String title, String description) {
-		this(null, title, description, null);
+		this(null, title, description);
 	}
 
 	/**
@@ -62,14 +58,14 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	 * @param title the title
 	 */
 	public Series(String title) {
-		this(null, title, null, null);
+		this(null, title, null);
 	}
 
 	/**
 	 * Constructs a new Series with no title or description.
 	 */
 	public Series() {
-		this(null, null, null, null);
+		this(null, null, null);
 	}
 
 	@Override
@@ -166,13 +162,23 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	}
 
 	@Override
-	public Category getCategory() {
-		return category;
+	public Set<Genre> getGenres() {
+		return EnumSet.copyOf(genres);
 	}
 
 	@Override
-	public void setCategory(Category category) {
-		this.category = category;
+	public boolean hasGenre(Genre genre) {
+		return genres.contains(genre);
+	}
+
+	@Override
+	public void addGenre(Genre genre) {
+		genres.add(genre);
+	}
+
+	@Override
+	public void removeGenre(Genre genre) {
+		genres.remove(genre);
 	}
 
 	@Override
