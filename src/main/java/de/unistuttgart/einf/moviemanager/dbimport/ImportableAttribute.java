@@ -8,7 +8,7 @@ public enum ImportableAttribute {
 	TITLE,
 	DESCRIPTION,
 	RUNTIME,
-	CATEGORY,
+	GENRE,
 	AGE_RATING
 
 }

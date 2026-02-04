@@ -1,13 +1,17 @@
 package de.unistuttgart.einf.moviemanager.dbimport;
 
+import de.unistuttgart.einf.moviemanager.model.Genre;
 import de.unistuttgart.einf.moviemanager.model.Movie;
-import de.unistuttgart.einf.moviemanager.model.age.*;
+import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
+import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
 import info.movito.themoviedbapi.TmdbMovies;
+import info.movito.themoviedbapi.model.core.IdElement;
 import info.movito.themoviedbapi.model.movies.MovieDb;
 import info.movito.themoviedbapi.model.movies.ReleaseType;
 import info.movito.themoviedbapi.tools.TmdbException;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MovieImporter extends MediaImporter{
@@ -84,7 +88,18 @@ public class MovieImporter extends MediaImporter{
 							movie.setAgeRating(rating);
 						}
 					}
-					// todo: case CATEGORY ->
+					case GENRE -> {
+						Set<Genre> genres = mapGenres(tmdbMovie.getGenres().stream()
+								.map(IdElement::getId)
+								.collect(Collectors.toSet()));
+
+						for (Genre genre : genres) {
+							if (!overridden.contains(attribute) && movie.hasGenre(genre)) {
+								continue;
+							}
+							movie.addGenre(genre);
+						}
+					}
 				}
 			});
 

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.unistuttgart.einf.moviemanager.model.Genre;
 import de.unistuttgart.einf.moviemanager.model.age.*;
 import info.movito.themoviedbapi.TmdbApi;
 
@@ -201,6 +202,64 @@ public abstract class MediaImporter {
 		}
 
 		return ageRatings;
+	}
+
+	/**
+	 * Returns all genres from the given set of TMDb gerne ids.
+	 *
+	 * @param ids the set of TMDb genre ids
+	 * @return the set of mapped genres
+	 */
+	protected Set<Genre> mapGenres(Set<Integer> ids) {
+		EnumSet<Genre> genres = EnumSet.noneOf(Genre.class);
+		for (int id : ids) {
+			switch (id) {
+				case 28 -> genres.add(Genre.ACTION);
+				case 12 -> genres.add(Genre.ADVENTURE);
+				case 16 -> genres.add(Genre.ANIMATION);
+				case 35 -> genres.add(Genre.COMEDY);
+				case 80 -> genres.add(Genre.CRIME);
+				case 99 -> genres.add(Genre.DOCUMENTARY);
+				case 18 -> genres.add(Genre.DRAMA);
+				case 10751 -> genres.add(Genre.FAMILY);
+				case 14 -> genres.add(Genre.FANTASY);
+				case 36 -> genres.add(Genre.HISTORY);
+				case 27 -> genres.add(Genre.HORROR);
+				case 10402 -> genres.add(Genre.MUSIC);
+				case 9648 -> genres.add(Genre.MYSTERY);
+				case 10749 -> genres.add(Genre.ROMANCE);
+				case 878 -> genres.add(Genre.SCIENCE_FICTION);
+				case 10770 -> genres.add(Genre.TV_MOVIE);
+				case 53 -> genres.add(Genre.THRILLER);
+				case 10752 -> genres.add(Genre.WAR);
+				case 37 -> genres.add(Genre.WESTERN);
+
+				case 10762 -> genres.add(Genre.KIDS);
+				case 10763 -> genres.add(Genre.NEWS);
+				case 10764 -> genres.add(Genre.REALITY);
+				case 10766 -> genres.add(Genre.SOAP);
+				case 10767 -> genres.add(Genre.TALK);
+
+				// Action & Adventure
+				case 10759 -> {
+					genres.add(Genre.ACTION);
+					genres.add(Genre.ADVENTURE);
+				}
+				// Sci-Fi & Fantasy
+				case 10765 -> {
+					genres.add(Genre.SCIENCE_FICTION);
+					genres.add(Genre.FANTASY);
+				}
+				// War & Politics
+				case 10768 -> {
+					genres.add(Genre.WAR);
+					genres.add(Genre.POLITICS);
+				}
+
+				default -> {}
+			}
+		}
+		return genres;
 	}
 
 }

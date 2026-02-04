@@ -1,15 +1,18 @@
 package de.unistuttgart.einf.moviemanager.dbimport;
 
+import de.unistuttgart.einf.moviemanager.model.Genre;
 import de.unistuttgart.einf.moviemanager.model.Season;
 import de.unistuttgart.einf.moviemanager.model.Series;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import info.movito.themoviedbapi.TmdbTvSeries;
+import info.movito.themoviedbapi.model.core.IdElement;
 import info.movito.themoviedbapi.model.tv.core.TvSeason;
 import info.movito.themoviedbapi.model.tv.series.TvSeriesDb;
 import info.movito.themoviedbapi.tools.TmdbException;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SeriesImporter extends MediaImporter {
 
@@ -85,8 +88,18 @@ public class SeriesImporter extends MediaImporter {
 							series.setDescription(tmdbDescription);
 						}
 					}
-					
-					// todo: case CATEGORY ->
+					case GENRE -> {
+						Set<Genre> genres = mapGenres(tmdbSeries.getGenres().stream()
+								.map(IdElement::getId)
+								.collect(Collectors.toSet()));
+
+						for (Genre genre : genres) {
+							if (!overridden.contains(attribute) && series.hasGenre(genre)) {
+								continue;
+							}
+							series.addGenre(genre);
+						}
+					}
 
 				}
 			});
