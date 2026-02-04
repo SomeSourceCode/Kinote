@@ -20,22 +20,17 @@ public class MediaFilter {
 	public String toString() {
 		return description;
 	}
-
+	
 	public boolean test(TopLevelMedia media) {
 		return predicate.test(media);
 	}
 
 	public MediaFilter and(MediaFilter other) {
 		Predicate<TopLevelMedia> andPredicate = this.predicate.and(other.predicate);
-		String andDescription = "(" + this.description + " AND " + other.description + ")";
+		String andDescription = "" + this.description + " AND " + other.description + "";
 		return new MediaFilter(andPredicate, andDescription);
 	}
 
-	public MediaFilter or(MediaFilter other) {
-		Predicate<TopLevelMedia> orPredicate = this.predicate.or(other.predicate);
-		String orDescription = "(" + this.description + " OR " + other.description + ")";
-		return new MediaFilter(orPredicate, orDescription);
-	}
 
 	public static MediaFilter isMovie() {
 		Predicate<TopLevelMedia> predicate =  media -> media instanceof Movie;
@@ -52,13 +47,13 @@ public class MediaFilter {
 
 	public static MediaFilter isCategory(Category category) {
 		Predicate<TopLevelMedia> predicate = media -> media.getCategory() == category;
-		String description = "isCategory(" + category.name() + ")";
+		String description = "Category = " + category.name();
 		return new MediaFilter(predicate, description);
 	}
 
 	public static MediaFilter hasStatus(Status status) {
 		Predicate<TopLevelMedia> predicate = media -> media.getStatus() == status;
-		String description = "hasStatus(" + status.name() + ")";
+		String description = "Status = " + status.name();
 		return new MediaFilter(predicate, description);
 	}
 
@@ -73,7 +68,7 @@ public class MediaFilter {
 			return AgeRating.compare(mediaAgeRating, rating) >= 0;
 
 		};
-		String description = "isAgeRatingAtLeast(" + rating.getLabel() + ")";
+		String description = "AgeRating >= " + rating.getLabel();
 		return new MediaFilter(predicate, description);
 	}
 
@@ -88,19 +83,19 @@ public class MediaFilter {
 			return AgeRating.compare(mediaAgeRating, rating) <= 0;
 
 		};
-		String description = "isAgeRatingAtMost(" + rating.getLabel() + ")";
+		String description = "AgeRating <= " + rating.getLabel();
 		return new MediaFilter(predicate, description);
 	}
 
 	public static MediaFilter minRating(int rating) {
 		Predicate<TopLevelMedia> predicate = media -> media.getRating() >= rating;
-		String description = "minRating(" + rating + ")";
+		String description = "Rating >= " + rating;
 		return new MediaFilter(predicate, description);
 	}
 
 	public static MediaFilter maxRating(int rating) {
 		Predicate<TopLevelMedia> predicate = media -> media.getRating() <= rating;
-		String description = "maxRating(" + rating + ")";
+		String description = "Rating <= " + rating;
 		return new MediaFilter(predicate, description);
 	}
 

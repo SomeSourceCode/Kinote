@@ -1,6 +1,7 @@
 package de.unistuttgart.einf.moviemanager;
 
 import de.unistuttgart.einf.moviemanager.model.*;
+import de.unistuttgart.einf.moviemanager.model.age.BbfcRating;
 import de.unistuttgart.einf.moviemanager.model.age.FskRating;
 import de.unistuttgart.einf.moviemanager.model.age.MpaRating;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
@@ -45,6 +46,7 @@ public class MediaFilterServiceTest {
 				.and(MediaFilter.isCategory(Category.CRIME))
 				.and(MediaFilter.isAgeRatingAtLeast(FskRating.FSK_16))
 				.and(MediaFilter.hasStatus(Status.UNWATCHED));
+		System.out.println(filter.toString());;
 		Movie movie = new Movie(UUID.randomUUID(), "movie", "peter", false, 720, Category.CRIME);
 		movie.setRating(70);
 		movie.setAgeRating(FskRating.FSK_16);
@@ -52,7 +54,19 @@ public class MediaFilterServiceTest {
 		assertTrue(list.stream().anyMatch(filter::test));
 	}
 
+	@Test
+	public void testDifferentAgeRatingSystem() {
+		MediaFilter filter = MediaFilter.isMovie().and(MediaFilter.isAgeRatingAtLeast(BbfcRating.BBFC_15));
+		System.out.println(filter.toString());;
+		Movie movie = new Movie(UUID.randomUUID(), "movie", "peter", false, 720, Category.CRIME);
+		movie.setRating(70);
+		movie.setAgeRating(FskRating.FSK_16);
+		List<TopLevelMedia> list = List.of(movie);
+		assertTrue(list.stream().anyMatch(filter::test));
 
+		movie.setAgeRating(FskRating.FSK_12);
+		assertFalse(list.stream().anyMatch(filter::test));
+	}
 
 
 }
