@@ -146,12 +146,8 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 
 	@Override
 	public boolean hasRating() {
-		for (Season season : this) {
-			if (!season.hasRating()) {
-				return false;
-			}
-		}
-		return true;
+		return this.getChildren().stream()
+				.anyMatch(Season::hasRating);
 	}
 
 	@Override
