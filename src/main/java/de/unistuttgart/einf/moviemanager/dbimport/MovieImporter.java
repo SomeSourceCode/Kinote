@@ -30,8 +30,9 @@ public class MovieImporter extends MediaImporter{
 	 *
 	 * @param movie the to import data into
 	 * @param tmdbId the TMDB ID of the movie
+	 * @throws MediaImportException if the import fails due to a TMDb API error
 	 */
-	public void importData(Movie movie, int tmdbId) {
+	public void importData(Movie movie, int tmdbId) throws MediaImportException {
 		final TmdbMovies tmdbMovies = tmdbApi.getMovies();
 
 		try {
@@ -104,7 +105,7 @@ public class MovieImporter extends MediaImporter{
 			});
 
 		} catch (TmdbException e) {
-			throw new RuntimeException(e);
+			throw new MediaImportException(e.getMessage(), e.getCause());
 		}
 	}
 

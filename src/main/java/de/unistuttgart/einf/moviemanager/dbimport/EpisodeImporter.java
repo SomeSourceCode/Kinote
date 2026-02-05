@@ -31,8 +31,9 @@ public class EpisodeImporter extends MediaImporter {
 	 * @param seriesId the TMDB ID of the series
 	 * @param seasonNumber the season number
 	 * @param episodeNumber the episode number
+	 * @throws MediaImportException if the import fails due to a TMDb API error
 	 */
-	public void importData(Episode episode, int seriesId, int seasonNumber, int episodeNumber) {
+	public void importData(Episode episode, int seriesId, int seasonNumber, int episodeNumber) throws MediaImportException {
 		importData(episode, seriesId, seasonNumber, episodeNumber, fetchAgeRatingsFromSeries(seriesId));
 	}
 
@@ -85,7 +86,7 @@ public class EpisodeImporter extends MediaImporter {
 		});
 	}
 
-	private void importData(Episode episode, int seriesId, int seasonNumber, int episodeNumber, Set<AgeRating> ageRatings) {
+	private void importData(Episode episode, int seriesId, int seasonNumber, int episodeNumber, Set<AgeRating> ageRatings) throws MediaImportException {
 		final TmdbTvEpisodes tmdbEpisodes = tmdbApi.getTvEpisodes();
 
 		try {
@@ -134,7 +135,7 @@ public class EpisodeImporter extends MediaImporter {
 			});
 
 		} catch (TmdbException e) {
-			throw new RuntimeException(e);
+			throw new MediaImportException(e.getMessage(), e.getCause());
 		}
 
 	}

@@ -63,8 +63,9 @@ public class SeriesImporter extends MediaImporter {
 	 *
 	 * @param series the series to import data into
 	 * @param seriesId the TMDB ID of the series
+	 * @throws MediaImportException if the import fails due to a TMDb API error
 	 */
-	public void importData(Series series, int seriesId) {
+	public void importData(Series series, int seriesId) throws MediaImportException {
 		final TmdbTvSeries tmdbTvSeries = tmdbApi.getTvSeries();
 
 		try {
@@ -124,7 +125,7 @@ public class SeriesImporter extends MediaImporter {
 			}
 
 		} catch (TmdbException e) {
-			throw new RuntimeException(e);
+			throw new MediaImportException(e.getMessage(), e.getCause());
 		}
 
 	}
