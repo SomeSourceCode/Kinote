@@ -67,8 +67,8 @@ public class MovieImporter extends MediaImporter{
 					case AGE_RATING -> {
 						Set<AgeRating> ageRatings = tmdbMovies.getReleaseDates(tmdbId).getResults().stream()
 								.flatMap(country -> country.getReleaseDates().stream()
-									.filter(releaseDate -> releaseDate.getType() == ReleaseType.THEATRICAL)
-									.map(releaseDate -> mapAgeRating(country.getIso31661(), releaseDate.getCertification())))
+										.filter(releaseDate -> releaseDate.getType() == ReleaseType.THEATRICAL)
+										.map(releaseDate -> mapAgeRating(country.getIso31661(), releaseDate.getCertification())))
 								.filter(Objects::nonNull)
 								.collect(Collectors.toSet());
 
