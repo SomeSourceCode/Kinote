@@ -38,7 +38,7 @@ public class MovieImporter extends MediaImporter{
 		try {
 			MovieDb tmdbMovie = tmdbMovies.getDetails(tmdbId, language.getCode());
 
-			included.forEach(attribute -> {
+			for (ImportableAttribute attribute : included) {
 				switch (attribute) {
 					case TITLE -> {
 						String tmdbTitle = tmdbMovie.getTitle();
@@ -65,24 +65,19 @@ public class MovieImporter extends MediaImporter{
 						}
 					}
 					case AGE_RATING -> {
-						Set<AgeRating> ageRatings = null;
-						try {
-							ageRatings = tmdbMovies.getReleaseDates(tmdbId).getResults().stream()
+						Set<AgeRating> ageRatings = tmdbMovies.getReleaseDates(tmdbId).getResults().stream()
 								.flatMap(country -> country.getReleaseDates().stream()
-										.filter(releaseDate -> releaseDate.getType() == ReleaseType.THEATRICAL)
-										.map(releaseDate -> mapAgeRating(country.getIso31661(), releaseDate.getCertification())))
+									.filter(releaseDate -> releaseDate.getType() == ReleaseType.THEATRICAL)
+									.map(releaseDate -> mapAgeRating(country.getIso31661(), releaseDate.getCertification())))
 								.filter(Objects::nonNull)
 								.collect(Collectors.toSet());
-						} catch (TmdbException e) {
-							throw new RuntimeException(e);
-						}
 
 						if (ageRatings.isEmpty()) {
-							return;
+							continue;
 						}
 
 						for (RatingSystem ratingSystem : RatingSystem.values()) {
-							if (!overridden.contains(attribute) && movie.getAgeRating(ratingSystem) != null) {
+							if (!overridden.contains(attribute) && movie.hasAgeRating(ratingSystem)) {
 								continue;
 							}
 							AgeRating rating = AgeRating.max(getAgeRatingsBySystem(ageRatings, ratingSystem));
@@ -102,10 +97,10 @@ public class MovieImporter extends MediaImporter{
 						}
 					}
 				}
-			});
+			}
 
 		} catch (TmdbException e) {
-			throw new MediaImportException(e.getMessage(), e.getCause());
+			throw new MediaImportException("Error while trying to import movie data from TMDb", e);
 		}
 	}
 

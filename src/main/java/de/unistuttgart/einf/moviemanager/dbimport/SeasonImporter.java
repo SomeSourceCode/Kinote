@@ -74,7 +74,7 @@ public class SeasonImporter extends MediaImporter {
 			TvSeriesDb tmdbSeries =  tmdbTvSeries.getDetails(seriesId, language.getCode());
 			importData(season, seriesId, seasonNumber, fetchAgeRatingsFromSeries(seriesId));
 		} catch (TmdbException e) {
-			throw new MediaImportException(e.getMessage(), e.getCause());
+			throw new MediaImportException("Error while trying to import season data from TMDb", e);
 		}
 
 	}
@@ -138,7 +138,7 @@ public class SeasonImporter extends MediaImporter {
 			}
 
 		} catch (TmdbException e) {
-			throw new MediaImportException(e.getMessage(), e.getCause());
+			throw new MediaImportException("Error while trying to import season data from TMDb", e);
 		}
 	}
 

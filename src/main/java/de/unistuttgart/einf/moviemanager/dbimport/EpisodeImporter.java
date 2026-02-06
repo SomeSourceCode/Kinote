@@ -75,7 +75,7 @@ public class EpisodeImporter extends MediaImporter {
 				}
 				case AGE_RATING -> {
 					for (RatingSystem ratingSystem : RatingSystem.values()) {
-						if (!overridden.contains(attribute) && episode.getAgeRating(ratingSystem) != null) {
+						if (!overridden.contains(attribute) && episode.hasAgeRating(ratingSystem)) {
 							continue;
 						}
 						AgeRating rating = AgeRating.max(getAgeRatingsBySystem(ageRatings, ratingSystem));
@@ -135,7 +135,7 @@ public class EpisodeImporter extends MediaImporter {
 			});
 
 		} catch (TmdbException e) {
-			throw new MediaImportException(e.getMessage(), e.getCause());
+			throw new MediaImportException("Error while trying to import episode data from TMDb", e);
 		}
 
 	}

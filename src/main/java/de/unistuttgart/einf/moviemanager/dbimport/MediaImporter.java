@@ -165,7 +165,7 @@ public abstract class MediaImporter {
 	 * @param seriesId the TMDb series ID
 	 * @return a set of age ratings
 	 */
-	protected Set<AgeRating> fetchAgeRatingsFromSeries(int seriesId) {
+	protected Set<AgeRating> fetchAgeRatingsFromSeries(int seriesId) throws MediaImportException {
 		Set<AgeRating> ageRatings = new HashSet<>();
 
 		try (HttpClient client = HttpClient.newHttpClient()) {
@@ -198,7 +198,7 @@ public abstract class MediaImporter {
 			}
 
 		} catch (IOException | InterruptedException | URISyntaxException e) {
-			throw new RuntimeException(e);
+			throw new MediaImportException("Error while trying to fetch the series' age ratings" + "e");
 		}
 
 		return ageRatings;
@@ -206,6 +206,7 @@ public abstract class MediaImporter {
 
 	/**
 	 * Returns all genres from the given set of TMDb gerne ids.
+	 * The mappings were found here: https://www.themoviedb.org/talk/5daf6eb0ae36680011d7e6ee
 	 *
 	 * @param ids the set of TMDb genre ids
 	 * @return the set of mapped genres
@@ -225,20 +226,19 @@ public abstract class MediaImporter {
 				case 14 -> genres.add(Genre.FANTASY);
 				case 36 -> genres.add(Genre.HISTORY);
 				case 27 -> genres.add(Genre.HORROR);
+				case 10762 -> genres.add(Genre.KIDS);
 				case 10402 -> genres.add(Genre.MUSIC);
 				case 9648 -> genres.add(Genre.MYSTERY);
+				case 10763 -> genres.add(Genre.NEWS);
+				case 10764 -> genres.add(Genre.REALITY);
 				case 10749 -> genres.add(Genre.ROMANCE);
 				case 878 -> genres.add(Genre.SCIENCE_FICTION);
+				case 10766 -> genres.add(Genre.SOAP);
+				case 10767 -> genres.add(Genre.TALK);
 				case 10770 -> genres.add(Genre.TV_MOVIE);
 				case 53 -> genres.add(Genre.THRILLER);
 				case 10752 -> genres.add(Genre.WAR);
 				case 37 -> genres.add(Genre.WESTERN);
-
-				case 10762 -> genres.add(Genre.KIDS);
-				case 10763 -> genres.add(Genre.NEWS);
-				case 10764 -> genres.add(Genre.REALITY);
-				case 10766 -> genres.add(Genre.SOAP);
-				case 10767 -> genres.add(Genre.TALK);
 
 				// Action & Adventure
 				case 10759 -> {

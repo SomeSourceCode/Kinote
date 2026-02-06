@@ -125,7 +125,7 @@ public class SeriesImporter extends MediaImporter {
 			}
 
 		} catch (TmdbException e) {
-			throw new MediaImportException(e.getMessage(), e.getCause());
+			throw new MediaImportException("Error while trying to import series data from TMDb", e);
 		}
 
 	}
