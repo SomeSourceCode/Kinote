@@ -197,7 +197,10 @@ public abstract class MediaImporter {
 				}
 			}
 
-		} catch (IOException | InterruptedException | URISyntaxException e) {
+		} catch (IOException | URISyntaxException e) {
+			throw new MediaImportException("Error while trying to fetch the series' age ratings" + "e");
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			throw new MediaImportException("Error while trying to fetch the series' age ratings" + "e");
 		}
 
