@@ -58,10 +58,9 @@ public class MovieImporter extends MediaImporter{
 					}
 					case RUNTIME -> {
 						Integer tmdbRuntime = tmdbMovie.getRuntime();
-						int runtime = movie.getDuration();
 
-						if (tmdbRuntime != null && (overridden.contains(attribute) || runtime == -1)) {
-							movie.setDuration(tmdbRuntime);
+						if (tmdbRuntime != null && (overridden.contains(attribute) || !movie.hasRuntime())) {
+							movie.setRuntime(tmdbRuntime);
 						}
 					}
 					case AGE_RATING -> {

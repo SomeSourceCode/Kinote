@@ -47,11 +47,18 @@ public interface Media {
 	Status getStatus();
 
 	/**
-	 * Returns the duration
+	 * Returns the runtime in minutes or -1 if it does not have a runtime.
 	 * 
-	 * @return the duration
+	 * @return the runtime
 	*/
-	int getDuration();
+	int getRuntime();
+
+	/**
+	 * Returns whether this media was assigned a runtime.
+	 *
+	 * @return true if it has a runtime, false otherwise
+	 */
+	boolean hasRuntime();
 
 	/**
 	 * Returns the genres assigned to the media.

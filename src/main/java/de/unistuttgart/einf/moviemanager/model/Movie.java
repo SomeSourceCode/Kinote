@@ -19,7 +19,7 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 
 	private boolean watched;
 	private int rating = -1;
-	private int duration;
+	private int runtime = -1;
 	private final Set<Genre> genres = EnumSet.noneOf(Genre.class);
 	private final AgeRatings ageRatings = new AgeRatings();
 
@@ -33,19 +33,17 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	}
 
 	/**
-	 * Constructs a new Movie with the given id, title, description, watched status and duration.
+	 * Constructs a new Movie with the given id, title, description and watched status.
 	 *
 	 * @param id the uuid
 	 * @param title the title
 	 * @param description the description
 	 * @param watched whether the movie has been watched
-	 * @param duration the duration of the movie
 	 */
-	public Movie(UUID id, String title, String description, boolean watched, int duration) {
+	public Movie(UUID id, String title, String description, boolean watched) {
 		setTitle(title);
 		setDescription(description);
 		this.watched = watched;
-		setDuration(duration);
 
 		if (id == null)
 			this.id = UUID.randomUUID();
@@ -60,7 +58,7 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	 * @param description the description
 	 */
 	public Movie(String title, String description) {
-		this(null, title, description, false, 0);
+		this(null, title, description, false);
 	}
 
 	/**
@@ -69,14 +67,14 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	 * @param title the title
 	 */
 	public Movie(String title) {
-		this(null, title, null, false, 0);
+		this(null, title, null, false);
 	}
 
 	/**
 	 * Constructs a new Movie with no title or description.
 	 */
 	public Movie() {
-		this(null, null, null, false, 0);
+		this(null, null, null, false);
 	}
 
 	@Override
@@ -120,13 +118,21 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 	}
 
 	@Override
-	public int getDuration() {
-		return duration;
+	public int getRuntime() {
+		return runtime;
 	}
 
 	@Override
-	public void setDuration(int duration) {
-		this.duration = duration;
+	public boolean hasRuntime() {
+		return runtime != -1;
+	}
+
+	@Override
+	public void setRuntime(int runtime) {
+		if (runtime < -1) {
+			throw new IllegalArgumentException("The runtime can not be less than -1");
+		}
+		this.runtime = runtime;
 	}
 
 	@Override

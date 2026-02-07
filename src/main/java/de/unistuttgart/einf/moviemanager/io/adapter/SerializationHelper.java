@@ -19,7 +19,7 @@ public class SerializationHelper {
 		public static final String GENRES = "genres";
 
 		public static final String WATCHED = "watched";
-		public static final String DURATION = "duration";
+		public static final String RUNTIME = "runtime";
 		public static final String RATING = "rating";
 		public static final String AGE_RATINGS = "age_ratings";
 
@@ -122,7 +122,7 @@ public class SerializationHelper {
 	 * the provided media item:
 	 * <ul>
 	 *     <li>{@link Keys#WATCHED}</li>
-	 *     <li>{@link Keys#DURATION}</li>
+	 *     <li>{@link Keys#RUNTIME}</li>
 	 *     <li>{@link Keys#RATING}</li>
 	 *     <li>{@link Keys#AGE_RATINGS}</li>
 	 * </ul>
@@ -133,7 +133,7 @@ public class SerializationHelper {
 	 */
 	public static void setLeafMediaAttributesOnJson(JsonObject object, LeafMedia item, JsonSerializationContext context) {
 		object.addProperty(Keys.WATCHED, item.getStatus() == Status.WATCHED);
-		object.addProperty(Keys.DURATION, item.getDuration());
+		object.addProperty(Keys.RUNTIME, item.getRuntime());
 		object.addProperty(Keys.RATING, item.getRating());
 
 		final JsonObject ratingsObject = new JsonObject();
@@ -157,7 +157,7 @@ public class SerializationHelper {
 	 * the provided JSON object:
 	 * <ul>
 	 *     <li>{@link Keys#WATCHED}</li>
-	 *     <li>{@link Keys#DURATION}</li>
+	 *     <li>{@link Keys#RUNTIME}</li>
 	 *     <li>{@link Keys#RATING}</li>
 	 *     <li>{@link Keys#AGE_RATINGS}</li>
 	 * </ul>
@@ -168,7 +168,7 @@ public class SerializationHelper {
 	 */
 	public static void setLeafMediaAttributesFromJson(LeafMedia item, JsonObject object, JsonDeserializationContext context) {
 		item.setWatched(getAsBooleanOrFalse(object, Keys.WATCHED));
-		item.setDuration(getAsIntOrElse(object, Keys.DURATION, 0));
+		item.setRuntime(getAsIntOrElse(object, Keys.RUNTIME, 0));
 		item.setRating(getAsIntOrElse(object, Keys.RATING, -1));
 
 		final JsonObject ratingsObject = getAsJsonObjectOrNull(object, Keys.AGE_RATINGS);

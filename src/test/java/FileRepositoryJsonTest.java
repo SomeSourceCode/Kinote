@@ -32,7 +32,7 @@ public class FileRepositoryJsonTest {
 				new FileRepository<>(file, new GsonDataSerializer());
 
 		Set<TopLevelMedia> data = new HashSet<>();
-		data.add(new Movie(null, "Inception", "Dreams", true, 1));
+		data.add(new Movie(null, "Inception", "Dreams", true));
 
 		repo.save(data);
 
@@ -46,7 +46,7 @@ public class FileRepositoryJsonTest {
 		FileRepository<Set<TopLevelMedia>> repo =
 				new FileRepository<>(file, new GsonDataSerializer());
 
-		Movie m = new Movie(null, "Interstellar", "Space", true, 66);
+		Movie m = new Movie(null, "Interstellar", "Space", true);
 		Set<TopLevelMedia> data = new HashSet<>();
 		data.add(m);
 
@@ -75,8 +75,8 @@ public class FileRepositoryJsonTest {
 		// build: Series -> Season -> Episodes
 		Series s = new Series("Dark", "Time travel");
 		Season season1 = new Season(1, "S1", "Start");
-		Episode e1 = new Episode(1, "E1", "Intro", true, 44);
-		Episode e2 = new Episode(2, "E2", "More", false, 44);
+		Episode e1 = new Episode(1, "E1", "Intro", true);
+		Episode e2 = new Episode(2, "E2", "More", false);
 
 		season1.addChild(e1);
 		season1.addChild(e2);
@@ -128,14 +128,14 @@ public class FileRepositoryJsonTest {
 		FileRepository<Set<TopLevelMedia>> repo =
 				new FileRepository<>(file, new GsonDataSerializer());
 
-		Movie m = new Movie(null, "Matrix", "Sci-fi", false, 66);
+		Movie m = new Movie(null, "Matrix", "Sci-fi", false);
 
 		Series s = new Series("The Office", null);
 		Season season2 = new Season(2, "Season 2");
 		season2.addChild(new Episode(1, "Ep1"));
 		s.addChild(season2);
 
-		Movie m2 = new Movie(null, "Matrix2", "2222", false, 66);
+		Movie m2 = new Movie(null, "Matrix2", "2222", false);
 		Set<TopLevelMedia> data = new HashSet<>();
 		data.add(m);
 		data.add(s);

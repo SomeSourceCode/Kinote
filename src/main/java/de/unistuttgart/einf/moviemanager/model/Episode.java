@@ -14,7 +14,7 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 
 	private boolean watched;
 	private int rating = -1;
-	private int duration;
+	private int runtime = -1;
 	private final AgeRatings ageRatings = new AgeRatings();
 
 	/**
@@ -24,10 +24,9 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	 * @param title the title
 	 * @param description the description
 	 * @param watched whether the episode has been watched
-	 * @param duration the duration
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
-	public Episode(int episodeNumber, String title, String description, boolean watched, int duration) {
+	public Episode(int episodeNumber, String title, String description, boolean watched) {
 		if (episodeNumber < 1) {
 			throw new IllegalArgumentException("Episode number must be at least 1");
 		}
@@ -35,7 +34,6 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 		setTitle(title);
 		setDescription(description);
 		this.watched = watched;
-		setDuration(duration);
 	}
 
 	/**
@@ -47,7 +45,7 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
 	public Episode(int episodeNumber, String title, String description) {
-		this(episodeNumber, title, description, false, 0);
+		this(episodeNumber, title, description, false);
 	}
 
 	/**
@@ -58,7 +56,7 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
 	public Episode(int episodeNumber, String title) {
-		this(episodeNumber, title, null, false, 0);
+		this(episodeNumber, title, null, false);
 	}
 
 	/**
@@ -68,7 +66,7 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	 * @throws IllegalArgumentException if episodeNumber is less than 1
 	 */
 	public Episode(int episodeNumber) {
-		this(episodeNumber, null, null, false,0);
+		this(episodeNumber, null, null, false);
 	}
 
 	/**
@@ -128,13 +126,21 @@ public class Episode extends ChildMedia<Season, Episode> implements LeafMedia {
 	}
 
 	@Override
-	public int getDuration() {
-		return duration;
+	public int getRuntime() {
+		return runtime;
 	}
 
 	@Override
-	public void setDuration(int duration) {
-		this.duration = duration;
+	public boolean hasRuntime() {
+		return runtime != -1;
+	}
+
+	@Override
+	public void setRuntime(int runtime) {
+		if (runtime < -1) {
+			throw new IllegalArgumentException("The runtime can not be less than -1");
+		}
+		this.runtime = runtime;
 	}
 
 

@@ -68,9 +68,9 @@ public class EpisodeImporter extends MediaImporter {
 				}
 				case RUNTIME -> {
 					Integer tmdbRuntime = tmdbEpisode.getRuntime();
-					int runtime = episode.getDuration();
-					if (tmdbRuntime != null && (overridden.contains(attribute) || episode.getDuration() == -1)) {
-						episode.setDuration(tmdbEpisode.getRuntime());
+					int runtime = episode.getRuntime();
+					if (tmdbRuntime != null && (overridden.contains(attribute) || !episode.hasRuntime())) {
+						episode.setRuntime(tmdbEpisode.getRuntime());
 					}
 				}
 				case AGE_RATING -> {
@@ -116,10 +116,10 @@ public class EpisodeImporter extends MediaImporter {
 					}
 					case RUNTIME -> {
 						Integer tmdbRuntime = tmdbEpisode.getRuntime();
-						int runtime = episode.getDuration();
+						int runtime = episode.getRuntime();
 
-						if (tmdbRuntime != null && (overridden.contains(attribute) || episode.getDuration() == -1)) {
-							episode.setDuration(tmdbRuntime);
+						if (tmdbRuntime != null && (overridden.contains(attribute) || !episode.hasRuntime())) {
+							episode.setRuntime(tmdbRuntime);
 						}
 					}
 					case AGE_RATING -> {

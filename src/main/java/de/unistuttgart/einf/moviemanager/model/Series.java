@@ -151,10 +151,19 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 	}
 
 	@Override
-	public int getDuration() {
+	public int getRuntime() {
+		if (!hasRuntime()) {
+			return -1;
+		}
 		return getChildren().stream()
-				.mapToInt(Media::getDuration)
+				.mapToInt(Media::getRuntime)
 				.sum();
+	}
+
+	@Override
+	public boolean hasRuntime() {
+		return getChildren().stream()
+				.anyMatch(Season::hasRuntime);
 	}
 
 	@Override

@@ -116,10 +116,19 @@ public class Season extends ChildMedia<Series, Season> implements ParentMedia<Ep
 	}
 
 	@Override
-	public int getDuration() {
+	public int getRuntime() {
+		if (!hasRuntime()) {
+			return -1;
+		}
 		return getChildren().stream()
-				.mapToInt(Media::getDuration)
+				.mapToInt(Media::getRuntime)
 				.sum();
+	}
+
+	@Override
+	public boolean hasRuntime() {
+		return getChildren().stream()
+				.anyMatch(Episode::hasRuntime);
 	}
 
 	@Override

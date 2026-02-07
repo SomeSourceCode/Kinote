@@ -25,11 +25,12 @@ public interface LeafMedia extends Media {
 	void setRating(int rating);
 
 	/**
-	 * Sets the duration of the media in minutes.
+	 * Sets the runtime of the media in minutes. It must be positive or -1 if it does not have a runtime.
 	 *
-	 * @param duration the duration
+	 * @param runtime the runtime
+	 * @throws IllegalArgumentException if the runtime is less than -1
 	 */
-	void setDuration(int duration);
+	void setRuntime(int runtime);
 
 	/**
 	 * Sets the given rating. This overrides the current
