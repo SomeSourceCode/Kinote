@@ -88,7 +88,9 @@ public class ListView<T> extends InteractableBase {
 		for (T item : items) {
 			addItem(item);
 		}
-		resetSelection();
+		if (selectedIndex != -1) {
+			resetSelection();
+		}
 	}
 
 	/**
