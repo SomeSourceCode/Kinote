@@ -212,11 +212,12 @@ public class CommandLine extends InteractableBase {
 		final String lastArg = lastSpaceIndex == -1
 				? content
 				: content.substring(lastSpaceIndex + 1);
+		final String lowercaseLastArg = lastArg.toLowerCase();
 
 		final List<String> suggestions = dispatcher.getSuggestions(content).stream()
 				.filter(suggestion -> {
 					int currentIndex = 0;
-					for (char c : lastArg.toCharArray()) {
+					for (char c : lowercaseLastArg.toCharArray()) {
 						currentIndex = suggestion.indexOf(c, currentIndex);
 						if (currentIndex == -1) {
 							return false;
@@ -226,8 +227,8 @@ public class CommandLine extends InteractableBase {
 					return true;
 				})
 				.sorted((s1, s2) -> {
-					final boolean s1StartMatches = s1.startsWith(lastArg);
-					final boolean s2StartMatches = s2.startsWith(lastArg);
+					final boolean s1StartMatches = s1.toLowerCase().startsWith(lowercaseLastArg);
+					final boolean s2StartMatches = s2.toLowerCase().startsWith(lowercaseLastArg);
 					if (s1StartMatches && !s2StartMatches) {
 						return -1;
 					}
