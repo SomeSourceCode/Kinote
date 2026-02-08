@@ -85,8 +85,8 @@ public class Button extends InteractableBase {
 
 	@Override
 	public void layout() {
-		setWidth(Math.max(1 ,this.label.length()) + getPadding().getLeft() + getPadding().getRight());
-		setHeight(1 + getPadding().getTop() + getPadding().getBottom());
+		setWidth(Math.max(1 ,this.label.length()) + getPadding().getLeft() + getPadding().getRight() + (isShowBorders() ? 2 : 0));
+		setHeight(1 + getPadding().getTop() + getPadding().getBottom() + (isShowBorders() ? 2 : 0));
 	}
 
 	@Override
