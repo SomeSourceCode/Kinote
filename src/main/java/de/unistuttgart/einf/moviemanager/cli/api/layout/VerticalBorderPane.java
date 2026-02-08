@@ -135,18 +135,23 @@ public class VerticalBorderPane extends Parent {
 
 		if (renderTopSeparator) {
 			final int y = topComponent.getY() + topComponent.getHeight();
-			painter.drawSmartHorizontalLine(toGlobalX(0), toGlobalY(y), getInnerWidth(), TextColor.ANSI.DEFAULT, null);
+			painter.drawSmartHorizontalLine(toGlobalX(getPadding().getLeft()), toGlobalY(y), getInnerWidth(), TextColor.ANSI.DEFAULT, null);
 		}
 		if (renderBottomSeparator) {
 			final int y = bottomComponent.getY() - 1;
-			painter.drawSmartHorizontalLine(toGlobalX(0), toGlobalY(y), getInnerWidth(), TextColor.ANSI.DEFAULT, null);
+			painter.drawSmartHorizontalLine(toGlobalX(getPadding().getLeft()), toGlobalY(y), getInnerWidth(), TextColor.ANSI.DEFAULT, null);
 		}
 	}
 
 	@Override
 	public void layoutChildren() {
-		final int width = getInnerWidth();
-		final int height = getInnerHeight();
+		final int paddingTop = getPadding().getTop();
+		final int paddingBottom = getPadding().getBottom();
+		final int paddingLeft = getPadding().getLeft();
+		final int paddingRight = getPadding().getRight();
+
+		final int width = getInnerWidth() - paddingLeft - paddingRight;
+		final int height = getInnerHeight() - paddingTop - paddingBottom;
 
 		final boolean renderTopComponent = topComponent != null && !topComponent.isHidden();
 		final boolean renderBottomComponent = bottomComponent != null && !bottomComponent.isHidden();
@@ -158,8 +163,8 @@ public class VerticalBorderPane extends Parent {
 		int topComponentHeight = 0;
 		if (renderTopComponent) {
 			topComponentHeight = topComponent.getHeight();
-			topComponent.setX(0);
-			topComponent.setY(0);
+			topComponent.setX(paddingLeft);
+			topComponent.setY(paddingTop);
 			topComponent.setWidth(width);
 			topComponentHeight += renderTopSeparator ? 1 : 0;
 		}
@@ -167,15 +172,15 @@ public class VerticalBorderPane extends Parent {
 		int bottomComponentHeight = 0;
 		if (renderBottomComponent) {
 			bottomComponentHeight = bottomComponent.getHeight();
-			bottomComponent.setX(0);
-			bottomComponent.setY(Math.max(topComponentHeight, height - bottomComponentHeight));
+			bottomComponent.setX(paddingLeft);
+			bottomComponent.setY(Math.max(paddingTop + topComponentHeight + (renderBottomSeparator ? 1 : 0), paddingTop + height - bottomComponentHeight));
 			bottomComponent.setWidth(width);
 			bottomComponentHeight += renderBottomSeparator ? 1 : 0;
 		}
 
 		if (renderCenterComponent) {
-			centerComponent.setX(0);
-			centerComponent.setY(topComponentHeight);
+			centerComponent.setX(paddingLeft);
+			centerComponent.setY(paddingTop + topComponentHeight);
 			centerComponent.setWidth(width);
 			centerComponent.setHeight(Math.max(0, height - topComponentHeight - bottomComponentHeight));
 		}
