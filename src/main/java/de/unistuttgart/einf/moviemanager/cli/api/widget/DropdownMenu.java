@@ -176,9 +176,13 @@ public class DropdownMenu<T> extends Parent {
 	}
 
 	private void updateListItems() {
-		listView.setItems(this.options);
+		listView.setItems(options);
 		final Scene scene = getScene();
 		if (scene == null) {
+			return;
+		}
+		if (options.isEmpty()) {
+			hideDropdown();
 			return;
 		}
 		if (scene.getPopovers().contains(popover)) {
@@ -202,6 +206,11 @@ public class DropdownMenu<T> extends Parent {
 		if (scene == null) {
 			return;
 		}
+
+		if (options.isEmpty()) {
+			return;
+		}
+
 		resizeListView();
 		scene.showPopover(popover);
 
