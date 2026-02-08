@@ -185,8 +185,10 @@ public class AnchoredPlacement implements PlacementStrategy {
 			return Point2D.ORIGIN;
 		}
 
-		final int anchorX = anchor.toGlobalX(0);
-		final int anchorY = anchor.toGlobalY(0);
+		final int borderOffset = anchor.isShowBorders() ? 1 : 0;
+		final int anchorX = anchor.toGlobalX(0) - borderOffset;
+		final int anchorY = anchor.toGlobalY(0) - borderOffset;
+
 		final int anchorWidth = anchor.getWidth();
 		final int anchorHeight = anchor.getHeight();
 
