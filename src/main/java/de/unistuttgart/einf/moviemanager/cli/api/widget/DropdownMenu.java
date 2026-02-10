@@ -231,6 +231,17 @@ public class DropdownMenu<T> extends Parent {
 	}
 
 	/**
+	 * Attempts to set the focus to this menu's button if
+	 * the dropdown is not already focused.
+	 */
+	public void requestButtonFocus() {
+		if (listView.isFocused()) {
+			return;
+		}
+		button.requestFocus();
+	}
+
+	/**
 	 * Returns the selection mode.
 	 *
 	 * @return the selection mode
