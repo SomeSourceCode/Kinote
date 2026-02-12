@@ -87,5 +87,45 @@ public class TextUtils {
 		return lines;
 	}
 
+	/**
+	 * Abbreviates the text to the specified maximum length, adding the given ellipsis
+	 * if the text exceeds the maximum length. If the maximum length is less than or equal
+	 * to the length of the ellipsis, the text will just be truncated.
+	 * <p>
+	 * Note that this method first tries to abbreviate the text by removing trailing spaces.
+	 *
+	 * @param text the text
+	 * @param maxLength the maximum length
+	 * @param ellipsis the ellipsis to append if the text is abbreviated
+	 * @return the abbreviated text
+	 */
+	public static String abbreviate(String text, int maxLength, String ellipsis) {
+		if (maxLength < 0) {
+			throw new IllegalArgumentException("maxLength must be non-negative");
+		}
+		if (text == null) {
+			return null;
+		}
+		text = text.stripTrailing();
+		if (text.length() <= maxLength) {
+			return text;
+		}
+		final int ellipsisLength = ellipsis.length();
+		if (maxLength <= ellipsisLength) {
+			return text.substring(0, maxLength);
+		}
+		return text.substring(0, maxLength - ellipsisLength) + ellipsis;
+	}
+
+	/**
+	 * Abbreviates the text using "..." as the ellipsis. For more details see {@link #abbreviate(String, int, String)}.
+	 *
+	 * @param text the text
+	 * @param maxLength the maximum length
+	 * @return the abbreviated text
+	 */
+	public static String abbreviate(String text, int maxLength) {
+		return abbreviate(text, maxLength, "...");
+	}
 
 }
