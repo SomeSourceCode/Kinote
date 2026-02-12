@@ -242,6 +242,8 @@ public class CommandDispatcher {
 		try {
 			executor.execute(new ExecutionContext(commandPathBuilder.toString(), parsedArgsMap));
 			return new ExecutionResult(true, null);
+		} catch (CommandExecutionException exception) {
+			return new ExecutionResult(false, exception.getMessage());
 		} catch (Exception exception) {
 			return new ExecutionResult(false, "An error occurred during command execution: " + exception.getMessage());
 		}

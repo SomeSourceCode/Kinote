@@ -62,4 +62,16 @@ public class Command extends CommandNode {
 
 	}
 
+	/**
+	 * Creates a new command execution exception with the given message.
+	 * Throw the returned exception to indicate a failure during command execution,
+	 * resulting in the failed status being recognized by the dispatcher.
+	 *
+	 * @param message the message
+	 * @return the exception
+	 */
+	public static CommandExecutionException fail(String message) {
+		return new CommandExecutionException(message);
+	}
+
 }
