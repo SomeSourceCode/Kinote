@@ -400,6 +400,11 @@ public class TableView<T> extends InteractableBase {
 				final int maxTextWidth = columnWidths[columnIndex] - (column.getPadding() * 2);
 
 				final String text = column.getValue(item);
+				if (text == null) {
+					x += columnWidths[columnIndex] + 1;
+					return;
+				}
+
 				final String displayText = isRowSelected ? text : TextUtils.abbreviate(text, maxTextWidth);
 
 				TextColor backgroundColor = TextColor.ANSI.DEFAULT;
