@@ -66,4 +66,40 @@ class TextUtilsTest {
 
 	}
 
+	@Nested
+	class AbbreviateTest {
+
+		@Test
+		@DisplayName("Should abbreviate text")
+		void testAbbreviate() {
+			assertEquals("Hello W...", TextUtils.abbreviate("Hello World", 10));
+			assertEquals("Hello World", TextUtils.abbreviate("Hello World", 11));
+			assertEquals("Hello World", TextUtils.abbreviate("Hello World", 20));
+		}
+
+		@Test
+		@DisplayName("Should not use ellipsis if max width is too small")
+		void testAbbreviateSmallWidth() {
+			assertEquals("H", TextUtils.abbreviate("Hello World", 1), "Should not use ellipsis if max width is too small");
+			assertEquals("He", TextUtils.abbreviate("Hello World", 2), "Should not use ellipsis if max width is too small");
+			assertEquals("Hel", TextUtils.abbreviate("Hello World", 3), "Should not use ellipsis if max width is too small");
+		}
+
+		@Test
+		@DisplayName("Should return empty string for empty string or null")
+		void testAbbreviateEmpty() {
+			assertEquals("", TextUtils.abbreviate("", 10), "Should return empty string for empty string");
+			assertEquals("", TextUtils.abbreviate("   ", 10), "Should return empty string for string with only spaces");
+			assertEquals("", TextUtils.abbreviate( "               ", 10), "Should return empty string for string with only spaces");
+		}
+
+		@Test
+		@DisplayName("Should try to remove trailing spaces before using ellipsis")
+		void testAbbreviateTrailingSpaces() {
+			assertEquals("Hello", TextUtils.abbreviate("Hello     ", 10), "Should remove trailing spaces");
+			assertEquals("Hello", TextUtils.abbreviate("Hello     ", 5), "Should remove trailing spaces instead of using ellipsis");
+		}
+
+	}
+
 }
