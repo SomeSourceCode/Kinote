@@ -100,11 +100,11 @@ public class TextUtils {
 	 * @return the abbreviated text
 	 */
 	public static String abbreviate(String text, int maxLength, String ellipsis) {
-		if (maxLength < 0) {
-			throw new IllegalArgumentException("maxLength must be non-negative");
-		}
 		if (text == null) {
 			return null;
+		}
+		if (maxLength < 0) {
+			return "";
 		}
 		text = text.stripTrailing();
 		if (text.length() <= maxLength) {
