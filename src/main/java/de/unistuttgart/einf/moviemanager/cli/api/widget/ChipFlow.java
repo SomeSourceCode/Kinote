@@ -209,9 +209,9 @@ public class ChipFlow<T> extends Parent {
 	 */
 	public void setOptions(Collection<T> options) {
 		this.options.clear();
-		for (T opt : options) {
-			if (!this.options.contains(opt)) {
-				this.options.add(opt);
+		for (T option : options) {
+			if (!this.options.contains(option)) {
+				this.options.add(option);
 			}
 		}
 		selected.retainAll(options);

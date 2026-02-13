@@ -107,7 +107,7 @@ public class Scene {
 	 * Closes all popovers.
 	 */
 	public void closeAllPopovers() {
-		popovers.forEach(p -> p.setScene(null));
+		popovers.forEach(popover -> popover.setScene(null));
 		popovers.clear();
 	}
 
