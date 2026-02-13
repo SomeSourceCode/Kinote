@@ -98,6 +98,7 @@ class TextUtilsTest {
 		void testAbbreviateTrailingSpaces() {
 			assertEquals("Hello", TextUtils.abbreviate("Hello     ", 10), "Should remove trailing spaces");
 			assertEquals("Hello", TextUtils.abbreviate("Hello     ", 5), "Should remove trailing spaces instead of using ellipsis");
+			assertEquals("Hello...", TextUtils.abbreviate("Hello World    ", 8), "Should remove trailing spaces before applying ellipsis");
 		}
 
 	}

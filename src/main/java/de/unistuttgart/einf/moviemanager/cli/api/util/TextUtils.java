@@ -114,7 +114,7 @@ public class TextUtils {
 		if (maxLength <= ellipsisLength) {
 			return text.substring(0, maxLength);
 		}
-		return text.substring(0, maxLength - ellipsisLength) + ellipsis;
+		return text.substring(0, maxLength - ellipsisLength).stripTrailing() + ellipsis;
 	}
 
 	/**
