@@ -564,7 +564,7 @@ public class CommandLine extends InteractableBase {
 	 *
 	 * @return whether the cursor position changed
 	 */
-	public boolean skipWordRight() {
+	public boolean moveWordRight() {
 		boolean posChanged = false;
 		while (cursorPos < content.length() && content.charAt(cursorPos) == ' ') {
 			posChanged |= moveCursorRight();
@@ -580,7 +580,7 @@ public class CommandLine extends InteractableBase {
 	 *
 	 * @return whether the cursor position changed
 	 */
-	public boolean skipWordLeft() {
+	public boolean moveWordLeft() {
 		boolean posChanged = false;
 		while (cursorPos > 0 && content.charAt(cursorPos - 1) == ' ') {
 			posChanged |= moveCursorLeft();
@@ -793,12 +793,12 @@ public class CommandLine extends InteractableBase {
 				if (isAltDown) {
 					switch (character) {
 						case 'b' -> { // alt + left arrow
-							if (skipWordLeft()) {
+							if (moveWordLeft()) {
 								hideSuggestions();
 							}
 						}
 						case 'f' -> { // alt + right arrow
-							if (skipWordRight()) {
+							if (moveWordRight()) {
 								hideSuggestions();
 							}
 						}
