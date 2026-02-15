@@ -3,6 +3,9 @@ package de.unistuttgart.einf.moviemanager.cli.commands;
 import de.unistuttgart.einf.moviemanager.cli.Cli;
 import de.unistuttgart.einf.moviemanager.command.CommandDispatcher;
 
+/**
+ * A helper class to create a command dispatcher with all commands registered.
+ */
 public class Commands {
 
 	/**
