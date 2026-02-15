@@ -66,7 +66,6 @@ public class OverviewPage extends Page {
 		container.setCenter(tableView);
 
 		refreshItems();
-		addChild(container);
 	}
 
 	/**

@@ -26,6 +26,7 @@ public abstract class Page extends Parent {
 		}
 		this.cli = cli;
 		this.mainComponent = mainComponent;
+		addChild(mainComponent);
 	}
 
 	/**
@@ -35,6 +36,15 @@ public abstract class Page extends Parent {
 	 */
 	public Cli getCli() {
 		return cli;
+	}
+
+	/**
+	 * Returns the main component.
+	 *
+	 * @return the main component
+	 */
+	protected Component getMainComponent() {
+		return mainComponent;
 	}
 
 	@Override
