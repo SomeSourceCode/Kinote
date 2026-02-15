@@ -2,6 +2,7 @@ package de.unistuttgart.einf.moviemanager.cli.page;
 
 import de.unistuttgart.einf.moviemanager.cli.Cli;
 import de.unistuttgart.einf.moviemanager.cli.api.Insets;
+import de.unistuttgart.einf.moviemanager.cli.api.TextAlignment;
 import de.unistuttgart.einf.moviemanager.cli.api.layout.VerticalBorderPane;
 import de.unistuttgart.einf.moviemanager.cli.api.util.MediaFormatter;
 import de.unistuttgart.einf.moviemanager.cli.api.widget.TableColumn;
@@ -59,8 +60,10 @@ public class OverviewPage extends Page {
 		titleColumn.setPadding(1);
 		final TableColumn<TopLevelMedia> ratingColumn = TableColumn.fixed("Rating", 6, MediaFormatter::rating);
 		ratingColumn.setPadding(1);
+		ratingColumn.setAlignment(TextAlignment.RIGHT);
 		final TableColumn<TopLevelMedia> statusColumn = TableColumn.fixed("Status", 11, MediaFormatter::status);
 		statusColumn.setPadding(1);
+		statusColumn.setAlignment(TextAlignment.RIGHT);
 
 		tableView.setColumns(typeColumn, titleColumn, ratingColumn, statusColumn);
 		container.setCenter(tableView);
