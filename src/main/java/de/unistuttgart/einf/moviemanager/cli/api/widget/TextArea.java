@@ -819,14 +819,15 @@ public class TextArea extends InteractableBase {
 							return InputResult.ENTER_EDIT_MODE;
 						}
 						case 'p' -> {
-							// get the current paragraph and copy it
-							final CursorCoordinate coordinate = getCursorCoordinates();
-							if (coordinate.visualRow() >= lines.size()) {
-								copyToClipboard("");
-								return InputResult.HANDLED;
+							int start = text.lastIndexOf('\n', Math.max(0, cursorIndex - 1));
+							start = (start == -1) ? 0 : start + 1;
+
+							int end = text.indexOf('\n', cursorIndex);
+							if (end == -1) {
+								end = text.length();
 							}
-							final VisualLine line = lines.get(coordinate.visualRow());
-							final String paragraph = text.substring(line.sourceStartIndex(), line.sourceStartIndex() + line.length()).strip();
+
+							final String paragraph = text.substring(start, end);
 							copyToClipboard(paragraph);
 							return InputResult.HANDLED;
 						}
