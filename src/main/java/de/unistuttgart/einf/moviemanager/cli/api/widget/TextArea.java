@@ -230,6 +230,13 @@ public class TextArea extends InteractableBase {
 
 	@Override
 	protected void drawContent(Painter painter) {
+		if (isFocused()) {
+			ensureCursorVisible();
+		} else {
+			scrollX = 0;
+			scrollY = 0;
+		}
+
 		final int visibleHeight = getInnerHeight();
 		final int visibleWidth = getInnerWidth();
 
