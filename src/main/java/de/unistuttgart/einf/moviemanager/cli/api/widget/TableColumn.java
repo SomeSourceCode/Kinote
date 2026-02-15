@@ -16,6 +16,7 @@ public class TableColumn<T> {
 	private final int weight;
 
 	private int padding;
+	private TextAlignment alignment;
 
 	private final Function<T, String> valueProvider;
 	private BiConsumer<T, Integer> onAction;
@@ -117,6 +118,24 @@ public class TableColumn<T> {
 	 */
 	public void setPadding(int padding) {
 		this.padding = padding;
+	}
+
+	/**
+	 * Returns the alignment of the text in this column.
+	 *
+	 * @return the alignment
+	 */
+	public TextAlignment getAlignment() {
+		return alignment == null ? TextAlignment.LEFT : alignment;
+	}
+
+	/**
+	 * Sets the alignment of the text in this column.
+	 *
+	 * @param alignment the alignment
+	 */
+	public void setAlignment(TextAlignment alignment) {
+		this.alignment = alignment;
 	}
 
 	/**

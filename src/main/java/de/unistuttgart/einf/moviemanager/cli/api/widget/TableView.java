@@ -375,7 +375,21 @@ public class TableView<T> extends InteractableBase {
 			int x = 0;
 			for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
 				final TableColumn<T> column = columns.get(columnIndex);
-				painter.drawString(toGlobalX(x + column.getPadding()), toGlobalY(0), columnWidths[columnIndex], column.getHeader());
+				if (column.getHeader() == null) {
+					x += columnWidths[columnIndex] + 1;
+					continue;
+				}
+
+				final int maxHeaderLength = columnWidths[columnIndex] - (column.getPadding() * 2);
+				String headerText = TextUtils.abbreviate(column.getHeader(), maxHeaderLength, "");
+				headerText = TextUtils.pad(headerText, maxHeaderLength, column.getAlignment());
+
+				painter.drawString(
+						toGlobalX(x + column.getPadding()),
+						toGlobalY(0),
+						columnWidths[columnIndex],
+						headerText
+				);
 				x += columnWidths[columnIndex] + 1;
 			}
 			painter.drawSmartHorizontalLine(toGlobalX(0), toGlobalY(1), width, TextColor.ANSI.DEFAULT, null);
@@ -405,7 +419,13 @@ public class TableView<T> extends InteractableBase {
 					return;
 				}
 
-				final String displayText = isRowSelected ? text : TextUtils.abbreviate(text, maxTextWidth);
+				final TextAlignment alignment = column.getAlignment();
+
+				final String ellipsis = isRowSelected ? "" : "...";
+				String displayText = (alignment == TextAlignment.RIGHT)
+						? TextUtils.abbreviateStart(text, maxTextWidth, ellipsis)
+						: TextUtils.abbreviate(text, maxTextWidth, ellipsis);
+				displayText = TextUtils.pad(displayText, maxTextWidth, alignment);
 
 				TextColor backgroundColor = TextColor.ANSI.DEFAULT;
 				TextColor textColor = TextColor.ANSI.WHITE;

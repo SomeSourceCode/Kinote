@@ -1,5 +1,7 @@
 package de.unistuttgart.einf.moviemanager.cli.api.util;
 
+import de.unistuttgart.einf.moviemanager.cli.api.widget.TextAlignment;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -126,6 +128,171 @@ public class TextUtils {
 	 */
 	public static String abbreviate(String text, int maxLength) {
 		return abbreviate(text, maxLength, "...");
+	}
+
+	/**
+	 * Abbreviates the start of the text to the specified maximum length, prepending the given ellipsis
+	 * if the text exceeds the maximum length. If the maximum length is less than or equal
+	 * to the length of the ellipsis, the text will just be truncated from the start.
+	 * <p>
+	 * Note that this method first tries to abbreviate the text by removing leading spaces.
+	 *
+	 * @param text the text
+	 * @param maxLength the maximum length
+	 * @param ellipsis the ellipsis to prepend if the text is abbreviated
+	 * @return the abbreviated text
+	 */
+	public static String abbreviateStart(String text, int maxLength, String ellipsis) {
+		if (text == null) {
+			return null;
+		}
+		if (maxLength < 0) {
+			return "";
+		}
+		text = text.stripLeading();
+		if (text.length() <= maxLength) {
+			return text;
+		}
+		final int ellipsisLength = ellipsis.length();
+		if (maxLength <= ellipsisLength) {
+			return text.substring(text.length() - maxLength);
+		}
+		return ellipsis + text.substring(text.length() - (maxLength - ellipsisLength)).stripLeading();
+	}
+
+	/**
+	 * Abbreviates the start of the text using "..." as the ellipsis.
+	 * For more details see {@link #abbreviateStart(String, int, String)}.
+	 *
+	 * @param text the text
+	 * @param maxLength the maximum length
+	 * @return the abbreviated text
+	 */
+	public static String abbreviateStart(String text, int maxLength) {
+		return abbreviateStart(text, maxLength, "...");
+	}
+
+	/**
+	 * Pads the string on the left with the given character until it reaches the specified length.
+	 *
+	 * @param text the text to pad
+	 * @param length the target length
+	 * @param padChar the character to pad with
+	 * @return the padded string
+	 */
+	public static String padLeft(String text, int length, char padChar) {
+		if (text == null) {
+			return null;
+		}
+		if (text.length() >= length) {
+			return text;
+		}
+		return String.valueOf(padChar).repeat(length - text.length()) + text;
+	}
+
+	/**
+	 * Pads the string on the left with spaces until it reaches the specified length.
+	 *
+	 * @param text the text to pad
+	 * @param length the target length
+	 * @return the padded string
+	 */
+	public static String padLeft(String text, int length) {
+		return padLeft(text, length, ' ');
+	}
+
+	/**
+	 * Pads the string on the right with the given character until it reaches the specified length.
+	 *
+	 * @param text the text to pad
+	 * @param length the target length
+	 * @param padChar the character to pad with
+	 * @return the padded string
+	 */
+	public static String padRight(String text, int length, char padChar) {
+		if (text == null) {
+			return null;
+		}
+		if (text.length() >= length) {
+			return text;
+		}
+		return text + String.valueOf(padChar).repeat(length - text.length());
+	}
+
+	/**
+	 * Pads the string on the right with spaces until it reaches the specified length.
+	 *
+	 * @param text the text to pad
+	 * @param length the target length
+	 * @return the padded string
+	 */
+	public static String padRight(String text, int length) {
+		return padRight(text, length, ' ');
+	}
+
+	/**
+	 * Pads the string on both sides with the given character until it reaches the specified length.
+	 * If the padding cannot be distributed equally, the right side will have one more character.
+	 *
+	 * @param text the text to pad
+	 * @param length the target length
+	 * @param padChar the character to pad with
+	 * @return the padded string
+	 */
+	public static String padCenter(String text, int length, char padChar) {
+		if (text == null) {
+			return null;
+		}
+		if (text.length() >= length) {
+			return text;
+		}
+		final int padding = length - text.length();
+		final int leftPadding = padding / 2;
+		final int rightPadding = padding - leftPadding;
+
+		return String.valueOf(padChar).repeat(leftPadding) + text + String.valueOf(padChar).repeat(rightPadding);
+	}
+
+	/**
+	 * Pads the string on both sides with spaces until it reaches the specified length.
+	 *
+	 * @param text the text to pad
+	 * @param length the target length
+	 * @return the padded string
+	 */
+	public static String padCenter(String text, int length) {
+		return padCenter(text, length, ' ');
+	}
+
+	/**
+	 * Pads the string with the given character until it reaches the specified length,
+	 * according to the specified alignment.
+	 *
+	 * @param text the text to pad
+	 * @param length the target length
+	 * @param padChar the character to pad with
+	 * @param alignment the alignment to use for padding
+	 * @return the padded string
+	 */
+	public static String pad(String text, int length, char padChar, TextAlignment alignment) {
+		return switch (alignment) {
+			case LEFT -> padRight(text, length, padChar);
+			case RIGHT -> padLeft(text, length, padChar);
+			case CENTER -> padCenter(text, length, padChar);
+		};
+	}
+
+	/**
+	 * Pads the string with spaces until it reaches the specified length,
+	 * according to the specified alignment.
+	 *
+	 * @param text the text to pad
+	 * @param length the target length
+	 * @param alignment the alignment to use for padding
+	 * @return the padded string
+	 */
+	public static String pad(String text, int length, TextAlignment alignment) {
+		return pad(text, length, ' ', alignment);
 	}
 
 }
