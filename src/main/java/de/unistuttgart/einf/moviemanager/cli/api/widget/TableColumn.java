@@ -1,5 +1,7 @@
 package de.unistuttgart.einf.moviemanager.cli.api.widget;
 
+import de.unistuttgart.einf.moviemanager.cli.api.TextAlignment;
+
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 

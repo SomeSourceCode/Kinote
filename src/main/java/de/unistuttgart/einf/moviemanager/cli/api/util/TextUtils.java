@@ -1,6 +1,6 @@
 package de.unistuttgart.einf.moviemanager.cli.api.util;
 
-import de.unistuttgart.einf.moviemanager.cli.api.widget.TextAlignment;
+import de.unistuttgart.einf.moviemanager.cli.api.TextAlignment;
 
 import java.util.ArrayList;
 import java.util.Collections;

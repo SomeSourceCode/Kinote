@@ -6,6 +6,7 @@ import de.unistuttgart.einf.moviemanager.cli.CliMode;
 import de.unistuttgart.einf.moviemanager.cli.api.InputResult;
 import de.unistuttgart.einf.moviemanager.cli.api.InteractableBase;
 import de.unistuttgart.einf.moviemanager.cli.api.Painter;
+import de.unistuttgart.einf.moviemanager.cli.api.TextAlignment;
 import de.unistuttgart.einf.moviemanager.cli.api.util.TextUtils;
 
 import java.util.ArrayList;
