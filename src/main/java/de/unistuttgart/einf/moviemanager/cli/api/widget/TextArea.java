@@ -352,7 +352,12 @@ public class TextArea extends InteractableBase {
 			final int lineEnd = lineStart + line.length();
 
 			if (cursorIndex >= lineStart && cursorIndex < lineEnd) {
-				return new CursorCoordinate(i, cursorIndex - lineStart);
+				final int localColumn = cursorIndex - lineStart;
+				if (localColumn >= getInnerWidth() && line.isSoftBreak()) {
+					return new CursorCoordinate(i + 1, 0);
+				}
+
+				return new CursorCoordinate(i, localColumn);
 			}
 
 			if (cursorIndex == lineEnd) {
@@ -379,6 +384,19 @@ public class TextArea extends InteractableBase {
 		}
 
 		return new CursorCoordinate(lastRow, lastColumn);
+	}
+
+	private boolean isSoftWrapCausingSpace(int index) {
+		if (index < 0 || index >= text.length() || Character.isWhitespace(text.charAt(index))) {
+			return false;
+		}
+
+		for (VisualLine line : lines) {
+			if (line.sourceStartIndex() + line.length() == index + 1) {
+				return line.isSoftBreak();
+			}
+		}
+		return false;
 	}
 
 	private void ensureCursorVisible() {
@@ -469,6 +487,11 @@ public class TextArea extends InteractableBase {
 			return false;
 		}
 		cursorIndex--;
+
+		if (isSoftWrapCausingSpace(cursorIndex)) {
+			cursorIndex--;
+		}
+
 		preferredCursorX = null;
 		ensureCursorVisible();
 		return true;
@@ -484,6 +507,11 @@ public class TextArea extends InteractableBase {
 			return false;
 		}
 		cursorIndex++;
+
+		if (isSoftWrapCausingSpace(cursorIndex)) {
+			cursorIndex++;
+		}
+
 		preferredCursorX = null;
 		ensureCursorVisible();
 		return true;
@@ -624,6 +652,10 @@ public class TextArea extends InteractableBase {
 			cursorIndex++;
 		}
 
+		if (isSoftWrapCausingSpace(cursorIndex)) {
+			cursorIndex++;
+		}
+
 		if (cursorIndex == oldCursorIndex) {
 			return false;
 		}
@@ -656,6 +688,10 @@ public class TextArea extends InteractableBase {
 			if (Character.isWhitespace(previousChar) || isWordChar(previousChar) != startIsWord) {
 				break;
 			}
+			cursorIndex--;
+		}
+
+		if (isSoftWrapCausingSpace(cursorIndex)) {
 			cursorIndex--;
 		}
 
