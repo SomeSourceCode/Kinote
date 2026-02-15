@@ -1,0 +1,333 @@
+package de.unistuttgart.einf.moviemanager.cli;
+
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.screen.TabBehaviour;
+import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.Terminal;
+import de.unistuttgart.einf.moviemanager.cli.api.*;
+import de.unistuttgart.einf.moviemanager.cli.api.layout.HorizontalBorderPane;
+import de.unistuttgart.einf.moviemanager.cli.api.layout.VerticalBorderPane;
+import de.unistuttgart.einf.moviemanager.cli.api.widget.CommandLine;
+import de.unistuttgart.einf.moviemanager.cli.api.widget.ConfirmationDialog;
+import de.unistuttgart.einf.moviemanager.cli.api.widget.Text;
+import de.unistuttgart.einf.moviemanager.cli.commands.Commands;
+import de.unistuttgart.einf.moviemanager.cli.page.OverviewPage;
+import de.unistuttgart.einf.moviemanager.cli.page.Page;
+import de.unistuttgart.einf.moviemanager.command.CommandDispatcher;
+import de.unistuttgart.einf.moviemanager.service.MediaService;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+
+public class Cli {
+
+	private static final int FRAME_TIME_MS = 100;
+	private static final int INPUT_POLL_DELAY_MS = 10;
+
+	private volatile boolean running = false;
+	private CliMode mode = CliMode.NAVIGATION;
+
+	private final Scene scene;
+
+	// components
+	private final VerticalBorderPane mainContainer;
+	private final Text dateDisplay;
+	private final Text navigationBar;
+	private final CommandLine commandLine;
+
+	private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+	// pages
+	private final OverviewPage overviewPage;
+
+	/**
+	 * Constructs a new Cli for the given media service.
+	 *
+	 * @param mediaService the media service
+	 * @throws IllegalArgumentException if mediaService is null
+	 */
+	public Cli(MediaService mediaService) {
+		if (mediaService == null) {
+			throw new IllegalArgumentException("mediaService must be non-null");
+		}
+
+		scene = new Scene();
+
+		// layout
+		final VerticalBorderPane rootLayout = new VerticalBorderPane();
+		scene.setRoot(rootLayout);
+
+		mainContainer = new VerticalBorderPane();
+		mainContainer.setShowBorders(true);
+		mainContainer.setShowSeparators(true);
+		rootLayout.setCenter(mainContainer);
+
+		// title bar (title and date)
+		final HorizontalBorderPane titleBar = new HorizontalBorderPane();
+		titleBar.setPadding(new Insets(0, 1));
+		titleBar.setHeight(1);
+		mainContainer.setTop(titleBar);
+
+		final Text titleDisplay = new Text("Kinote (MoVim)");
+		titleBar.setLeft(titleDisplay);
+
+		dateDisplay = new Text();
+		titleBar.setRight(dateDisplay);
+
+		// navigation bar (displays current mode and hints)
+		navigationBar = new Text(mode.name());
+		navigationBar.setWrapping(true);
+		navigationBar.setPadding(new Insets(0, 1));
+		mainContainer.setBottom(navigationBar);
+
+		// pages (the main ui part)
+		overviewPage = new OverviewPage(this, mediaService);
+		mainContainer.setCenter(overviewPage);
+
+		// info bar hook
+		scene.getFocusManager().setOnFocusChange((_, newFocus) -> {
+			updateInfoBar(newFocus);
+			return true;
+		});
+
+		// command line
+		final CommandDispatcher dispatcher = Commands.createDispatcher(this);
+
+		commandLine = new CommandLine(dispatcher);
+		commandLine.setHidden(true);
+		commandLine.setHeight(1);
+		commandLine.setPrefix(":");
+		commandLine.setPadding(new Insets(0, 2));
+
+		commandLine.setOnFail(message -> {
+			final ConfirmationDialog dialog = new ConfirmationDialog(message);
+			dialog.setConfirmLabel("Ok");
+			dialog.setCancelButtonVisible(false);
+			dialog.show(scene);
+		});
+
+		rootLayout.setBottom(commandLine);
+
+		// initial state
+		scene.getFocusManager().ensureValidFocus();
+		updateInfoBar(scene.getFocusManager().getCurrentFocus());
+	}
+
+	/**
+	 * Returns whether the cli is running.
+	 *
+	 * @return whether the cli is running
+	 * @see #run()
+	 * @see #stop()
+	 */
+	public boolean isRunning() {
+		return running;
+	}
+
+	/**
+	 * Stops the cli.
+	 */
+	public void stop() {
+		running = false;
+	}
+
+	/**
+	 * Starts the cli. This method blocks until the cli is stopped.
+	 */
+	public void run() {
+		running = true;
+
+		try (
+				Terminal terminal = new DefaultTerminalFactory().createTerminal();
+				Screen screen = new TerminalScreen(terminal)
+		) {
+			screen.setTabBehaviour(TabBehaviour.CONVERT_TO_ONE_SPACE);
+			screen.setCursorPosition(null);
+			screen.startScreen();
+
+			final Painter painter = new Painter(screen);
+			long time = System.currentTimeMillis();
+
+			while (running) {
+				final KeyStroke key = terminal.pollInput();
+				final boolean keyHandled = handleGlobalInput(key);
+
+				if (screen.doResizeIfNecessary() != null || System.currentTimeMillis() - time > FRAME_TIME_MS || keyHandled) {
+					time = System.currentTimeMillis();
+
+					updateDateText();
+
+					screen.clear();
+					scene.update(screen.getTerminalSize().getColumns(), screen.getTerminalSize().getRows(), painter);
+					screen.refresh();
+				}
+
+				try {
+					Thread.sleep(INPUT_POLL_DELAY_MS);
+				} catch (InterruptedException ignored) {
+					Thread.currentThread().interrupt();
+					return;
+				}
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void updateDateText() {
+		final String dateString = LocalDateTime.now().format(dateTimeFormatter);
+		dateDisplay.setText(dateString);
+	}
+
+	private void updateInfoBar(Interactable focused) {
+		navigationBar.setText(switch (mode) {
+			case COMMAND -> "COMMAND - Enter to submit, Esc to exit";
+			case NAVIGATION -> {
+				if (focused == null || !focused.isEditable()) {
+					yield "NAVIGATION - j/k, h/l to navigate, : to enter command mode";
+				}
+				yield "NAVIGATION - j/k, h/l to navigate, e to edit, : to enter command mode";
+			}
+			case EDIT -> "EDIT - Type to edit, Esc to exit";
+		});
+	}
+
+	/* *************************************************************** *
+	 *                       State / Navigation                        *
+	 * *************************************************************** */
+
+	public void setMode(CliMode mode) {
+		if (Objects.equals(this.mode, mode)) {
+			return;
+		}
+		this.mode = mode;
+
+		updateInfoBar(scene.getFocusManager().getCurrentFocus());
+
+		if (this.mode == CliMode.COMMAND) {
+			commandLine.setHidden(false);
+			commandLine.requestFocus();
+		} else {
+			commandLine.setHidden(true);
+			if (scene.getFocusManager().getCurrentFocus() == commandLine) {
+				scene.getFocusManager().focusNext();
+			}
+		}
+	}
+
+	/**
+	 * Navigates to the overview page.
+	 */
+	public void navigateToOverview() {
+		navigateTo(overviewPage);
+	}
+
+	/**
+	 * Navigates to the given page.
+	 *
+	 * @param page the page
+	 */
+	public void navigateTo(Page page) {
+		if (page.getCli() != this) {
+			throw new IllegalArgumentException("page does not belong to this cli");
+		}
+		mainContainer.setCenter(page);
+	}
+
+	/* *************************************************************** *
+	 *                              Input                              *
+	 * *************************************************************** */
+
+	public boolean handleGlobalInput(KeyStroke key) {
+		if (key == null) {
+			return false;
+		}
+
+		// command mode has top priority
+		if (mode == CliMode.COMMAND) {
+			final InputResult result = commandLine.handleInput(key, mode);
+			if (result.shouldMoveFocus() || result == InputResult.LEAVE_COMMAND_MODE) {
+				setMode(CliMode.NAVIGATION);
+				return true;
+			}
+			return result != InputResult.UNHANDLED;
+		}
+
+		// pass input to focus
+		final FocusManager focusManager = scene.getFocusManager();
+		final Interactable focused = focusManager.getCurrentFocus();
+
+		if (focused != null) {
+			final InputResult result = focused.handleInput(key, mode);
+
+			if (result.shouldMoveFocus()) {
+				switch (result) {
+					case MOVE_FOCUS_NEXT -> focusManager.focusNext();
+					case MOVE_FOCUS_PREVIOUS -> focusManager.focusPrevious();
+					case MOVE_FOCUS_UP -> focusManager.moveFocus(Direction.UP);
+					case MOVE_FOCUS_DOWN -> focusManager.moveFocus(Direction.DOWN);
+					case MOVE_FOCUS_LEFT -> focusManager.moveFocus(Direction.LEFT);
+					case MOVE_FOCUS_RIGHT -> focusManager.moveFocus(Direction.RIGHT);
+				}
+				return true;
+			}
+
+			if (result == InputResult.ENTER_EDIT_MODE) {
+				setMode(CliMode.EDIT);
+				return true;
+			}
+			if (result == InputResult.LEAVE_EDIT_MODE) {
+				setMode(CliMode.NAVIGATION);
+				return true;
+			}
+
+			if (result.isHandled()) {
+				return true;
+			}
+		}
+
+		// default navigation hotkeys
+		if (mode == CliMode.NAVIGATION) {
+			switch (key.getKeyType()) {
+				case Character -> {
+					switch (key.getCharacter()) {
+						case 'q' -> stop();
+						case 'e' -> {
+							if (focused != null && focused.isEditable()) {
+								setMode(CliMode.EDIT);
+								focused.requestFocus();
+							}
+						}
+						case ':' -> setMode(CliMode.COMMAND);
+						case 'K', 'k' -> focusManager.moveFocus(Direction.UP);
+						case 'J', 'j' -> focusManager.moveFocus(Direction.DOWN);
+						case 'H', 'h' -> focusManager.moveFocus(Direction.LEFT);
+						case 'L', 'l' -> focusManager.moveFocus(Direction.RIGHT);
+						default -> {
+							return false;
+						}
+					}
+				}
+				case Escape -> {
+					return scene.attemptClosePopover();
+				}
+				case Tab -> focusManager.focusNext();
+				case ReverseTab -> focusManager.focusPrevious();
+				case ArrowUp -> focusManager.moveFocus(Direction.UP);
+				case ArrowDown -> focusManager.moveFocus(Direction.DOWN);
+				case ArrowLeft -> focusManager.moveFocus(Direction.LEFT);
+				case ArrowRight -> focusManager.moveFocus(Direction.RIGHT);
+				default -> {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+}
