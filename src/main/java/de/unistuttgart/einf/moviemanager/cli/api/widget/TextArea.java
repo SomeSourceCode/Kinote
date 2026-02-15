@@ -818,7 +818,7 @@ public class TextArea extends InteractableBase {
 							moveToLineEnd();
 							return InputResult.ENTER_EDIT_MODE;
 						}
-						case 'p' -> {
+						case 'c' -> {
 							int start = text.lastIndexOf('\n', Math.max(0, cursorIndex - 1));
 							start = (start == -1) ? 0 : start + 1;
 
@@ -831,7 +831,7 @@ public class TextArea extends InteractableBase {
 							copyToClipboard(paragraph);
 							return InputResult.HANDLED;
 						}
-						case 'P' -> {
+						case 'C' -> {
 							copyToClipboard(text);
 							return InputResult.HANDLED;
 						}
