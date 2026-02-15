@@ -20,6 +20,7 @@ public class Commands {
 		final CommandDispatcher dispatcher = new CommandDispatcher();
 
 		QuitCommand.register(dispatcher, cli);
+		HomeCommand.register(dispatcher, cli);
 
 		return dispatcher;
 	}
