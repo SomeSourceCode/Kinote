@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * An editable multi-line text area component.
@@ -32,6 +33,8 @@ public class TextArea extends InteractableBase {
 
 	private String text;
 	private final List<VisualLine> lines = new ArrayList<>();
+
+	private Predicate<String> inputFilter;
 
 	private int cursorIndex = 0;
 	private Integer preferredCursorX = null;
@@ -84,6 +87,28 @@ public class TextArea extends InteractableBase {
 		this.text = text;
 		this.cursorIndex = Math.min(cursorIndex, this.text.length());
 		recalculateLines();
+	}
+
+	/**
+	 * Returns the input filter.
+	 *
+	 * @return the input filter
+	 */
+	public Predicate<String> getInputFilter() {
+		return inputFilter;
+	}
+
+	/**
+	 * Sets the input filter.
+	 *
+	 * @param inputFilter the input filter
+	 */
+	public void setInputFilter(Predicate<String> inputFilter) {
+		this.inputFilter = inputFilter;
+	}
+
+	private boolean isTextAllowed(String text) {
+		return inputFilter == null || inputFilter.test(text);
 	}
 
 	/**
@@ -453,11 +478,18 @@ public class TextArea extends InteractableBase {
 	 * @param character the character
 	 */
 	public void insert(char character) {
+		final String oldText = text;
 		if (cursorIndex >= text.length()) {
 			text += character;
 		} else {
 			text = text.substring(0, cursorIndex) + character + text.substring(cursorIndex);
 		}
+
+		if (!isTextAllowed(text)) {
+			text = oldText;
+			return;
+		}
+
 		cursorIndex++;
 		preferredCursorX = null;
 		recalculateLines();
