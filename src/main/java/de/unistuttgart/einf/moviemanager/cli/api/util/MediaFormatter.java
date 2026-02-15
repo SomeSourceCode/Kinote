@@ -56,7 +56,7 @@ public class MediaFormatter {
 		}
 		final int hours = duration / 60;
 		final int minutes = duration % 60;
-		return String.format("%dh %02dmin", hours, minutes);
+		return String.format("%dh %02dm", hours, minutes);
 	}
 
 	/**
