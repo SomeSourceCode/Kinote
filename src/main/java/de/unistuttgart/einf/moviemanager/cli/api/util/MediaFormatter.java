@@ -3,7 +3,10 @@ package de.unistuttgart.einf.moviemanager.cli.api.util;
 import de.unistuttgart.einf.moviemanager.model.*;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
 
+import java.util.Arrays;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for formatting {@link Media} properties into human-readable strings.
@@ -74,6 +77,23 @@ public class MediaFormatter {
 	}
 
 	/**
+	 * Returns a string representation of the media genres, separated by commas.
+	 *
+	 * @param media the media
+	 * @return the genres
+	 */
+	public static String genres(Media media) {
+		final Set<Genre> genres = media.getGenres();
+		if (genres.isEmpty()) {
+			return "No Genres";
+		}
+		return Arrays.stream(Genre.values())
+				.filter(genres::contains)
+				.map(MediaFormatter::genre)
+				.collect(Collectors.joining(", "));
+	}
+
+	/**
 	 * Returns a string representation of the media rating as a percentage.
 	 *
 	 * @param media the media
@@ -81,9 +101,13 @@ public class MediaFormatter {
 	 */
 	public static String rating(Media media) {
 		if (!media.hasRating()) {
-			return "--%";
+			return "-/10";
 		}
-		return String.format("%3d%%", media.getRating());
+		final int rating = media.getRating();
+		if (rating % 10 == 0) {
+			return String.format("%d/10", rating / 10);
+		}
+		return String.format("%.1f/10", rating / 10.0);
 	}
 
 	/**
