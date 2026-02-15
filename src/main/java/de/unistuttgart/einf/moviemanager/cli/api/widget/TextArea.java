@@ -207,8 +207,15 @@ public class TextArea extends InteractableBase {
 		recalculateLines();
 
 		if (autoSizeHeight) {
-			final int requiredHeight = lines.size() + getPadding().getTop() + getPadding().getBottom() + (isShowBorders() ? 2 : 0);
-			setHeight(requiredHeight);
+			final CursorCoordinate cursorCoords = getCursorCoordinates();
+			int requiredHeight = lines.size();
+			if (cursorCoords.visualRow() >= requiredHeight) {
+				requiredHeight = cursorCoords.visualRow() + 1;
+			}
+
+			final int verticalPadding = getPadding().getTop() + getPadding().getBottom() + (isShowBorders() ? 2 : 0);
+
+			setHeight(requiredHeight + verticalPadding);
 		}
 	}
 
