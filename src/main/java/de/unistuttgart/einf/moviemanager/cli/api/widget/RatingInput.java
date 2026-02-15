@@ -51,7 +51,7 @@ public class RatingInput extends Parent {
 		inputArea.setOnSubmit(text -> {
 			if (text.isEmpty()) {
 				setRating(-1);
-				inputArea.setText(formatValue(rating));
+				inputArea.setText(formatValue(this.rating));
 				return;
 			}
 			try {
@@ -61,7 +61,7 @@ public class RatingInput extends Parent {
 					return;
 				}
 				setRating((int) Math.round(value * 10));
-				inputArea.setText(formatValue(rating));
+				inputArea.setText(formatValue(this.rating));
 			} catch (NumberFormatException _) {
 				inputArea.setText(formatValue(this.rating));
 			}
