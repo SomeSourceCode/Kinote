@@ -183,7 +183,7 @@ public class DetailsPage extends Page {
 
 		// season dropdown
 		final DropdownMenu<Season> seasonDropdown = new DropdownMenu<>(season -> "Season " + season.getNumber());
-		seasonDropdown.setPlaceholder("All Seasons");
+		seasonDropdown.setPlaceholder("No Seasons");
 
 		final List<Season> seasons = series.getChildren();
 		seasonDropdown.setOptions(seasons);
