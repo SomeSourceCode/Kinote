@@ -168,11 +168,12 @@ public class DetailsPage extends Page {
 		episodeColumn.setPadding(1);
 		final TableColumn<Episode> ratingColumn = TableColumn.fixed("Rating", 6, MediaFormatter::rating);
 		ratingColumn.setPadding(1);
+		ratingColumn.setAlignment(TextAlignment.RIGHT);
 		final TableColumn<Episode> statusColumn = TableColumn.fixed("Status", 11, MediaFormatter::status);
 		statusColumn.setPadding(1);
-		ratingColumn.setAlignment(TextAlignment.RIGHT);
+		statusColumn.setAlignment(TextAlignment.RIGHT);
 
-		episodeTable.setColumns(episodeColumn, statusColumn, ratingColumn);
+		episodeTable.setColumns(episodeColumn, ratingColumn, statusColumn);
 
 		episodeTable.setDefaultRowAction((episode, _) -> {
 			getCli().navigateTo(new DetailsPage(getCli(), episode));
