@@ -17,12 +17,12 @@ import java.util.Set;
  * This serializer is used to store and load a set of top-level media objects
  * (movies and series) as JSON.
  */
-public class GsonDataSerializer implements DataSerializer<Set<TopLevelMedia>> {
+public class TopLevelMediaSetSerializer implements DataSerializer<Set<TopLevelMedia>> {
 
 	private static final Type SET_TLM_TYPE = new TypeToken<Set<TopLevelMedia>>() {}.getType();
 	private final Gson gson;
 
-	public GsonDataSerializer() {
+	public TopLevelMediaSetSerializer() {
 		GsonBuilder builder = new GsonBuilder()
 				.setPrettyPrinting()
 				.registerTypeAdapter(TopLevelMedia.class, new TopLevelMediaTypeAdapter())

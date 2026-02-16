@@ -1,5 +1,5 @@
 import de.unistuttgart.einf.moviemanager.io.FileRepository;
-import de.unistuttgart.einf.moviemanager.io.GsonDataSerializer;
+import de.unistuttgart.einf.moviemanager.io.TopLevelMediaSetSerializer;
 import de.unistuttgart.einf.moviemanager.model.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -20,7 +20,7 @@ public class FileRepositoryJsonTest {
 	void loadReturnsNullIfFileDoesNotExist() {
 		Path file = tempDir.resolve("does-not-exist.json");
 		FileRepository<Set<TopLevelMedia>> repo =
-				new FileRepository<>(file, new GsonDataSerializer());
+				new FileRepository<>(file, new TopLevelMediaSetSerializer());
 
 		assertNull(repo.load());
 	}
@@ -29,7 +29,7 @@ public class FileRepositoryJsonTest {
 	void saveCreatesFileAndIsNotEmpty() throws Exception {
 		Path file = tempDir.resolve("media.json");
 		FileRepository<Set<TopLevelMedia>> repo =
-				new FileRepository<>(file, new GsonDataSerializer());
+				new FileRepository<>(file, new TopLevelMediaSetSerializer());
 
 		Set<TopLevelMedia> data = new HashSet<>();
 		data.add(new Movie(null, "Inception", "Dreams", true));
@@ -44,7 +44,7 @@ public class FileRepositoryJsonTest {
 	void roundtripMoviePreservesFields() {
 		Path file = tempDir.resolve("media.json");
 		FileRepository<Set<TopLevelMedia>> repo =
-				new FileRepository<>(file, new GsonDataSerializer());
+				new FileRepository<>(file, new TopLevelMediaSetSerializer());
 
 		Movie m = new Movie(null, "Interstellar", "Space", true);
 		Set<TopLevelMedia> data = new HashSet<>();
@@ -70,7 +70,7 @@ public class FileRepositoryJsonTest {
 	void roundtripSeriesPreservesTreeAndRelinksParents() {
 		Path file = tempDir.resolve("media.json");
 		FileRepository<Set<TopLevelMedia>> repo =
-				new FileRepository<>(file, new GsonDataSerializer());
+				new FileRepository<>(file, new TopLevelMediaSetSerializer());
 
 		// build: Series -> Season -> Episodes
 		Series s = new Series("Dark", "Time travel");
@@ -126,7 +126,7 @@ public class FileRepositoryJsonTest {
 	void roundtripMixedMovieAndSeries() {
 		Path file = tempDir.resolve("media.json");
 		FileRepository<Set<TopLevelMedia>> repo =
-				new FileRepository<>(file, new GsonDataSerializer());
+				new FileRepository<>(file, new TopLevelMediaSetSerializer());
 
 		Movie m = new Movie(null, "Matrix", "Sci-fi", false);
 
