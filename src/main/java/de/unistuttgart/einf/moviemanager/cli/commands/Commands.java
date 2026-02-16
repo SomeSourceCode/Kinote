@@ -24,6 +24,7 @@ public class Commands {
 
 		QuitCommand.register(dispatcher, cli);
 		HomeCommand.register(dispatcher, cli);
+		AboutCommand.register(dispatcher, cli);
 		SettingsCommand.register(dispatcher, cli);
 
 		CreateCommand.register(dispatcher, cli);
