@@ -1,11 +1,9 @@
 package de.unistuttgart.einf.moviemanager.service.search;
 
-import de.unistuttgart.einf.moviemanager.model.Category;
 import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.Series;
 import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -23,9 +21,7 @@ public class MediaSearchServiceBonusTest {
 				UUID.randomUUID(),
 				"The Conjuring",
 				"Paranormal investigators help a family terrorized by a dark presence.",
-				false,
-				112,
-				Category.HORROR
+				false
 		);
 
 		// Movie SciFi
@@ -33,17 +29,14 @@ public class MediaSearchServiceBonusTest {
 				UUID.randomUUID(),
 				"Interstellar",
 				"A team travels through a wormhole in space to save humanity.",
-				false,
-				169,
-				Category.SCIFI
+				false
 		);
 
 		// Series Crime
 		Series breakingBad = new Series(
 				UUID.randomUUID(),
 				"Breaking Bad",
-				"A chemistry teacher turns to cooking meth.",
-				Category.CRIME
+				"A chemistry teacher turns to cooking meth."
 		);
 
 		catalog = new HashSet<>(List.of(conjuring, interstellar, breakingBad));
@@ -56,13 +49,12 @@ public class MediaSearchServiceBonusTest {
 	}
 
 	private static String titleOf(TopLevelMedia m) {
-		return m.getTitle(); // ggf. m.title()
+		return m.getTitle();
 	}
 
 
 	@Test
 	void categoryBonus_shouldPreferHorrorMovie_forMovieHorrorQuery() {
-		// threshold=0 damit nix rausgefiltert wird
 		var results = sorted("movie horror", 40);
 
 		assertFalse(results.isEmpty());
@@ -71,8 +63,6 @@ public class MediaSearchServiceBonusTest {
 
 	@Test
 	void typeBonus_shouldPreferSeries_whenQueryMentionsSeries() {
-		// "series" + crime -> sollte Series bevorzugen (bonus = 6)
-		System.out.println("------");
 		var results = sorted("crime series break ad", 40);
 
 		results.forEach(r -> System.out.println(titleOf(r.media()) + r.score() + ","));

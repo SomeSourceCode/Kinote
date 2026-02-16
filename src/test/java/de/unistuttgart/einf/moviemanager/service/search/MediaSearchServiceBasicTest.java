@@ -15,17 +15,17 @@ public class MediaSearchServiceBasicTest {
 	@BeforeEach
 	void setUp() {
 		Movie interstellar = new Movie(UUID.randomUUID(), "Interstellar",
-				"A team travels through a wormhole in space.", false, 169, Category.SCIFI);
+				"A team travels through a wormhole in space.", false);
 
 		Movie conjuring = new Movie(UUID.randomUUID(), "The Conjuring",
-				"Paranormal investigators and a dark presence.", false, 112, Category.HORROR);
+				"Paranormal investigators and a dark presence.", false);
 
 		Series breakingBad = new Series(UUID.randomUUID(), "Breaking Bad",
-				"A chemistry teacher turns to cooking meth.", Category.CRIME);
+				"A chemistry teacher turns to cooking meth.");
 
-		// children hinzufügen (schadet nicht, auch wenn Suche es ignoriert)
+		// children
 		Season s2 = new Season(2, "Season 2", "The business grows and consequences escalate.");
-		s2.addChild(new Episode(1, "Seven Thirty-Seven", "A deal, a threat, and rising tension.", false, 47));
+		s2.addChild(new Episode(1, "Seven Thirty-Seven", "A deal, a threat, and rising tension.", false));
 		breakingBad.addChild(s2);
 
 		catalog = new HashSet<>(List.of(interstellar, conjuring, breakingBad));

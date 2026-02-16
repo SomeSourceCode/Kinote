@@ -22,54 +22,46 @@ public class MediaSearchServiceTest {
 				UUID.randomUUID(),
 				"Interstellar",
 				"A team travels through a wormhole in space to save humanity.",
-				false,
-				169,
-				Category.SCIFI
+				false
 		);
 
 		Movie conjuring = new Movie(
 				UUID.randomUUID(),
 				"The Conjuring",
 				"Paranormal investigators help a family terrorized by a dark presence.",
-				false,
-				112,
-				Category.HORROR
+				false
 		);
 
 		Movie godfather = new Movie(
 				UUID.randomUUID(),
 				"The Godfather",
 				"A crime family dynasty and the rise of Michael Corleone.",
-				false,
-				175,
-				Category.CRIME
+				false
 		);
 
 		// --- Series + children ---
 		Series breakingBad = new Series(
 				UUID.randomUUID(),
 				"Breaking Bad",
-				"A chemistry teacher turns to cooking meth to secure his family's future.",
-				Category.CRIME
+				"A chemistry teacher turns to cooking meth to secure his family's future."
 		);
 
 		Season bbS1 = new Season(1, "Season 1", "Walter's first steps into the drug world.");
-		bbS1.addChild(new Episode(1, "Pilot", "A teacher starts cooking meth.", false, 58));
-		bbS1.addChild(new Episode(2, "Cat's in the Bag...", "They deal with the aftermath.", false, 48));
+		bbS1.addChild(new Episode(1, "Pilot", "A teacher starts cooking meth.", false));
+		bbS1.addChild(new Episode(2, "Cat's in the Bag...", "They deal with the aftermath.", false));
 		breakingBad.addChild(bbS1);
 
 		Season bbS2 = new Season(2, "Season 2", "The business grows and consequences escalate.");
-		bbS2.addChild(new Episode(1, "Seven Thirty-Seven", "A deal, a threat, and rising tension.", false, 47));
+		bbS2.addChild(new Episode(1, "Seven Thirty-Seven", "A deal, a threat, and rising tension.", false));
 		breakingBad.addChild(bbS2);
 
 		Series office = new Series(
 				UUID.randomUUID(),
 				"The Office",
-				"A mockumentary sitcom about office workers and awkward humor.",
-				Category.COMEDY
+				"A mockumentary sitcom about office workers and awkward humor."
 		);
 		Season offS1 = new Season(1, "Season 1", "New manager, new problems.");
-		offS1.addChild(new Episode(1, "Pilot", "Welcome to the office.", false, 23));
+		offS1.addChild(new Episode(1, "Pilot", "Welcome to the office.", false));
 		office.addChild(offS1);
 
 		catalog = new HashSet<>(List.of(interstellar, conjuring, godfather, breakingBad, office));

@@ -27,7 +27,7 @@ public class MediaFilter {
 
 	public MediaFilter and(MediaFilter other) {
 		Predicate<TopLevelMedia> andPredicate = this.predicate.and(other.predicate);
-		String andDescription = "" + this.description + " AND " + other.description + "";
+		String andDescription = this.description + " AND " + other.description;
 		return new MediaFilter(andPredicate, andDescription);
 	}
 
@@ -45,9 +45,9 @@ public class MediaFilter {
 		return new MediaFilter(predicate, description);
 	}
 
-	public static MediaFilter isCategory(Category category) {
-		Predicate<TopLevelMedia> predicate = media -> media.getCategory() == category;
-		String description = "Category = " + category.name();
+	public static MediaFilter containsGenre(Genre genre) {
+		Predicate<TopLevelMedia> predicate = media -> media.getGenres().contains(genre);
+		String description = "Genre = " + genre.name();
 		return new MediaFilter(predicate, description);
 	}
 

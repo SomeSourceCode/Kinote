@@ -43,11 +43,10 @@ public class MediaFilterServiceTest {
 	public void testCategory() {
 		MediaFilter filter = MediaFilter.isMovie()
 				.and(MediaFilter.maxRating(70))
-				.and(MediaFilter.isCategory(Category.CRIME))
 				.and(MediaFilter.isAgeRatingAtLeast(FskRating.FSK_16))
 				.and(MediaFilter.hasStatus(Status.UNWATCHED));
 		System.out.println(filter.toString());;
-		Movie movie = new Movie(UUID.randomUUID(), "movie", "peter", false, 720, Category.CRIME);
+		Movie movie = new Movie(UUID.randomUUID(), "movie", "peter", false);
 		movie.setRating(70);
 		movie.setAgeRating(FskRating.FSK_16);
 		List<TopLevelMedia> list = List.of(movie);
@@ -58,7 +57,7 @@ public class MediaFilterServiceTest {
 	public void testDifferentAgeRatingSystem() {
 		MediaFilter filter = MediaFilter.isMovie().and(MediaFilter.isAgeRatingAtLeast(BbfcRating.BBFC_15));
 		System.out.println(filter.toString());;
-		Movie movie = new Movie(UUID.randomUUID(), "movie", "peter", false, 720, Category.CRIME);
+		Movie movie = new Movie(UUID.randomUUID(), "movie", "peter", false);
 		movie.setRating(70);
 		movie.setAgeRating(FskRating.FSK_16);
 		List<TopLevelMedia> list = List.of(movie);
