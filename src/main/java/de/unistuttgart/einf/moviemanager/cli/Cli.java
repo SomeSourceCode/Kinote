@@ -22,6 +22,8 @@ import de.unistuttgart.einf.moviemanager.service.MediaService;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Objects;
 
 public class Cli {
@@ -44,6 +46,9 @@ public class Cli {
 
 	// pages
 	private final OverviewPage overviewPage;
+
+	private Page currentPage;
+	private final Deque<Page> pageStack = new ArrayDeque<>();
 
 	/**
 	 * Constructs a new Cli for the given media service.
@@ -89,6 +94,7 @@ public class Cli {
 		overviewPage = new OverviewPage(this, mediaService);
 		overviewPage.setOnMediaSelected((media, _) -> navigateTo(new DetailsPage(this, media)));
 		mainContainer.setCenter(overviewPage);
+		currentPage = overviewPage;
 
 		// info bar hook
 		scene.getFocusManager().setOnFocusChange((_, newFocus) -> {
@@ -222,10 +228,29 @@ public class Cli {
 	}
 
 	/**
-	 * Navigates to the overview page.
+	 * Returns the current page.
+	 *
+	 * @return the current page
+	 */
+	public Page getPage() {
+		return currentPage;
+	}
+
+	/**
+	 * Returns the overview page.
+	 *
+	 * @return the overview page
+	 */
+	public OverviewPage getOverviewPage() {
+		return overviewPage;
+	}
+
+	/**
+	 * Clears history and navigates to the overview page.
 	 */
 	public void navigateToOverview() {
-		navigateTo(overviewPage);
+		pageStack.clear();
+		navigateTo(overviewPage, false);
 	}
 
 	/**
@@ -234,10 +259,38 @@ public class Cli {
 	 * @param page the page
 	 */
 	public void navigateTo(Page page) {
+		navigateTo(page, true);
+	}
+
+	private void navigateTo(Page page, boolean addToHistory) {
 		if (page.getCli() != this) {
 			throw new IllegalArgumentException("page does not belong to this cli");
 		}
+		if (currentPage == page) {
+			return;
+		}
+		if (addToHistory && currentPage != null) {
+			pageStack.push(currentPage);
+		}
+
+		currentPage = page;
 		mainContainer.setCenter(page);
+	}
+
+	/**
+	 * Navigates back to the previous page.
+	 *
+	 * @return whether there was a previous page to navigate to
+	 */
+	public boolean navigateBack() {
+		if (pageStack.isEmpty()) {
+			return false;
+		}
+		final Page previousPage = pageStack.pop();
+
+		currentPage = previousPage;
+		mainContainer.setCenter(previousPage);
+		return true;
 	}
 
 	/* *************************************************************** *
@@ -320,7 +373,10 @@ public class Cli {
 					}
 				}
 				case Escape -> {
-					return scene.attemptClosePopover();
+					if (scene.attemptClosePopover()) {
+						return true;
+					}
+					return navigateBack();
 				}
 				case Tab -> focusManager.focusNext();
 				case ReverseTab -> focusManager.focusPrevious();
