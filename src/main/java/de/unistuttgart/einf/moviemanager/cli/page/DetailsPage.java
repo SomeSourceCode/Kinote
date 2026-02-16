@@ -190,7 +190,7 @@ public class DetailsPage extends Page {
 
 		seasonDropdown.setOnSelect(selectedSeason -> {
 			updateEpisodeTable(episodeTable, selectedSeason);
-			updateSeriesAgeRatingText(ageRatingText, selectedSeason);
+			updateSeasonAgeRatingText(ageRatingText, selectedSeason);
 		});
 
 		if (!seasons.isEmpty()) {
@@ -212,7 +212,7 @@ public class DetailsPage extends Page {
 		table.setItems(season.getChildren());
 	}
 
-	private void updateSeriesAgeRatingText(Text text, Season season) {
+	private void updateSeasonAgeRatingText(Text text, Season season) {
 		if (season == null) {
 			text.setHidden(true);
 			return;
