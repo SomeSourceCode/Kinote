@@ -13,6 +13,7 @@ import de.unistuttgart.einf.moviemanager.cli.api.widget.CommandLine;
 import de.unistuttgart.einf.moviemanager.cli.api.widget.ConfirmationDialog;
 import de.unistuttgart.einf.moviemanager.cli.api.widget.Text;
 import de.unistuttgart.einf.moviemanager.cli.commands.Commands;
+import de.unistuttgart.einf.moviemanager.cli.page.DetailsPage;
 import de.unistuttgart.einf.moviemanager.cli.page.OverviewPage;
 import de.unistuttgart.einf.moviemanager.cli.page.Page;
 import de.unistuttgart.einf.moviemanager.command.CommandDispatcher;
@@ -86,6 +87,7 @@ public class Cli {
 
 		// pages (the main ui part)
 		overviewPage = new OverviewPage(this, mediaService);
+		overviewPage.setOnMediaSelected((media, _) -> navigateTo(new DetailsPage(this, media)));
 		mainContainer.setCenter(overviewPage);
 
 		// info bar hook
