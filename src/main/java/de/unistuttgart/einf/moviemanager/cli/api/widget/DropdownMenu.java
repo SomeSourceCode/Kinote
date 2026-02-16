@@ -135,11 +135,11 @@ public class DropdownMenu<T> extends Parent {
 		this.options.clear();
 
 		for (T option : options) {
-			if (!this.options.contains(option)) {
+			if (option != null && !this.options.contains(option)) {
 				this.options.add(option);
 			}
 		}
-		if (!options.contains(selectedOption)) {
+		if (selectedOption != null && !this.options.contains(selectedOption)) {
 			selectedOption = null;
 		}
 
