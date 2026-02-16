@@ -154,7 +154,7 @@ public class DetailsPage extends Page {
 		final FlowPane seasonBar = new FlowPane();
 		seasonBar.setPadding(new Insets(1, 0));
 		seasonBar.setAutoAdjustHeight(true);
-		seasonBar.setHGap(1);
+		seasonBar.setHGap(2);
 		container.addChild(seasonBar);
 
 		// episodes
@@ -181,6 +181,15 @@ public class DetailsPage extends Page {
 		// age rating
 		final Text ageRatingText = new Text();
 
+		// runtime
+		final Text runtimeText = new Text();
+
+		// status
+		final Text statusText = new Text();
+
+		// rating
+		final Text ratingText = new Text();
+
 		// season dropdown
 		final DropdownMenu<Season> seasonDropdown = new DropdownMenu<>(season -> "Season " + season.getNumber());
 		seasonDropdown.setPlaceholder("No Seasons");
@@ -191,6 +200,9 @@ public class DetailsPage extends Page {
 		seasonDropdown.setOnSelect(selectedSeason -> {
 			updateEpisodeTable(episodeTable, selectedSeason);
 			updateSeasonAgeRatingText(ageRatingText, selectedSeason);
+			updateSeasonRuntimeText(runtimeText, selectedSeason);
+			updateSeasonStatusText(statusText, selectedSeason);
+			updateSeasonRatingText(ratingText, selectedSeason);
 		});
 
 		if (!seasons.isEmpty()) {
@@ -200,6 +212,9 @@ public class DetailsPage extends Page {
 
 		seasonBar.addChild(seasonDropdown);
 		seasonBar.addChild(ageRatingText);
+		seasonBar.addChild(runtimeText);
+		seasonBar.addChild(statusText);
+		seasonBar.addChild(ratingText);
 
 		container.addChild(episodeTable);
 	}
@@ -219,6 +234,33 @@ public class DetailsPage extends Page {
 		}
 		text.setHidden(false);
 		text.setText(MediaFormatter.ageRating(season, RatingSystem.FSK));
+	}
+
+	private void updateSeasonRuntimeText(Text text, Season season) {
+		if (season == null || !season.hasRuntime()) {
+			text.setHidden(true);
+			return;
+		}
+		text.setHidden(false);
+		text.setText(MediaFormatter.runtime(season));
+	}
+
+	private void updateSeasonStatusText(Text text, Season season) {
+		if (season == null) {
+			text.setHidden(true);
+			return;
+		}
+		text.setHidden(false);
+		text.setText(MediaFormatter.status(season));
+	}
+
+	private void updateSeasonRatingText(Text text, Season season) {
+		if (season == null || !season.hasRating()) {
+			text.setHidden(true);
+			return;
+		}
+		text.setHidden(false);
+		text.setText(MediaFormatter.rating(season));
 	}
 
 	@Override
