@@ -115,12 +115,7 @@ public class Cli {
 		commandLine.setPrefix(":");
 		commandLine.setPadding(new Insets(0, 2));
 
-		commandLine.setOnFail(message -> {
-			final ConfirmationDialog dialog = new ConfirmationDialog(message);
-			dialog.setConfirmLabel("Ok");
-			dialog.setCancelButtonVisible(false);
-			dialog.show(scene);
-		});
+		commandLine.setOnFail(this::showInfoDialog);
 
 		rootLayout.setBottom(commandLine);
 
@@ -304,6 +299,16 @@ public class Cli {
 		currentPage = previousPage;
 		mainContainer.setCenter(previousPage);
 		return true;
+	}
+
+	/**
+	 * Shows an info dialog.
+	 */
+	public void showInfoDialog(String info) {
+		final ConfirmationDialog dialog = new ConfirmationDialog(info);
+		dialog.setConfirmLabel("Ok");
+		dialog.setCancelButtonVisible(false);
+		dialog.show(scene);
 	}
 
 	/* *************************************************************** *
