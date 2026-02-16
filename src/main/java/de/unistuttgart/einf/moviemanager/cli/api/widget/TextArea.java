@@ -668,6 +668,44 @@ public class TextArea extends InteractableBase {
 		return true;
 	}
 
+	/**
+	 * Moves the cursor to the start of the current paragraph.
+	 *
+	 * @return whether the cursor position changed
+	 */
+	public boolean moveToParagraphStart() {
+		final int paragraphStartIndex = text.lastIndexOf('\n', Math.max(0, cursorIndex - 1));
+		final int oldCursorIndex = cursorIndex;
+
+		if (paragraphStartIndex == -1) {
+			cursorIndex = 0;
+		} else {
+			cursorIndex = paragraphStartIndex + 1;
+		}
+
+		preferredCursorX = null;
+		return cursorIndex != oldCursorIndex;
+	}
+
+	/**
+	 * Moves the cursor to the end of the current paragraph.
+	 *
+	 * @return whether the cursor position changed
+	 */
+	public boolean moveToParagraphEnd() {
+		final int paragraphEndIndex = text.indexOf('\n', cursorIndex);
+		final int oldCursorIndex = cursorIndex;
+
+		if (paragraphEndIndex == -1) {
+			cursorIndex = text.length();
+		} else {
+			cursorIndex = paragraphEndIndex;
+		}
+
+		preferredCursorX = null;
+		return cursorIndex != oldCursorIndex;
+	}
+
 	private boolean isWordChar(char character) {
 		return Character.isLetterOrDigit(character) || '_' == character;
 	}
@@ -823,15 +861,14 @@ public class TextArea extends InteractableBase {
 							return InputResult.ENTER_EDIT_MODE;
 						}
 						case 'O' -> {
-							moveToLineStart();
+							moveToParagraphStart();
 							insert('\n');
 							moveUp();
 							return InputResult.ENTER_EDIT_MODE;
 						}
 						case 'o' -> {
-							moveToLineEnd();
+							moveToParagraphEnd();
 							insert('\n');
-							moveDown();
 							return InputResult.ENTER_EDIT_MODE;
 						}
 						case 'c' -> {
