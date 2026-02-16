@@ -166,10 +166,10 @@ public class DetailsPage extends Page {
 
 		final TableColumn<Episode> episodeColumn = TableColumn.weighted("Episodes", 1, episode -> episode.getNumber() + " " + episode.getTitle());
 		episodeColumn.setPadding(1);
+		final TableColumn<Episode> ratingColumn = TableColumn.fixed("Rating", 6, MediaFormatter::rating);
+		ratingColumn.setPadding(1);
 		final TableColumn<Episode> statusColumn = TableColumn.fixed("Status", 11, MediaFormatter::status);
 		statusColumn.setPadding(1);
-		final TableColumn<Episode> ratingColumn = TableColumn.fixed("Rating", 3, MediaFormatter::rating);
-		ratingColumn.setPadding(1);
 		ratingColumn.setAlignment(TextAlignment.RIGHT);
 
 		episodeTable.setColumns(episodeColumn, statusColumn, ratingColumn);
