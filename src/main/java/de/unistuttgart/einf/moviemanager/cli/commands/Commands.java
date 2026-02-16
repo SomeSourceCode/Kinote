@@ -25,6 +25,8 @@ public class Commands {
 		QuitCommand.register(dispatcher, cli);
 		HomeCommand.register(dispatcher, cli);
 
+		CreateCommand.register(dispatcher, cli);
+
 		return dispatcher;
 	}
 
