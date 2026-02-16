@@ -5,6 +5,7 @@ import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * The service over which the frontend interacts with the model.
@@ -29,7 +30,7 @@ public class MediaService {
 	}
 
 	/**
-	 * Reloads the data from the repository
+	 * Reloads the data from the repository.
 	 */
 	public void reload() {
 		mediaList.clear();
@@ -40,19 +41,28 @@ public class MediaService {
 	}
 
 	/**
-	 * Saves the data to the repository
+	 * Saves the data to the repository.
 	 */
 	public void save() {
 		repository.save(mediaList);
 	}
 
 	/**
-	 * Adds a new media item
+	 * Adds a new media item.
 	 *
 	 * @param media the media item
 	 */
 	public void addMedia(TopLevelMedia media) {
 		mediaList.add(media);
+	}
+
+	/**
+	 * Removes a media item.
+	 *
+	 * @param media the media item
+	 */
+	public void removeMedia(TopLevelMedia media) {
+		mediaList.remove(media);
 	}
 
 	/**
@@ -62,6 +72,26 @@ public class MediaService {
 	 */
 	public Set<TopLevelMedia> getAllMedia() {
 		return Set.copyOf(mediaList);
+	}
+
+	/**
+	 * Returns the media item with the given id, or null if no such item exists.
+	 *
+	 * @param id the id of the media item
+	 * @return the media item
+	 */
+	public TopLevelMedia getMediaById(UUID id) {
+		if (id == null) {
+			return null;
+		}
+
+		for (TopLevelMedia media : mediaList) {
+			if (id.equals(media.getId())) {
+				return media;
+			}
+		}
+
+		return null;
 	}
 
 }
