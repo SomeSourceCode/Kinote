@@ -36,6 +36,9 @@ public class Cli {
 
 	private final Scene scene;
 
+	// services
+	private final MediaService mediaService;
+
 	// components
 	private final VerticalBorderPane mainContainer;
 	private final Text dateDisplay;
@@ -60,6 +63,7 @@ public class Cli {
 		if (mediaService == null) {
 			throw new IllegalArgumentException("mediaService must be non-null");
 		}
+		this.mediaService = mediaService;
 
 		scene = new Scene();
 
@@ -202,6 +206,15 @@ public class Cli {
 			}
 			case EDIT -> "EDIT - Type to edit, Esc to exit";
 		});
+	}
+
+	/**
+	 * Returns the media service.
+	 *
+	 * @return the media service
+	 */
+	public MediaService getMediaService() {
+		return mediaService;
 	}
 
 	/* *************************************************************** *
