@@ -3,6 +3,7 @@ package de.unistuttgart.einf.moviemanager.cli.page;
 import de.unistuttgart.einf.moviemanager.cli.Cli;
 import de.unistuttgart.einf.moviemanager.cli.api.Component;
 import de.unistuttgart.einf.moviemanager.cli.api.Parent;
+import de.unistuttgart.einf.moviemanager.model.Media;
 
 /**
  * The base class for pages in the cli.
@@ -61,6 +62,15 @@ public abstract class Page extends Parent {
 		mainComponent.setY(topPadding);
 		mainComponent.setWidth(width);
 		mainComponent.setHeight(height);
+	}
+
+	/**
+	 * Returns the currently active media item, or null if no media item is active.
+	 *
+	 * @return the active media item, e.g. a highlighted movie or an opened episode
+	 */
+	public Media getActiveMedia() {
+		return null;
 	}
 
 }

@@ -203,6 +203,62 @@ public class TableView<T> extends InteractableBase {
 	}
 
 	/**
+	 * Returns the currently selected item, or null if there are no items.
+	 *
+	 * @return the currently selected item
+	 */
+	public T getSelectedItem() {
+		if (items.isEmpty() || selectedRowIndex >= items.size()) {
+			return null;
+		}
+		return items.get(selectedRowIndex);
+	}
+
+	/**
+	 * Selects the row of the first occurrence of the given item, if it exists in the table.
+	 *
+	 * @param item the item
+	 */
+	public void selectRow(T item) {
+		int index = items.indexOf(item);
+		if (index >= 0) {
+			selectRow(index);
+		}
+	}
+
+	/**
+	 * Selects the row with the given index, clamping it to the valid range.
+	 *
+	 * @param rowIndex the row index
+	 */
+	public void selectRow(int rowIndex) {
+		selectedRowIndex = Math.max(0, Math.min(rowIndex, items.size() - 1));
+		ensureValidSelection();
+		ensureSelectionVisible();
+	}
+
+	/**
+	 * Selects the column with the given index, clamping it to the valid range.
+	 *
+	 * @param columnIndex the column index
+	 */
+	public void selectColumn(int columnIndex) {
+		selectedColumnIndex = Math.max(0, Math.min(columnIndex, columns.size() - 1));
+		ensureValidSelection();
+	}
+
+	/**
+	 * Selects the cell at the given row and column indices, clamping them to the valid range.
+	 *
+	 * @param rowIndex the row index
+	 * @param columnIndex the column index
+	 */
+	public void selectCell(int rowIndex, int columnIndex) {
+		selectRow(rowIndex);
+		selectColumn(columnIndex);
+	}
+
+	/**
 	 * Resets the selection to the top-left cell.
 	 */
 	public void resetSelection() {

@@ -8,6 +8,7 @@ import de.unistuttgart.einf.moviemanager.cli.api.util.MediaFormatter;
 import de.unistuttgart.einf.moviemanager.cli.api.widget.TableColumn;
 import de.unistuttgart.einf.moviemanager.cli.api.widget.TableView;
 import de.unistuttgart.einf.moviemanager.cli.api.widget.Text;
+import de.unistuttgart.einf.moviemanager.model.Media;
 import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
 import de.unistuttgart.einf.moviemanager.service.MediaService;
 
@@ -142,6 +143,11 @@ public class OverviewPage extends Page {
 					return desc1.compareToIgnoreCase(desc2);
 				})
 				.toList());
+	}
+
+	@Override
+	public Media getActiveMedia() {
+		return tableView.getSelectedItem();
 	}
 
 	/**

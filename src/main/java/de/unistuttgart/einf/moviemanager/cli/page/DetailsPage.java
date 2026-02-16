@@ -221,4 +221,9 @@ public class DetailsPage extends Page {
 		text.setText(MediaFormatter.ageRating(season, RatingSystem.FSK));
 	}
 
+	@Override
+	public Media getActiveMedia() {
+		return media;
+	}
+
 }
