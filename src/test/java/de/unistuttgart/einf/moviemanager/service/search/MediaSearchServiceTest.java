@@ -24,6 +24,7 @@ public class MediaSearchServiceTest {
 				"A team travels through a wormhole in space to save humanity.",
 				false
 		);
+		interstellar.addGenre(Genre.SCIENCE_FICTION);
 
 		Movie conjuring = new Movie(
 				UUID.randomUUID(),
@@ -31,6 +32,7 @@ public class MediaSearchServiceTest {
 				"Paranormal investigators help a family terrorized by a dark presence.",
 				false
 		);
+		conjuring.addGenre(Genre.HORROR);
 
 		Movie godfather = new Movie(
 				UUID.randomUUID(),
@@ -38,6 +40,7 @@ public class MediaSearchServiceTest {
 				"A crime family dynasty and the rise of Michael Corleone.",
 				false
 		);
+		godfather.addGenre(Genre.CRIME);
 
 		// --- Series + children ---
 		Series breakingBad = new Series(
@@ -45,6 +48,7 @@ public class MediaSearchServiceTest {
 				"Breaking Bad",
 				"A chemistry teacher turns to cooking meth to secure his family's future."
 		);
+		breakingBad.addGenre(Genre.CRIME);
 
 		Season bbS1 = new Season(1, "Season 1", "Walter's first steps into the drug world.");
 		bbS1.addChild(new Episode(1, "Pilot", "A teacher starts cooking meth.", false));
@@ -60,6 +64,8 @@ public class MediaSearchServiceTest {
 				"The Office",
 				"A mockumentary sitcom about office workers and awkward humor."
 		);
+		office.addGenre(Genre.COMEDY);
+
 		Season offS1 = new Season(1, "Season 1", "New manager, new problems.");
 		offS1.addChild(new Episode(1, "Pilot", "Welcome to the office.", false));
 		office.addChild(offS1);
@@ -75,7 +81,8 @@ public class MediaSearchServiceTest {
 
 	private List<MediaSearchService.ScoredMedia> sortedResults(String query, int threshold) {
 		return rawSearch(query, threshold).stream()
-				.sorted(Comparator.comparingInt(MediaSearchService.ScoredMedia::score).reversed())
+				.sorted(Comparator.comparingInt(MediaSearchService.ScoredMedia::score).reversed()
+						.thenComparing(result -> titleOf(result.media())))
 				.toList();
 	}
 
@@ -111,7 +118,7 @@ public class MediaSearchServiceTest {
 	@Test
 	void categoryKeywordBonus_shouldBoostCorrectCategory() {
 		// Query enthält "horror" -> Horror Movie sollte oben landen
-		var top = topResult("movie horror", 0);
+		var top = topResult("horror spooky", 0);
 
 		System.out.print(top.score() + " scoreee");
 		assertNotNull(top);

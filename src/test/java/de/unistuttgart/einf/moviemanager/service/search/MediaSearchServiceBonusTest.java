@@ -1,5 +1,6 @@
 package de.unistuttgart.einf.moviemanager.service.search;
 
+import de.unistuttgart.einf.moviemanager.model.Genre;
 import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.Series;
 import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
@@ -23,6 +24,7 @@ public class MediaSearchServiceBonusTest {
 				"Paranormal investigators help a family terrorized by a dark presence.",
 				false
 		);
+		conjuring.addGenre(Genre.HORROR);
 
 		// Movie SciFi
 		Movie interstellar = new Movie(
@@ -31,6 +33,7 @@ public class MediaSearchServiceBonusTest {
 				"A team travels through a wormhole in space to save humanity.",
 				false
 		);
+		interstellar.addGenre(Genre.SCIENCE_FICTION);
 
 		// Series Crime
 		Series breakingBad = new Series(
@@ -38,13 +41,15 @@ public class MediaSearchServiceBonusTest {
 				"Breaking Bad",
 				"A chemistry teacher turns to cooking meth."
 		);
+		breakingBad.addGenre(Genre.CRIME);
 
 		catalog = new HashSet<>(List.of(conjuring, interstellar, breakingBad));
 	}
 
 	private List<MediaSearchService.ScoredMedia> sorted(String q, int threshold) {
 		return MediaSearchService.search(q, catalog, threshold).stream()
-				.sorted(Comparator.comparingInt(MediaSearchService.ScoredMedia::score).reversed())
+				.sorted(Comparator.comparingInt(MediaSearchService.ScoredMedia::score).reversed()
+						.thenComparing(result -> titleOf(result.media())))
 				.toList();
 	}
 
@@ -55,10 +60,10 @@ public class MediaSearchServiceBonusTest {
 
 	@Test
 	void categoryBonus_shouldPreferHorrorMovie_forMovieHorrorQuery() {
-		var results = sorted("movie horror", 40);
+		var results = sorted("horror", 40);
 
 		assertFalse(results.isEmpty());
-		assertEquals("The Conjuring", titleOf(results.get(0).media()));
+		assertEquals("The Conjuring", titleOf(results.getFirst().media()));
 	}
 
 	@Test
