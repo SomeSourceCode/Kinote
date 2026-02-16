@@ -68,7 +68,7 @@ public class DetailsPage extends Page {
 		propertyContainer.addChild(typeLabel);
 
 		// age rating
-		final RatingSystem ratingSystem = RatingSystem.FSK;
+		final RatingSystem ratingSystem = getCli().getSettingsService().getSettings().getRatingSystem();
 		final String ageRatingString = MediaFormatter.ageRating(media, ratingSystem);
 
 		if (media instanceof LeafMedia asLeafMedia) {
@@ -233,7 +233,7 @@ public class DetailsPage extends Page {
 			return;
 		}
 		text.setHidden(false);
-		text.setText(MediaFormatter.ageRating(season, RatingSystem.FSK));
+		text.setText(MediaFormatter.ageRating(season, getCli().getSettingsService().getSettings().getRatingSystem()));
 	}
 
 	private void updateSeasonRuntimeText(Text text, Season season) {

@@ -18,6 +18,7 @@ import de.unistuttgart.einf.moviemanager.cli.page.OverviewPage;
 import de.unistuttgart.einf.moviemanager.cli.page.Page;
 import de.unistuttgart.einf.moviemanager.command.CommandDispatcher;
 import de.unistuttgart.einf.moviemanager.service.MediaService;
+import de.unistuttgart.einf.moviemanager.service.SettingsService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -38,6 +39,7 @@ public class Cli {
 
 	// services
 	private final MediaService mediaService;
+	private final SettingsService settingsService;
 
 	// components
 	private final VerticalBorderPane mainContainer;
@@ -59,11 +61,15 @@ public class Cli {
 	 * @param mediaService the media service
 	 * @throws IllegalArgumentException if mediaService is null
 	 */
-	public Cli(MediaService mediaService) {
+	public Cli(MediaService mediaService, SettingsService settingsService) {
 		if (mediaService == null) {
 			throw new IllegalArgumentException("mediaService must be non-null");
 		}
 		this.mediaService = mediaService;
+		if (settingsService == null) {
+			throw new IllegalArgumentException("settingsService must be non-null");
+		}
+		this.settingsService = settingsService;
 
 		scene = new Scene();
 
@@ -210,6 +216,15 @@ public class Cli {
 	 */
 	public MediaService getMediaService() {
 		return mediaService;
+	}
+
+	/**
+	 * Returns the settings service.
+	 *
+	 * @return the settings service
+	 */
+	public SettingsService getSettingsService() {
+		return settingsService;
 	}
 
 	/* *************************************************************** *

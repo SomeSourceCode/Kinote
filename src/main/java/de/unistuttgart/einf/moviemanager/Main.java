@@ -2,8 +2,10 @@ package de.unistuttgart.einf.moviemanager;
 
 import de.unistuttgart.einf.moviemanager.cli.Cli;
 import de.unistuttgart.einf.moviemanager.io.FileRepository;
+import de.unistuttgart.einf.moviemanager.io.SettingsSerializer;
 import de.unistuttgart.einf.moviemanager.io.TopLevelMediaSetSerializer;
 import de.unistuttgart.einf.moviemanager.service.MediaService;
+import de.unistuttgart.einf.moviemanager.service.SettingsService;
 
 import java.nio.file.Path;
 
@@ -18,14 +20,21 @@ public class Main {
 	static void main() {
 		final String userHome = System.getProperty("user.home");
 		final Path appDataDir = Path.of(userHome, ".kinote");
+
 		final Path mediaFile = appDataDir.resolve("media.json");
+		final Path settingsFile = appDataDir.resolve("settings.json");
 
 		final MediaService mediaService = new MediaService(
 				new FileRepository<>(mediaFile, new TopLevelMediaSetSerializer())
 		);
 		Runtime.getRuntime().addShutdownHook(new Thread(mediaService::save));
 
-		new Cli(mediaService).run();
+		final SettingsService settingsService = new SettingsService(
+				new FileRepository<>(settingsFile, new SettingsSerializer())
+		);
+		Runtime.getRuntime().addShutdownHook(new Thread(settingsService::save));
+
+		new Cli(mediaService, settingsService).run();
 	}
 
 }
