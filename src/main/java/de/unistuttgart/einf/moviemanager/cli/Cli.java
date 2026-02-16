@@ -304,7 +304,12 @@ public class Cli {
 								focused.requestFocus();
 							}
 						}
-						case ':' -> setMode(CliMode.COMMAND);
+						case ':' -> {
+							if (scene.getPopovers().stream().anyMatch(Parent::hasFocusedChild)) {
+								return false;
+							}
+							setMode(CliMode.COMMAND);
+						}
 						case 'K', 'k' -> focusManager.moveFocus(Direction.UP);
 						case 'J', 'j' -> focusManager.moveFocus(Direction.DOWN);
 						case 'H', 'h' -> focusManager.moveFocus(Direction.LEFT);
