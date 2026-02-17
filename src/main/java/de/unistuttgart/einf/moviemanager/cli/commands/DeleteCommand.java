@@ -42,7 +42,7 @@ public class DeleteCommand {
 	}
 
 	private static void executeDeleteActiveMedia(Cli cli) {
-		final Media media = cli.getPage().getActiveMedia();
+		final Media media = cli.getActiveMedia();
 		switch (media) {
 			case null -> {
 				throw Command.fail("Delete only works without arguments if the subject is clear from the context.");
@@ -148,15 +148,13 @@ public class DeleteCommand {
 			return series;
 		}
 
-		final Media activeMedia = cli.getPage().getActiveMedia();
-		if (activeMedia instanceof Series asSeries) {
-			return asSeries;
-		}
+		final Series activeMedia = cli.getActiveSeries();
 
 		if (activeMedia == null) {
 			throw Command.fail("No series specified and the subject is not clear from the context.");
 		}
-		throw Command.fail("Active media '" + activeMedia.getTitle() + "' is not a series, so the series must be specified explicitly.");
+
+		return activeMedia;
 	}
 
 	private static void confirmAndExecute(Cli cli, String message, Runnable action) {

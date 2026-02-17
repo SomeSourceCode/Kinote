@@ -92,15 +92,10 @@ public class CreateCommand {
 	private static Series getParentSeries(ExecutionContext context, Cli cli) {
 		Series parentSeries = context.get("parent-series", Series.class);
 		if (parentSeries == null) {
-			final Media activeMedia = cli.getPage().getActiveMedia();
-			if (activeMedia == null) {
-				throw Command.fail("Parent series can only be omitted if it's clearly identifiable from the context (e.g. opened)");
-			}
-			if (!(activeMedia instanceof Series series)) {
-				throw Command.fail("Active media" + (activeMedia.getTitle() != null ? " ('" + activeMedia.getTitle() + "') " : " ")
-						+ "item is not a series, so parent series must be specified explicitly");
-			}
-			parentSeries = series;
+			parentSeries = cli.getActiveSeries();
+		}
+		if (parentSeries == null) {
+			throw Command.fail("Parent series can only be omitted if it's clearly identifiable from the context (e.g. opened)");
 		}
 		return parentSeries;
 	}
