@@ -2,6 +2,7 @@ package de.unistuttgart.einf.moviemanager.cli.page;
 
 import de.unistuttgart.einf.moviemanager.cli.Cli;
 import de.unistuttgart.einf.moviemanager.cli.api.Component;
+import de.unistuttgart.einf.moviemanager.cli.api.Interactable;
 import de.unistuttgart.einf.moviemanager.cli.api.Parent;
 import de.unistuttgart.einf.moviemanager.model.Media;
 
@@ -12,6 +13,8 @@ public abstract class Page extends Parent {
 
 	private final Cli cli;
 	private final Component mainComponent;
+
+	private Interactable focusCache;
 
 	/**
 	 * Constructs a new page with the given cli and
@@ -62,6 +65,41 @@ public abstract class Page extends Parent {
 		mainComponent.setY(topPadding);
 		mainComponent.setWidth(width);
 		mainComponent.setHeight(height);
+	}
+
+	/**
+	 * Returns the interactable that last had focus on this page, or that
+	 * is supposed to receive focus when the user returns to or opens this page.
+	 *
+	 * @return the interactable
+	 */
+	public Interactable getFocusCache() {
+		return focusCache;
+	}
+
+	/**
+	 * Sets the interactable that last had focus on this page, or that
+	 * is supposed to receive focus when the user returns to or opens this page.
+	 *
+	 * @param focusCache the interactable
+	 */
+	public void setFocusCache(Interactable focusCache) {
+		this.focusCache = focusCache;
+	}
+
+	/**
+	 * Returns the effective focus for this page. This is identical to
+	 * the current focus of the scene, if that focus is a child of this page,
+	 * the cache otherwise.
+	 *
+	 * @return the effective cache.
+	 */
+	public Interactable getEffectiveFocus() {
+		final Interactable focus = getCli().getFocusManager().getCurrentFocus();
+		if (isChild(focus)) {
+			return focus;
+		}
+		return focusCache;
 	}
 
 	/**

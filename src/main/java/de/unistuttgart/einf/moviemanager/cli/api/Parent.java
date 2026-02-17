@@ -115,4 +115,26 @@ public abstract class Parent extends ComponentBase {
 		return false;
 	}
 
+	/**
+	 * Returns whether the given component is a child of this parent. This method checks
+	 * recursively, so it returns true if the given component is a child of any child of this parent.
+	 *
+	 * @param component the component to check
+	 * @return whether the given component is a child of this parent
+	 */
+	public boolean isChild(Component component) {
+		if (component == null) {
+			return false;
+		}
+		for (Component child : getChildren()) {
+			if (child.equals(component)) {
+				return true;
+			}
+			if (child instanceof Parent parent && parent.isChild(component)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

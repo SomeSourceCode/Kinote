@@ -228,9 +228,27 @@ public class Cli {
 		return settingsService;
 	}
 
+	/**
+	 * Returns the focus manager.
+	 *
+	 * @return the focus manager.
+	 */
+	public FocusManager getFocusManager() {
+		return scene.getFocusManager();
+	}
+
 	/* *************************************************************** *
 	 *                       State / Navigation                        *
 	 * *************************************************************** */
+
+	/**
+	 * Returns the current mode of the cli.
+	 *
+	 * @return the cli mode
+	 */
+	public CliMode getMode() {
+		return mode;
+	}
 
 	public void setMode(CliMode mode) {
 		if (Objects.equals(this.mode, mode)) {
@@ -238,15 +256,24 @@ public class Cli {
 		}
 		this.mode = mode;
 
-		updateInfoBar(scene.getFocusManager().getCurrentFocus());
+		final Interactable currentFocus = scene.getFocusManager().getCurrentFocus();
+		updateInfoBar(currentFocus);
 
 		if (this.mode == CliMode.COMMAND) {
+			if (currentPage.isChild(currentFocus)) {
+				currentPage.setFocusCache(currentFocus);
+			}
+
 			commandLine.setHidden(false);
 			commandLine.requestFocus();
 		} else {
 			commandLine.setHidden(true);
 			if (scene.getFocusManager().getCurrentFocus() == commandLine) {
-				scene.getFocusManager().focusNext();
+				if (currentPage.isChild(currentPage.getFocusCache())) {
+					currentPage.getFocusCache().requestFocus();
+				} else {
+					scene.getFocusManager().ensureValidFocus();
+				}
 			}
 		}
 	}
@@ -293,12 +320,25 @@ public class Cli {
 		if (currentPage == page) {
 			return;
 		}
-		if (addToHistory && currentPage != null) {
-			pageStack.push(currentPage);
+
+		if (currentPage != null) {
+			final Interactable currentFocus = scene.getFocusManager().getCurrentFocus();
+			if (currentPage.isChild(currentFocus)) {
+				currentPage.setFocusCache(currentFocus);
+			}
+			if (addToHistory) {
+				pageStack.push(currentPage);
+			}
 		}
 
 		currentPage = page;
 		mainContainer.setCenter(page);
+
+		if (page.isChild(page.getFocusCache())) {
+			page.getFocusCache().requestFocus();
+		} else {
+			scene.getFocusManager().ensureValidFocus();
+		}
 	}
 
 	/**
@@ -314,6 +354,13 @@ public class Cli {
 
 		currentPage = previousPage;
 		mainContainer.setCenter(previousPage);
+
+		if (previousPage.isChild(previousPage.getFocusCache())) {
+			previousPage.getFocusCache().requestFocus();
+		} else {
+			scene.getFocusManager().ensureValidFocus();
+		}
+
 		return true;
 	}
 

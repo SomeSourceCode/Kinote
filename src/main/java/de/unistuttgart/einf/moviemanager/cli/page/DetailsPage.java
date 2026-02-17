@@ -2,6 +2,7 @@ package de.unistuttgart.einf.moviemanager.cli.page;
 
 import de.unistuttgart.einf.moviemanager.cli.Cli;
 import de.unistuttgart.einf.moviemanager.cli.api.Insets;
+import de.unistuttgart.einf.moviemanager.cli.api.Interactable;
 import de.unistuttgart.einf.moviemanager.cli.api.TextAlignment;
 import de.unistuttgart.einf.moviemanager.cli.api.layout.FlowPane;
 import de.unistuttgart.einf.moviemanager.cli.api.layout.VBox;
@@ -13,6 +14,7 @@ import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The details page. Displays editable media information.
@@ -21,6 +23,9 @@ public class DetailsPage extends Page {
 
 	private final Media media;
 	private final VBox container;
+
+	private TableView<Episode> episodeTable;
+	private DropdownMenu<Season> seasonDropdown;
 
 	/**
 	 * Constructs a new details page for the given media item.
@@ -158,7 +163,7 @@ public class DetailsPage extends Page {
 		container.addChild(seasonBar);
 
 		// episodes
-		final TableView<Episode> episodeTable = new TableView<>();
+		episodeTable = new TableView<>();
 		episodeTable.setShowHeader(false);
 		episodeTable.setHeight(7);
 		episodeTable.setShowBorders(true);
@@ -192,7 +197,7 @@ public class DetailsPage extends Page {
 		final Text ratingText = new Text();
 
 		// season dropdown
-		final DropdownMenu<Season> seasonDropdown = new DropdownMenu<>(season -> "Season " + season.getNumber());
+		seasonDropdown = new DropdownMenu<>(season -> "Season " + season.getNumber());
 		seasonDropdown.setPlaceholder("No Seasons");
 
 		final List<Season> seasons = series.getChildren();
@@ -266,6 +271,23 @@ public class DetailsPage extends Page {
 
 	@Override
 	public Media getActiveMedia() {
+		final Interactable effectiveFocus = getEffectiveFocus();
+		if (effectiveFocus == null) {
+			return media;
+		}
+
+		if (Objects.equals(effectiveFocus, episodeTable)) {
+			final Episode selectedEpisode = episodeTable.getSelectedItem();
+			if (selectedEpisode != null) {
+				return selectedEpisode;
+			}
+		} else if (seasonDropdown.isChild(effectiveFocus)) {
+			final Season selectedSeason = seasonDropdown.getSelectedOption();
+			if (selectedSeason != null) {
+				return selectedSeason;
+			}
+		}
+
 		return media;
 	}
 
