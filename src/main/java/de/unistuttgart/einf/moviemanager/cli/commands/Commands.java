@@ -30,6 +30,8 @@ public class Commands {
 		CreateCommand.register(dispatcher, cli);
 		DeleteCommand.register(dispatcher, cli);
 
+		DebugCommand.register(dispatcher, cli);
+
 		return dispatcher;
 	}
 
