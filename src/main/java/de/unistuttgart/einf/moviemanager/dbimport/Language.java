@@ -63,7 +63,7 @@ public enum Language {
 
 	GALICIAN("gl", "Galician"),
 	GEORGIAN("ka", "Georgian"),
-	GERMAN("de-DE", "German"),
+	GERMAN("de", "German"),
 	GREEK("el", "Greek"),
 	GUARANI("gn", "Guarani"),
 	GUJARATI("gu", "Gujarati"),
@@ -231,6 +231,21 @@ public enum Language {
 	 */
 	public String getEnglishName() {
 		return englishName;
+	}
+
+	/**
+	 * Returns the Language enum constant for the given ISO 639-1 code or null if the code ist not supported.
+	 *
+	 * @param code the ISO 639-1 language code
+	 * @return the Language enum constant or null
+	 */
+	public static Language getLanguageByCode(String code) {
+		for (Language language : Language.values()) {
+			if (language.code.equals(code)) {
+				return language;
+			}
+		}
+		return null;
 	}
 
 }
