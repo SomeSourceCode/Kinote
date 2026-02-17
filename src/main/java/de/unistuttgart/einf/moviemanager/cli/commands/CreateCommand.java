@@ -72,6 +72,7 @@ public class CreateCommand {
 
 		cli.getMediaService().addMedia(movie);
 		cli.getOverviewPage().refreshItems();
+		cli.getOverviewPage().moveTo(movie);
 		cli.navigateToOverview();
 	}
 
@@ -84,6 +85,7 @@ public class CreateCommand {
 
 		cli.getMediaService().addMedia(series);
 		cli.getOverviewPage().refreshItems();
+		cli.getOverviewPage().moveTo(series);
 		cli.navigateToOverview();
 	}
 
@@ -113,6 +115,8 @@ public class CreateCommand {
 
 		final Season season = new Season(number);
 		parentSeries.addChild(season);
+
+		cli.getOverviewPage().moveTo(parentSeries);
 	}
 
 	private static void executeCreateEpisode(ExecutionContext context, Cli cli) {
@@ -135,6 +139,8 @@ public class CreateCommand {
 		final Episode episode = new Episode(episodeNumber, title);
 		episode.setDescription(description);
 		season.addChild(episode);
+
+		cli.getOverviewPage().moveTo(parentSeries);
 	}
 
 }
