@@ -33,6 +33,16 @@ public class ExecutionContext {
 	}
 
 	/**
+	 * Returns true if this context contains an argument with the given name.
+	 *
+	 * @param name the name of the argument
+	 * @return true if this context contains an argument with the given name
+	 */
+	public boolean has(String name) {
+		return arguments.containsKey(name);
+	}
+
+	/**
 	 * Returns the value of the argument with the given name,
 	 * or null if it does not exist.
 	 *
