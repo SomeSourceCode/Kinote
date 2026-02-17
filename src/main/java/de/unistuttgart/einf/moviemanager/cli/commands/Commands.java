@@ -27,6 +27,8 @@ public class Commands {
 		AboutCommand.register(dispatcher, cli);
 		SettingsCommand.register(dispatcher, cli);
 
+		FindCommand.register(dispatcher, cli);
+
 		CreateCommand.register(dispatcher, cli);
 		DeleteCommand.register(dispatcher, cli);
 
