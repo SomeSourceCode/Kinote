@@ -219,10 +219,10 @@ public class TableView<T> extends InteractableBase {
 	 *
 	 * @param item the item
 	 */
-	public void selectRow(T item) {
+	public void moveToRow(T item) {
 		int index = items.indexOf(item);
 		if (index >= 0) {
-			selectRow(index);
+			moveToRow(index);
 		}
 	}
 
@@ -231,7 +231,7 @@ public class TableView<T> extends InteractableBase {
 	 *
 	 * @param rowIndex the row index
 	 */
-	public void selectRow(int rowIndex) {
+	public void moveToRow(int rowIndex) {
 		selectedRowIndex = Math.max(0, Math.min(rowIndex, items.size() - 1));
 		ensureValidSelection();
 		ensureSelectionVisible();
@@ -242,7 +242,7 @@ public class TableView<T> extends InteractableBase {
 	 *
 	 * @param columnIndex the column index
 	 */
-	public void selectColumn(int columnIndex) {
+	public void moveToColumn(int columnIndex) {
 		selectedColumnIndex = Math.max(0, Math.min(columnIndex, columns.size() - 1));
 		ensureValidSelection();
 	}
@@ -253,9 +253,9 @@ public class TableView<T> extends InteractableBase {
 	 * @param rowIndex the row index
 	 * @param columnIndex the column index
 	 */
-	public void selectCell(int rowIndex, int columnIndex) {
-		selectRow(rowIndex);
-		selectColumn(columnIndex);
+	public void moveToCell(int rowIndex, int columnIndex) {
+		moveToRow(rowIndex);
+		moveToColumn(columnIndex);
 	}
 
 	/**
