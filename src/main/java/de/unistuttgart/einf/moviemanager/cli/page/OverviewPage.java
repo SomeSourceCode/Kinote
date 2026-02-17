@@ -93,6 +93,15 @@ public class OverviewPage extends Page {
 	}
 
 	/**
+	 * Moves the selection to the first occurrence of the given media item.
+	 *
+	 * @param media the media
+	 */
+	public void moveTo(TopLevelMedia media) {
+		tableView.moveToRow(media);
+	}
+
+	/**
 	 * Returns the filter.
 	 *
 	 * @return the filter
