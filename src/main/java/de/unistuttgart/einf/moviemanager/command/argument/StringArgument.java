@@ -47,7 +47,7 @@ public class StringArgument extends Argument<String> {
 
 	@Override
 	public String parse(Token token) {
-		if (!pattern.matcher(token.value()).matches()) {
+		if (pattern != null && !pattern.matcher(token.value()).matches()) {
 			throw new CommandParseException("Invalid string format");
 		}
 		return token.value();
