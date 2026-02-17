@@ -1,13 +1,17 @@
 package de.unistuttgart.einf.moviemanager.command.argument;
 
+import de.unistuttgart.einf.moviemanager.command.CommandParseException;
 import de.unistuttgart.einf.moviemanager.command.Token;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * A string argument.
  */
 public class StringArgument extends Argument<String> {
+
+	private final Pattern pattern;
 
 	/**
 	 * Constructs a new string argument from the given builder.
@@ -16,6 +20,16 @@ public class StringArgument extends Argument<String> {
 	 */
 	protected StringArgument(Builder builder) {
 		super(builder);
+		this.pattern = builder.pattern;
+	}
+
+	/**
+	 * Returns the pattern that the argument value must match.
+	 *
+	 * @return the pattern, or null if no pattern is set
+	 */
+	public Pattern getPattern() {
+		return pattern;
 	}
 
 	@Override
@@ -24,7 +38,18 @@ public class StringArgument extends Argument<String> {
 	}
 
 	@Override
+	public boolean isValid(Token token) {
+		if (pattern == null) {
+			return true;
+		}
+		return pattern.matcher(token.value()).matches();
+	}
+
+	@Override
 	public String parse(Token token) {
+		if (!pattern.matcher(token.value()).matches()) {
+			throw new CommandParseException("Invalid string format");
+		}
 		return token.value();
 	}
 
@@ -51,6 +76,8 @@ public class StringArgument extends Argument<String> {
 	 */
 	public static class Builder extends Argument.Builder<StringArgument> {
 
+		private Pattern pattern;
+
 		/**
 		 * Constructs a new string argument builder with the given name.
 		 *
@@ -58,6 +85,17 @@ public class StringArgument extends Argument<String> {
 		 */
 		protected Builder(String name) {
 			super(name);
+		}
+
+		/**
+		 * Sets the pattern that the argument value must match.
+		 *
+		 * @param pattern the pattern
+		 * @return this builder for chaining
+		 */
+		public Builder withPattern(Pattern pattern) {
+			this.pattern = pattern;
+			return this;
 		}
 
 		@Override
