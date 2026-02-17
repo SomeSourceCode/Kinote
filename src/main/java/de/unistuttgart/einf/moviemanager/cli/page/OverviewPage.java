@@ -11,10 +11,13 @@ import de.unistuttgart.einf.moviemanager.cli.api.widget.Text;
 import de.unistuttgart.einf.moviemanager.model.Media;
 import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
 import de.unistuttgart.einf.moviemanager.service.MediaService;
+import de.unistuttgart.einf.moviemanager.service.search.MediaSearchService;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 
 /**
  * The overview page. Displays a table of all media items that
@@ -27,7 +30,8 @@ public class OverviewPage extends Page {
 	private final Text filterText;
 	private final TableView<TopLevelMedia> tableView;
 
-	private Filter filter;
+	private String searchQuery;
+	private final HashMap<TopLevelMedia, Integer> mediaToScore = new HashMap<>();
 
 	/**
 	 * Constructs a new overview page for the given media service.
@@ -57,7 +61,17 @@ public class OverviewPage extends Page {
 
 		final TableColumn<TopLevelMedia> typeColumn = TableColumn.fixed("Type", 6, MediaFormatter::type);
 		typeColumn.setPadding(1);
-		final TableColumn<TopLevelMedia> titleColumn = TableColumn.weighted("Title", 1, TopLevelMedia::getTitle);
+		final TableColumn<TopLevelMedia> titleColumn = TableColumn.weighted("Title", 1, media -> {
+			if (searchQuery == null) {
+				return media.getTitle();
+			}
+			final String title = media.getTitle() != null ? media.getTitle() : "";
+			final Integer score = mediaToScore.get(media);
+			if (score != null) {
+				return title + " (" + score + "%)";
+			}
+			return title;
+		});
 		titleColumn.setPadding(1);
 		final TableColumn<TopLevelMedia> ratingColumn = TableColumn.fixed("Rating", 6, MediaFormatter::rating);
 		ratingColumn.setPadding(1);
@@ -102,76 +116,77 @@ public class OverviewPage extends Page {
 	}
 
 	/**
-	 * Returns the filter.
+	 * Returns the active search query.
 	 *
-	 * @return the filter
+	 * @return the search query
 	 */
-	public Filter getFilter() {
-		return filter;
+	public String getSearchQuery() {
+		return searchQuery;
 	}
 
 	/**
-	 * Sets the filter.
+	 * Sets the active search query.
 	 *
-	 * @param filter the filter
+	 * @param searchQuery the search query
 	 */
-	public void setFilter(Filter filter) {
-		if (Objects.equals(this.filter, filter)) {
+	public void setSearchQuery(String searchQuery) {
+		searchQuery = searchQuery != null && searchQuery.isBlank() ? null : searchQuery;
+		if (Objects.equals(this.searchQuery, searchQuery)) {
 			return;
 		}
-		this.filter = filter;
-		filterText.setHidden(filter == null);
-		if (filter != null) {
-			filterText.setText(filter.name());
+		this.searchQuery = searchQuery;
+		filterText.setHidden(searchQuery == null);
+		if (searchQuery != null) {
+			filterText.setText("Query: " + searchQuery);
 		}
 		refreshItems();
 	}
 
-	/**
-	 * Resets the filter.
-	 */
-	public void resetFilter() {
-		setFilter(null);
+	public void resetSearchQuery() {
+		setSearchQuery(null);
 	}
 
 	/**
 	 * Refreshes the displayed items.
 	 */
 	public void refreshItems() {
-		tableView.setItems(mediaService.getAllMedia().stream()
-				.filter(media -> filter == null || filter.predicate().test(media))
-				.sorted((media1, media2) -> {
-					final String title1 = media1.getTitle() != null ? media1.getTitle() : "";
-					final String title2 = media2.getTitle() != null ? media2.getTitle() : "";
-					final int comparedTitles = title1.compareToIgnoreCase(title2);
-					if (comparedTitles != 0) {
-						return comparedTitles;
-					}
-					final String desc1 = media1.getDescription() != null ? media1.getDescription() : "";
-					final String desc2 = media2.getDescription() != null ? media2.getDescription() : "";
-					return desc1.compareToIgnoreCase(desc2);
-				})
+		final Comparator<TopLevelMedia> lexicalComparator = (media1, media2) -> {
+			final String title1 = media1.getTitle() != null ? media1.getTitle() : "";
+			final String title2 = media2.getTitle() != null ? media2.getTitle() : "";
+			final int comparedTitles = title1.compareToIgnoreCase(title2);
+			if (comparedTitles != 0) {
+				return comparedTitles;
+			}
+			final String desc1 = media1.getDescription() != null ? media1.getDescription() : "";
+			final String desc2 = media2.getDescription() != null ? media2.getDescription() : "";
+			return desc1.compareToIgnoreCase(desc2);
+		};
+
+		if (searchQuery == null) {
+			tableView.setItems(mediaService.getAllMedia().stream()
+					.sorted(lexicalComparator)
+					.toList());
+			mediaToScore.clear();
+			return;
+		}
+
+		final Set<MediaSearchService.ScoredMedia> scoredMedia = MediaSearchService.search(searchQuery, mediaService.getAllMedia(), 40);
+
+		tableView.setItems(scoredMedia.stream()
+				.sorted(Comparator.comparingInt(MediaSearchService.ScoredMedia::score).reversed()
+						.thenComparing(MediaSearchService.ScoredMedia::media, lexicalComparator))
+				.map(MediaSearchService.ScoredMedia::media)
 				.toList());
+
+		mediaToScore.clear();
+		for (MediaSearchService.ScoredMedia scored : scoredMedia) {
+			mediaToScore.put(scored.media(), scored.score());
+		}
 	}
 
 	@Override
 	public Media getActiveMedia() {
 		return tableView.getSelectedItem();
-	}
-
-	/**
-	 * A filter named for media items.
-	 *
-	 * @param name the name
-	 * @param predicate the predicate
-	 */
-	public record Filter(String name, Predicate<TopLevelMedia> predicate) {
-
-		@Override
-		public Predicate<TopLevelMedia> predicate() {
-			return predicate != null ? predicate : _ -> true;
-		}
-
 	}
 
 }
