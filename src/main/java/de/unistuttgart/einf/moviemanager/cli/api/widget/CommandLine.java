@@ -216,9 +216,11 @@ public class CommandLine extends InteractableBase {
 
 		final List<String> suggestions = dispatcher.getSuggestions(content).stream()
 				.filter(suggestion -> {
+					final String lowercaseSuggestion = suggestion.toLowerCase();
+
 					int currentIndex = 0;
 					for (char c : lowercaseLastArg.toCharArray()) {
-						currentIndex = suggestion.indexOf(c, currentIndex);
+						currentIndex = lowercaseSuggestion.indexOf(c, currentIndex);
 						if (currentIndex == -1) {
 							return false;
 						}
