@@ -17,6 +17,7 @@ import de.unistuttgart.einf.moviemanager.cli.page.DetailsPage;
 import de.unistuttgart.einf.moviemanager.cli.page.OverviewPage;
 import de.unistuttgart.einf.moviemanager.cli.page.Page;
 import de.unistuttgart.einf.moviemanager.command.CommandDispatcher;
+import de.unistuttgart.einf.moviemanager.model.*;
 import de.unistuttgart.einf.moviemanager.service.MediaService;
 import de.unistuttgart.einf.moviemanager.service.SettingsService;
 
@@ -338,6 +339,77 @@ public class Cli {
 		dialog.setCancelLabel("No");
 		dialog.setOnConfirm(onConfirm);
 		dialog.show(scene);
+	}
+
+	/* *************************************************************** *
+	 *                             Context                             *
+	 * *************************************************************** */
+
+	/**
+	 * Returns the active media item (opened, selected, etc.), or null if no
+	 * media item is active.
+	 *
+	 * @return the active media item
+	 */
+	public Media getActiveMedia() {
+		final Page page = getPage();
+		return page == null ? null : page.getActiveMedia();
+	}
+
+	/**
+	 * Returns the active movie, or null if no movie is active.
+	 *
+	 * @return the active movie
+	 */
+	public Movie getActiveMovie() {
+		final Media activeMedia = getActiveMedia();
+		return activeMedia instanceof Movie movie ? movie : null;
+	}
+
+	/**
+	 * Returns the active series, or null if no series is active.
+	 * Tries to infer the active series from the active media item,
+	 * e.g. if a season or episode is active, their parent series is returned.
+	 *
+	 * @return the active series
+	 */
+	public Series getActiveSeries() {
+		final Media activeMedia = getActiveMedia();
+		return switch (activeMedia) {
+			case Series series -> series;
+			case Season season -> season.getParent();
+			case Episode episode -> {
+				final Season parentSeason = episode.getParent();
+				yield parentSeason == null ? null : parentSeason.getParent();
+			}
+			default -> null;
+		};
+	}
+
+	/**
+	 * Returns the active season, or null if no season is active.
+	 * Tries to infer the active season from the active media item,
+	 * e.g. if an episode is active, its parent season is returned.
+	 *
+	 * @return the active season
+	 */
+	public Season getActiveSeason() {
+		final Media activeMedia = getActiveMedia();
+		return switch (activeMedia) {
+			case Season season -> season;
+			case Episode episode -> episode.getParent();
+			default -> null;
+		};
+	}
+
+	/**
+	 * Returns the active episode, or null if no episode is active.
+	 *
+	 * @return the active episode
+	 */
+	public Episode getActiveEpisode() {
+		final Media activeMedia = getActiveMedia();
+		return activeMedia instanceof Episode episode ? episode : null;
 	}
 
 	/* *************************************************************** *
