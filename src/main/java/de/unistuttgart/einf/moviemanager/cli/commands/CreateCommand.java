@@ -25,16 +25,19 @@ public class CreateCommand {
 	 */
 	public static void register(CommandDispatcher dispatcher, Cli cli) {
 		dispatcher.register(Command.create("create")
+				// create movie <title> [<description>]
 				.then(LiteralArgument.create("movie")
 						.then(StringArgument.create("title")
 								.executes(context -> executeCreateMovie(context, cli))
 								.then(StringArgument.create("description")
 										.executes(context -> executeCreateMovie(context, cli)))))
+				// create series <title> [<description>]
 				.then(LiteralArgument.create("series")
 						.then(StringArgument.create("title")
 								.executes(context -> executeCreateSeries(context, cli))
 								.then(StringArgument.create("description")
 										.executes(context -> executeCreateSeries(context, cli)))))
+				// create season [<parent-series>] <number>
 				.then(LiteralArgument.create("season")
 						.then(SeriesArgument.create("parent-series", cli.getMediaService())
 								.then(IntegerArgument.create("number")
@@ -43,7 +46,9 @@ public class CreateCommand {
 						.then(IntegerArgument.create("number")
 								.withMin(1)
 								.executes(context -> executeCreateSeason(context, cli))))
+				// create episode [<parent-series>] <season-number> <number> <title> [<description>]
 				.then(LiteralArgument.create("episode")
+						// create episode <parent-series> <season-number> <number> <title> [<description>]
 						.then(SeriesArgument.create("parent-series", cli.getMediaService())
 								.then(IntegerArgument.create("season-number")
 										.withMin(1)
@@ -53,6 +58,7 @@ public class CreateCommand {
 														.executes(context -> executeCreateEpisode(context, cli))
 														.then(StringArgument.create("description")
 												.executes(context -> executeCreateEpisode(context, cli)))))))
+						// create episode <season-number> <number> <title> [<description>]
 						.then(IntegerArgument.create("season-number")
 								.withMin(1)
 								.then(IntegerArgument.create("number")
