@@ -12,6 +12,8 @@ import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.Season;
 import de.unistuttgart.einf.moviemanager.model.Series;
 
+import java.util.regex.Pattern;
+
 /**
  * The command to import media from TMDb.
  */
@@ -27,6 +29,7 @@ public class ImportCommand {
 		dispatcher.register(Command.create("import")
 				// import <tmdb-url> [<language>]
 				.then(StringArgument.create("tmdb-url")
+						.withPattern(Pattern.compile("(https?://)?(www\\.)?themoviedb\\.org/((movie)|(tv))/\\d+-.*"))
 						.executes(context -> executeImportUrl(context, cli))
 						.then(EnumArgument.create("language", Language.class)
 								.executes(context -> executeImportUrl(context, cli))))
