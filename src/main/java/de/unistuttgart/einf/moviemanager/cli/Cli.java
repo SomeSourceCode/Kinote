@@ -326,6 +326,20 @@ public class Cli {
 		dialog.show(scene);
 	}
 
+	/**
+	 * Shows a confirmation dialog with the given text.
+	 *
+	 * @param text the text to display
+	 * @param onConfirm the action to execute if the user confirms
+	 */
+	public void showConfirmationDialog(String text, Runnable onConfirm) {
+		final ConfirmationDialog dialog = new ConfirmationDialog(text);
+		dialog.setConfirmLabel("Yes");
+		dialog.setCancelLabel("No");
+		dialog.setOnConfirm(onConfirm);
+		dialog.show(scene);
+	}
+
 	/* *************************************************************** *
 	 *                              Input                              *
 	 * *************************************************************** */
