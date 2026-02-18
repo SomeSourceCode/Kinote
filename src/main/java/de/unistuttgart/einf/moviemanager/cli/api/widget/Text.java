@@ -4,6 +4,7 @@ import de.unistuttgart.einf.moviemanager.cli.api.ComponentBase;
 import de.unistuttgart.einf.moviemanager.cli.api.Painter;
 import de.unistuttgart.einf.moviemanager.cli.api.util.TextUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -90,10 +91,11 @@ public class Text extends ComponentBase {
 			final int paddingLeft = getPadding().getLeft();
 			final int paddingRight = getPadding().getRight();
 
-			final int textWidth = text == null ? 0 : text.length();
+			final String[] lines = text == null ? new String[0] : text.strip().split("\n", -1);
+			final int textWidth = text == null ? 0 : Arrays.stream(lines).mapToInt(String::length).max().orElse(0);
 
 			setWidth(textWidth + paddingLeft + paddingRight);
-			setHeight(1 + paddingTop + paddingBottom);
+			setHeight(lines.length + paddingTop + paddingBottom);
 			return;
 		}
 
@@ -110,14 +112,18 @@ public class Text extends ComponentBase {
 		final int width = getInnerWidth() - paddingLeft - paddingRight;
 
 		if (!wrapping) {
-			painter.drawString(toGlobalX(paddingLeft), toGlobalY(paddingTop), width, text == null ? "" : text);
+			final String[] lines = text == null ? new String[0] : text.strip().split("\n", -1);
+			for (int i = 0; i < lines.length; i++) {
+				final String line = lines[i];
+				painter.drawString(toGlobalX(paddingLeft), toGlobalY(paddingTop + i), width, line);
+			}
 			return;
 		}
 
 		final List<String> wrappedLines = getWrappedLines();
 		for (int i = 0; i < wrappedLines.size(); i++) {
 			final String line = wrappedLines.get(i);
-			painter.drawString(toGlobalX(paddingLeft), toGlobalY(paddingTop + i), line);
+			painter.drawString(toGlobalX(paddingLeft), toGlobalY(paddingTop + i), width, line);
 		}
 	}
 
