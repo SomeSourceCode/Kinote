@@ -334,6 +334,8 @@ public class Cli {
 		currentPage = page;
 		mainContainer.setCenter(page);
 
+		page.refresh();
+
 		if (page.isChild(page.getFocusCache())) {
 			page.getFocusCache().requestFocus();
 		} else {
@@ -354,6 +356,8 @@ public class Cli {
 
 		currentPage = previousPage;
 		mainContainer.setCenter(previousPage);
+
+		previousPage.refresh();
 
 		if (previousPage.isChild(previousPage.getFocusCache())) {
 			previousPage.getFocusCache().requestFocus();
