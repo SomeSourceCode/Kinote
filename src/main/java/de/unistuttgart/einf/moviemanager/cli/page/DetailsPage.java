@@ -28,7 +28,7 @@ public class DetailsPage extends Page {
 	private TableView<Episode> episodeTable;
 	private DropdownMenu<Season> seasonDropdown;
 
-	private List<Runnable> refreshActions = new ArrayList<>();
+	private final List<Runnable> refreshActions = new ArrayList<>();
 
 	/**
 	 * Constructs a new details page for the given media item.
@@ -361,8 +361,13 @@ public class DetailsPage extends Page {
 
 	@Override
 	public void refresh() {
-		if (media instanceof Episode episode && episode.getParent() == null) {
-			getCli().navigateBack();
+		if (media instanceof Episode episode) {
+			final Season episodeParent = episode.getParent();
+			if (episodeParent == null) {
+				getCli().navigateBack();
+			} else if (episodeParent.getParent() == null) {
+				getCli().navigateBack();
+			}
 			return;
 		}
 		if (media instanceof TopLevelMedia topLevelMedia && !getCli().getMediaService().getAllMedia().contains(topLevelMedia)) {
