@@ -315,6 +315,14 @@ public class CommandDispatcher {
 
 	private record NodeInfo(CommandNode node, int depth) {}
 
+	/**
+	 * Returns a tail tip for the given input, representing the next possible arguments
+	 * or literals that can follow the current input.
+	 *
+	 * @param input the input
+	 * @param maxLength the maximum length of the tail tip
+	 * @return the tail tip
+	 */
 	public String getTailTip(String input, int maxLength) {
 		if (maxLength < 0) {
 			throw new IllegalArgumentException("maxLength must be non-negative");
