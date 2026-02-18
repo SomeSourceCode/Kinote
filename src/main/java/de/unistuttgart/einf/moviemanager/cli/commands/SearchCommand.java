@@ -4,6 +4,7 @@ import de.unistuttgart.einf.moviemanager.cli.Cli;
 import de.unistuttgart.einf.moviemanager.command.Command;
 import de.unistuttgart.einf.moviemanager.command.CommandDispatcher;
 import de.unistuttgart.einf.moviemanager.command.ExecutionContext;
+import de.unistuttgart.einf.moviemanager.command.argument.LiteralArgument;
 import de.unistuttgart.einf.moviemanager.command.argument.StringArgument;
 
 import java.util.Objects;
@@ -30,6 +31,17 @@ public class SearchCommand {
 							cli.showConfirmationDialog("Search is only available on the overview page. Do you want to navigate there now?", () -> {
 								cli.navigateToOverview();
 								executeSearch(context, cli);
+							});
+						}))
+				.then(LiteralArgument.create("reset")
+						.executes(context -> {
+							if (Objects.equals(cli.getPage(), cli.getOverviewPage())) {
+								cli.getOverviewPage().setSearchQuery("");
+								return;
+							}
+							cli.showConfirmationDialog("Search is only available on the overview page. Do you want to navigate there now?", () -> {
+								cli.navigateToOverview();
+								cli.getOverviewPage().setSearchQuery("");
 							});
 						})));
 	}
