@@ -91,7 +91,7 @@ public class Text extends ComponentBase {
 			final int paddingLeft = getPadding().getLeft();
 			final int paddingRight = getPadding().getRight();
 
-			final String[] lines = text == null ? new String[0] : text.strip().split("\n", -1);
+			final String[] lines = text == null ? new String[0] : Arrays.stream(text.split("\n", -1)).map(String::trim).toArray(String[]::new);
 			final int textWidth = text == null ? 0 : Arrays.stream(lines).mapToInt(String::length).max().orElse(0);
 
 			setWidth(textWidth + paddingLeft + paddingRight);
@@ -112,7 +112,7 @@ public class Text extends ComponentBase {
 		final int width = getInnerWidth() - paddingLeft - paddingRight;
 
 		if (!wrapping) {
-			final String[] lines = text == null ? new String[0] : text.strip().split("\n", -1);
+			final String[] lines = text == null ? new String[0] : Arrays.stream(text.split("\n", -1)).map(String::trim).toArray(String[]::new);
 			for (int i = 0; i < lines.length; i++) {
 				final String line = lines[i];
 				painter.drawString(toGlobalX(paddingLeft), toGlobalY(paddingTop + i), width, line);
