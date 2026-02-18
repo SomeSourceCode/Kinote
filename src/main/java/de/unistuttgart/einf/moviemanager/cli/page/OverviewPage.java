@@ -57,6 +57,7 @@ public class OverviewPage extends Page {
 
 		filterText = new Text();
 		filterText.setPadding(new Insets(0, 1));
+		filterText.setWrapping(true);
 		filterText.setHidden(true);
 		container.setTop(filterText);
 
