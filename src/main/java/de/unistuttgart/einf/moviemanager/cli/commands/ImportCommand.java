@@ -5,14 +5,15 @@ import de.unistuttgart.einf.moviemanager.cli.api.util.TextUtils;
 import de.unistuttgart.einf.moviemanager.command.Command;
 import de.unistuttgart.einf.moviemanager.command.CommandDispatcher;
 import de.unistuttgart.einf.moviemanager.command.ExecutionContext;
-import de.unistuttgart.einf.moviemanager.command.argument.*;
+import de.unistuttgart.einf.moviemanager.command.argument.EnumArgument;
+import de.unistuttgart.einf.moviemanager.command.argument.IntegerArgument;
+import de.unistuttgart.einf.moviemanager.command.argument.LiteralArgument;
+import de.unistuttgart.einf.moviemanager.command.argument.SeriesArgument;
 import de.unistuttgart.einf.moviemanager.dbimport.*;
 import de.unistuttgart.einf.moviemanager.model.Episode;
 import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.Season;
 import de.unistuttgart.einf.moviemanager.model.Series;
-
-import java.util.regex.Pattern;
 
 /**
  * The command to import media from TMDb.
@@ -28,8 +29,7 @@ public class ImportCommand {
 	public static void register(CommandDispatcher dispatcher, Cli cli) {
 		dispatcher.register(Command.create("import")
 				// import <tmdb-url> [<language>]
-				.then(StringArgument.create("tmdb-url")
-						.withPattern(Pattern.compile("(https?://)?(www\\.)?themoviedb\\.org/((movie)|(tv))/\\d+-.*"))
+				.then(Arguments.tmdbUrl("tmdb-url")
 						.executes(context -> executeImportUrl(context, cli))
 						.then(EnumArgument.create("language", Language.class)
 								.executes(context -> executeImportUrl(context, cli))))

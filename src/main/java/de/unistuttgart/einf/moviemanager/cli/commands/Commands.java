@@ -37,6 +37,7 @@ public class Commands {
 		DeleteCommand.register(dispatcher, cli);
 
 		ImportCommand.register(dispatcher, cli);
+		SmartFillCommand.register(dispatcher, cli);
 
 		DebugCommand.register(dispatcher, cli);
 
