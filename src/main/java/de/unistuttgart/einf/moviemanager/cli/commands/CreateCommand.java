@@ -77,7 +77,7 @@ public class CreateCommand {
 		description.ifPresent(movie::setDescription);
 
 		cli.getMediaService().addMedia(movie);
-		cli.getOverviewPage().refreshItems();
+		cli.refresh();
 		cli.getOverviewPage().moveTo(movie);
 		cli.navigateToOverview();
 	}
@@ -90,7 +90,7 @@ public class CreateCommand {
 		description.ifPresent(series::setDescription);
 
 		cli.getMediaService().addMedia(series);
-		cli.getOverviewPage().refreshItems();
+		cli.refresh();
 		cli.getOverviewPage().moveTo(series);
 		cli.navigateToOverview();
 	}
@@ -117,6 +117,7 @@ public class CreateCommand {
 		final Season season = new Season(number);
 		parentSeries.addChild(season);
 
+		cli.refresh();
 		cli.getOverviewPage().moveTo(parentSeries);
 	}
 
@@ -141,6 +142,7 @@ public class CreateCommand {
 		episode.setDescription(description);
 		season.addChild(episode);
 
+		cli.refresh();
 		cli.getOverviewPage().moveTo(parentSeries);
 	}
 

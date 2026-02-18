@@ -12,6 +12,7 @@ import de.unistuttgart.einf.moviemanager.model.*;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +27,8 @@ public class DetailsPage extends Page {
 
 	private TableView<Episode> episodeTable;
 	private DropdownMenu<Season> seasonDropdown;
+
+	private List<Runnable> refreshActions = new ArrayList<>();
 
 	/**
 	 * Constructs a new details page for the given media item.
@@ -58,6 +61,8 @@ public class DetailsPage extends Page {
 		titleArea.setInputFilter(text -> !text.contains("\n"));
 		titleArea.setOnSubmit(media::setTitle);
 		container.addChild(titleArea);
+
+		refreshActions.add(() -> titleArea.setText(media.getTitle()));
 	}
 
 	private void buildProperties() {
@@ -69,8 +74,9 @@ public class DetailsPage extends Page {
 		// type
 		final String type = MediaFormatter.type(media);
 		final Text typeLabel = new Text("[" + type + "]");
-		typeLabel.setWidth(type.length() + 2);
 		propertyContainer.addChild(typeLabel);
+
+		refreshActions.add(() -> typeLabel.setText("[" + MediaFormatter.type(media) + "]"));
 
 		// age rating
 		final RatingSystem ratingSystem = getCli().getSettingsService().getSettings().getRatingSystem();
@@ -86,10 +92,26 @@ public class DetailsPage extends Page {
 			fskDropdown.setOnSelect(asLeafMedia::setAgeRating);
 			fskDropdown.setWidth(10);
 			propertyContainer.addChild(fskDropdown);
+
+			refreshActions.add(() -> {
+				final RatingSystem currentSystem = getCli().getSettingsService().getSettings().getRatingSystem();
+				fskDropdown.setPlaceholder(MediaFormatter.ageRating(media, currentSystem));
+				fskDropdown.setOptions(Arrays.asList(currentSystem.getRatings()));
+
+				if (media.hasAgeRating(currentSystem)) {
+					fskDropdown.setSelectedOption(media.getAgeRating(currentSystem));
+				} else {
+					fskDropdown.setSelectedOption(null);
+				}
+			});
 		} else {
 			final Text ageRatingText = new Text(ageRatingString);
-			ageRatingText.setWidth(ageRatingString.length());
 			propertyContainer.addChild(ageRatingText);
+
+			refreshActions.add(() -> {
+				final RatingSystem currentSystem = getCli().getSettingsService().getSettings().getRatingSystem();
+				ageRatingText.setText(MediaFormatter.ageRating(media, currentSystem));
+			});
 		}
 
 		// runtime
@@ -97,9 +119,13 @@ public class DetailsPage extends Page {
 			final RuntimeInput runtimeInput = new RuntimeInput(media.getRuntime());
 			runtimeInput.setOnRuntimeChange(asLeafMedia::setRuntime);
 			propertyContainer.addChild(runtimeInput);
+
+			refreshActions.add(() -> runtimeInput.setRuntime(media.getRuntime()));
 		} else {
 			final Text runtimeText = new Text(MediaFormatter.runtime(media));
 			propertyContainer.addChild(runtimeText);
+
+			refreshActions.add(() -> runtimeText.setText(MediaFormatter.runtime(media)));
 		}
 
 		// status
@@ -110,9 +136,13 @@ public class DetailsPage extends Page {
 				statusButton.setLabel(MediaFormatter.status(asLeafMedia));
 			});
 			propertyContainer.addChild(statusButton);
+
+			refreshActions.add(() -> statusButton.setLabel(MediaFormatter.status(media)));
 		} else {
 			final Text statusText = new Text(MediaFormatter.status(media));
 			propertyContainer.addChild(statusText);
+
+			refreshActions.add(() -> statusText.setText(MediaFormatter.status(media)));
 		}
 
 		// rating
@@ -120,9 +150,13 @@ public class DetailsPage extends Page {
 			final RatingInput ratingInput = new RatingInput(media.getRating());
 			ratingInput.setOnRatingChange(asLeafMedia::setRating);
 			propertyContainer.addChild(ratingInput);
+
+			refreshActions.add(() -> ratingInput.setRating(media.getRating()));
 		} else {
 			final Text ratingText = new Text(MediaFormatter.rating(media));
 			propertyContainer.addChild(ratingText);
+
+			refreshActions.add(() -> ratingText.setText(MediaFormatter.rating(media)));
 		}
 
 		// genres
@@ -138,10 +172,19 @@ public class DetailsPage extends Page {
 			genreChips.setOnOptionSelected(asTopLevelMedia::addGenre);
 			genreChips.setOnOptionDeselected(asTopLevelMedia::removeGenre);
 			container.addChild(genreChips);
+
+			refreshActions.add(() -> {
+				Arrays.stream(Genre.values()).forEach(genreChips::deselect);
+				for (Genre genre : asTopLevelMedia.getGenres()) {
+					genreChips.select(genre);
+				}
+			});
 		} else {
 			final Text genreText = new Text(MediaFormatter.genres(media));
 			genreText.setPadding(new Insets(1, 0));
 			container.addChild(genreText);
+
+			refreshActions.add(() -> genreText.setText(MediaFormatter.genres(media)));
 		}
 	}
 
@@ -153,6 +196,8 @@ public class DetailsPage extends Page {
 		descriptionArea.setWrapping(true);
 		descriptionArea.setOnSubmit(media::setDescription);
 		container.addChild(descriptionArea);
+
+		refreshActions.add(() -> descriptionArea.setText(media.getDescription()));
 	}
 
 	private void addSeriesComponents(Series series) {
@@ -223,6 +268,29 @@ public class DetailsPage extends Page {
 		seasonBar.addChild(ratingText);
 
 		container.addChild(episodeTable);
+
+		refreshActions.add(() -> {
+			final List<Season> currentSeasons = series.getChildren();
+			final Season currentlySelected = seasonDropdown.getSelectedOption();
+
+			seasonDropdown.setOptions(currentSeasons);
+
+			final Season selectionSeason;
+			if (currentlySelected != null && currentSeasons.contains(currentlySelected)) {
+				selectionSeason = currentlySelected;
+			} else if (!currentSeasons.isEmpty()) {
+				selectionSeason = currentSeasons.getFirst();
+			} else {
+				selectionSeason = null;
+			}
+
+			seasonDropdown.setSelectedOption(selectionSeason);
+			updateEpisodeTable(episodeTable, selectionSeason);
+			updateSeasonAgeRatingText(ageRatingText, selectionSeason);
+			updateSeasonRuntimeText(runtimeText, selectionSeason);
+			updateSeasonStatusText(statusText, selectionSeason);
+			updateSeasonRatingText(ratingText, selectionSeason);
+		});
 	}
 
 	private void updateEpisodeTable(TableView<Episode> table, Season season) {
@@ -289,6 +357,21 @@ public class DetailsPage extends Page {
 		}
 
 		return media;
+	}
+
+	@Override
+	public void refresh() {
+		if (media instanceof Episode episode && episode.getParent() == null) {
+			getCli().navigateBack();
+			return;
+		}
+		if (media instanceof Series series && !getCli().getMediaService().getAllMedia().contains(series)) {
+			getCli().navigateToOverview();
+			return;
+		}
+		for (Runnable action : refreshActions) {
+			action.run();
+		}
 	}
 
 }

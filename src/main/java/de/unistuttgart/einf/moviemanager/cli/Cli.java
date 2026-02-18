@@ -459,6 +459,14 @@ public class Cli {
 		return activeMedia instanceof Episode episode ? episode : null;
 	}
 
+	/**
+	 * Refreshes the data for the current pages and all the ones in history.
+	 */
+	public void refresh() {
+		currentPage.refresh();
+		pageStack.forEach(Page::refresh);
+	}
+
 	/* *************************************************************** *
 	 *                              Input                              *
 	 * *************************************************************** */

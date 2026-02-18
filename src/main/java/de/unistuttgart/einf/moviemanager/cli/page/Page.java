@@ -111,4 +111,6 @@ public abstract class Page extends Parent {
 		return null;
 	}
 
+	public abstract void refresh();
+
 }

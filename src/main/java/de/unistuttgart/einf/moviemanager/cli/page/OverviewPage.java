@@ -175,6 +175,13 @@ public class OverviewPage extends Page {
 		refreshItems();
 	}
 
+	/**
+	 * Resets the filter.
+	 */
+	public void resetFilter() {
+		setFilter(null);
+	}
+
 	private void updateFilterText() {
 		filterText.setHidden(searchQuery == null && filter == null);
 		String description = "";
@@ -194,6 +201,8 @@ public class OverviewPage extends Page {
 	 * Refreshes the displayed items.
 	 */
 	public void refreshItems() {
+		final TopLevelMedia selected = tableView.getSelectedItem();
+
 		final Comparator<TopLevelMedia> lexicalComparator = (media1, media2) -> {
 			final String title1 = media1.getTitle() != null ? media1.getTitle() : "";
 			final String title2 = media2.getTitle() != null ? media2.getTitle() : "";
@@ -211,6 +220,7 @@ public class OverviewPage extends Page {
 					.sorted(lexicalComparator)
 					.toList());
 			mediaToScore.clear();
+			moveTo(selected);
 			return;
 		}
 
@@ -223,6 +233,7 @@ public class OverviewPage extends Page {
 					.sorted(lexicalComparator)
 					.toList());
 			mediaToScore.clear();
+			moveTo(selected);
 			return;
 		}
 
@@ -238,11 +249,18 @@ public class OverviewPage extends Page {
 		for (MediaSearchService.ScoredMedia scored : scoredMedia) {
 			mediaToScore.put(scored.media(), scored.score());
 		}
+		moveTo(selected);
 	}
 
 	@Override
 	public Media getActiveMedia() {
 		return tableView.getSelectedItem();
+	}
+
+	@Override
+	public void refresh() {
+		refreshItems();
+		updateFilterText();
 	}
 
 }

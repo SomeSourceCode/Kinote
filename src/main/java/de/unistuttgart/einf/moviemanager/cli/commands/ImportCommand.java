@@ -147,7 +147,7 @@ public class ImportCommand {
 		}
 
 		cli.getMediaService().addMedia(movie);
-		cli.getOverviewPage().refreshItems();
+		cli.refresh();
 		cli.getOverviewPage().moveTo(movie);
 		cli.navigateToOverview();
 	}
@@ -165,7 +165,7 @@ public class ImportCommand {
 		}
 
 		cli.getMediaService().addMedia(series);
-		cli.getOverviewPage().refreshItems();
+		cli.refresh();
 		cli.getOverviewPage().moveTo(series);
 		cli.navigateToOverview();
 	}
@@ -186,7 +186,7 @@ public class ImportCommand {
 		}
 
 		series.addChild(season);
-		cli.getOverviewPage().refreshItems();
+		cli.refresh();
 	}
 
 	private static void performImportEpisode(Cli cli, Series series, int seasonNumber, int episodeNumber, int seriesTmdbId, Language language) {
@@ -210,7 +210,7 @@ public class ImportCommand {
 		}
 
 		season.addChild(episode);
-		cli.getOverviewPage().refreshItems();
+		cli.refresh();
 	}
 
 	private static String getApiKey(Cli cli) {

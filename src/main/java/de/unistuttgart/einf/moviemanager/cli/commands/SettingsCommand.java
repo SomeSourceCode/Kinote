@@ -30,6 +30,7 @@ public class SettingsCommand {
 								.executes(context -> {
 									final RatingSystem system = context.get("system", RatingSystem.class);
 									cli.getSettingsService().getSettings().setRatingSystem(system);
+									cli.refresh();
 								})))
 				.then(LiteralArgument.create("tmdb-api-key")
 						.executes(context -> {
@@ -44,6 +45,7 @@ public class SettingsCommand {
 								.executes(context -> {
 									final String apiKey = context.get("key", String.class);
 									cli.getSettingsService().getSettings().setTmdbApiKey(apiKey.isBlank() ? null : apiKey.trim());
+									cli.refresh();
 								}))
 						.then(LiteralArgument.create("unset")
 								.executes(_ -> {
@@ -58,6 +60,7 @@ public class SettingsCommand {
 								.executes(context -> {
 									final Language language = context.get("language", Language.class);
 									cli.getSettingsService().getSettings().setImportLanguage(language);
+									cli.refresh();
 								}))));
 	}
 

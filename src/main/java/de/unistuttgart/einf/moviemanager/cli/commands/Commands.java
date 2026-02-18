@@ -40,6 +40,7 @@ public class Commands {
 		ImportCommand.register(dispatcher, cli);
 		SmartFillCommand.register(dispatcher, cli);
 
+		RefreshCommand.register(dispatcher, cli);
 		DebugCommand.register(dispatcher, cli);
 
 		return dispatcher;

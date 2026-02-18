@@ -52,8 +52,7 @@ public class DeleteCommand {
 					"You are about to delete '" + asTopLevelMedia.getTitle() + "'. Are you sure?",
 					() -> {
 						cli.getMediaService().removeMedia(asTopLevelMedia);
-						cli.navigateBack();
-						cli.getOverviewPage().refreshItems();
+						cli.refresh();
 					}
 			);
 			case Season season -> {
@@ -65,7 +64,7 @@ public class DeleteCommand {
 						"You are about to delete Season " + season.getNumber() + " of " + season.getParent().getTitle() + ". Are you sure?",
 						() -> {
 							season.getParent().removeChild(season.getNumber());
-							cli.navigateBack();
+							cli.refresh();
 						}
 				);
 			}
@@ -78,7 +77,7 @@ public class DeleteCommand {
 						"You are about to delete 'Episode " + episode.getNumber() + ": " + episode.getTitle() + "'. Are you sure?",
 						() -> {
 							episode.getParent().removeChild(episode.getNumber());
-							cli.navigateBack();
+							cli.refresh();
 						}
 				);
 			}
@@ -91,8 +90,7 @@ public class DeleteCommand {
 		final Movie media = context.get("movie", Movie.class);
 		confirmAndExecute(cli, "You are about to delete '" + media.getTitle() + "'. Are you sure?", () -> {
 			cli.getMediaService().removeMedia(media);
-			cli.navigateBack();
-			cli.getOverviewPage().refreshItems();
+			cli.refresh();
 		});
 	}
 
@@ -100,8 +98,7 @@ public class DeleteCommand {
 		final Series media = context.get("series", Series.class);
 		confirmAndExecute(cli, "You are about to delete '" + media.getTitle() + "'. Are you sure?", () -> {
 			cli.getMediaService().removeMedia(media);
-			cli.navigateBack();
-			cli.getOverviewPage().refreshItems();
+			cli.refresh();
 		});
 	}
 
@@ -116,7 +113,7 @@ public class DeleteCommand {
 
 		confirmAndExecute(cli, "You are about to delete Season " + seasonNumber + " of '" + media.getTitle() + "'. Are you sure?", () -> {
 			media.removeChild(seasonNumber);
-			cli.navigateBack();
+			cli.refresh();
 		});
 	}
 
@@ -138,7 +135,7 @@ public class DeleteCommand {
 
 		confirmAndExecute(cli, "You are about to delete Episode " + episodeNumber + " of Season " + seasonNumber + " of '" + media.getTitle() + "'. Are you sure?", () -> {
 			season.removeChild(episodeNumber);
-			cli.navigateBack();
+			cli.refresh();
 		});
 	}
 
