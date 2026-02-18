@@ -354,7 +354,7 @@ public class CommandDispatcher {
 			final int depth = info.depth();
 
 			final Token currentToken = tokens.get(depth - 1);
-			if (!node.matches(currentToken)) {
+			if (!node.isValid(currentToken)) {
 				continue;
 			}
 
