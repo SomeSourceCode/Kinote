@@ -281,7 +281,7 @@ public class DetailsPage extends Page {
 			if (selectedEpisode != null) {
 				return selectedEpisode;
 			}
-		} else if (seasonDropdown.isChild(effectiveFocus)) {
+		} else if (seasonDropdown != null && seasonDropdown.isChild(effectiveFocus)) {
 			final Season selectedSeason = seasonDropdown.getSelectedOption();
 			if (selectedSeason != null) {
 				return selectedSeason;
