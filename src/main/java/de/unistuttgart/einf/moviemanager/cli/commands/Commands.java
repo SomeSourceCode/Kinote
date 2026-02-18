@@ -28,6 +28,7 @@ public class Commands {
 		SettingsCommand.register(dispatcher, cli);
 
 		ControlsCommand.register(dispatcher, cli);
+		HelpCommand.register(dispatcher, cli);
 
 		FindCommand.register(dispatcher, cli);
 		SearchCommand.register(dispatcher, cli);
