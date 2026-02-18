@@ -30,6 +30,7 @@ public class OverviewPage extends Page {
 	private final Text filterText;
 	private final TableView<TopLevelMedia> tableView;
 
+	private static final int SEARCH_THRESHOLD = 60;
 	private String searchQuery;
 	private final HashMap<TopLevelMedia, Integer> mediaToScore = new HashMap<>();
 
@@ -170,7 +171,7 @@ public class OverviewPage extends Page {
 			return;
 		}
 
-		final Set<MediaSearchService.ScoredMedia> scoredMedia = MediaSearchService.search(searchQuery, mediaService.getAllMedia(), 40);
+		final Set<MediaSearchService.ScoredMedia> scoredMedia = MediaSearchService.search(searchQuery, mediaService.getAllMedia(), SEARCH_THRESHOLD);
 
 		tableView.setItems(scoredMedia.stream()
 				.sorted(Comparator.comparingInt(MediaSearchService.ScoredMedia::score).reversed()
