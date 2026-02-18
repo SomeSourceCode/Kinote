@@ -29,6 +29,7 @@ public class Commands {
 
 		FindCommand.register(dispatcher, cli);
 		SearchCommand.register(dispatcher, cli);
+		FilterCommand.register(dispatcher, cli);
 
 		CreateCommand.register(dispatcher, cli);
 		DeleteCommand.register(dispatcher, cli);
