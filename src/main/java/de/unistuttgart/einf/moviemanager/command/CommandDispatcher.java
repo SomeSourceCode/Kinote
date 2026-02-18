@@ -409,7 +409,7 @@ public class CommandDispatcher {
 			tipBuilder.append("[");
 		}
 
-		for (String tip : Stream.concat(nonLiterals.stream(), literals.stream()).toList()) {
+		for (String tip : Stream.concat(nonLiterals.stream().sorted(), literals.stream().sorted()).toList()) {
 			if (tipBuilder.length() > (isTipOptional ? 1 : 0)) {
 				tipBuilder.append("|");
 			}
