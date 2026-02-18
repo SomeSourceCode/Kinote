@@ -12,74 +12,6 @@ import java.util.Map;
  */
 public class Painter {
 
-	private static final char HORIZONTAL_LINE = '─';
-	private static final char VERTICAL_LINE = '│';
-
-	private static final char TOP_LEFT_CORNER = '┌';
-	private static final char TOP_RIGHT_CORNER = '┐';
-	private static final char BOTTOM_LEFT_CORNER = '└';
-	private static final char BOTTOM_RIGHT_CORNER = '┘';
-
-	private static final char T_UP = '┴';
-	private static final char T_DOWN = '┬';
-	private static final char T_LEFT = '┤';
-	private static final char T_RIGHT = '├';
-
-	private static final char CROSS = '┼';
-
-	// bit masks
-	private static final int UP = 1; // 0001
-	private static final int DOWN = 2; // 0010
-	private static final int LEFT = 4; // 0100
-	private static final int RIGHT = 8; // 1000
-
-	private static final char[] MASK_TO_CHAR = new char[16];
-	private static final Map<Character, Integer> CHAR_TO_MASK = new HashMap<>();
-
-	static {
-		// Point
-		MASK_TO_CHAR[0] = ' ';
-
-		// Lines
-		MASK_TO_CHAR[UP] = VERTICAL_LINE;
-		MASK_TO_CHAR[DOWN] = VERTICAL_LINE;
-		MASK_TO_CHAR[LEFT] = HORIZONTAL_LINE;
-		MASK_TO_CHAR[RIGHT] = HORIZONTAL_LINE;
-
-		MASK_TO_CHAR[UP | DOWN] = VERTICAL_LINE;
-		MASK_TO_CHAR[LEFT | RIGHT] = HORIZONTAL_LINE;
-
-		// Corners
-		MASK_TO_CHAR[RIGHT | DOWN] = TOP_LEFT_CORNER;
-		MASK_TO_CHAR[LEFT | DOWN] = TOP_RIGHT_CORNER;
-		MASK_TO_CHAR[RIGHT | UP] = BOTTOM_LEFT_CORNER;
-		MASK_TO_CHAR[LEFT | UP] = BOTTOM_RIGHT_CORNER;
-
-		// T-Junctions
-		MASK_TO_CHAR[LEFT | RIGHT | UP] = T_UP;
-		MASK_TO_CHAR[LEFT | RIGHT | DOWN] = T_DOWN;
-		MASK_TO_CHAR[UP | DOWN | LEFT] = T_LEFT;
-		MASK_TO_CHAR[UP | DOWN | RIGHT] = T_RIGHT;
-
-		// Cross
-		MASK_TO_CHAR[UP | DOWN | LEFT | RIGHT] = CROSS;
-
-		CHAR_TO_MASK.put(HORIZONTAL_LINE, LEFT | RIGHT);
-		CHAR_TO_MASK.put(VERTICAL_LINE, UP | DOWN);
-
-		CHAR_TO_MASK.put(TOP_LEFT_CORNER, RIGHT | DOWN);
-		CHAR_TO_MASK.put(TOP_RIGHT_CORNER, LEFT | DOWN);
-		CHAR_TO_MASK.put(BOTTOM_LEFT_CORNER, RIGHT | UP);
-		CHAR_TO_MASK.put(BOTTOM_RIGHT_CORNER, LEFT | UP);
-
-		CHAR_TO_MASK.put(T_UP, LEFT | RIGHT | UP);
-		CHAR_TO_MASK.put(T_DOWN, LEFT | RIGHT | DOWN);
-		CHAR_TO_MASK.put(T_LEFT, UP | DOWN | LEFT);
-		CHAR_TO_MASK.put(T_RIGHT, UP | DOWN | RIGHT);
-
-		CHAR_TO_MASK.put(CROSS, UP | DOWN | LEFT | RIGHT);
-	}
-
 	private final Screen screen;
 
 	/**
@@ -219,6 +151,74 @@ public class Painter {
 	/* *************************************************************** *
 	 *                           Smart lines                           *
 	 * *************************************************************** */
+
+	private static final char HORIZONTAL_LINE = '─';
+	private static final char VERTICAL_LINE = '│';
+
+	private static final char TOP_LEFT_CORNER = '┌';
+	private static final char TOP_RIGHT_CORNER = '┐';
+	private static final char BOTTOM_LEFT_CORNER = '└';
+	private static final char BOTTOM_RIGHT_CORNER = '┘';
+
+	private static final char T_UP = '┴';
+	private static final char T_DOWN = '┬';
+	private static final char T_LEFT = '┤';
+	private static final char T_RIGHT = '├';
+
+	private static final char CROSS = '┼';
+
+	// bit masks
+	private static final int UP = 1; // 0001
+	private static final int DOWN = 2; // 0010
+	private static final int LEFT = 4; // 0100
+	private static final int RIGHT = 8; // 1000
+
+	private static final char[] MASK_TO_CHAR = new char[16];
+	private static final Map<Character, Integer> CHAR_TO_MASK = new HashMap<>();
+
+	static {
+		// Point
+		MASK_TO_CHAR[0] = ' ';
+
+		// Lines
+		MASK_TO_CHAR[UP] = VERTICAL_LINE;
+		MASK_TO_CHAR[DOWN] = VERTICAL_LINE;
+		MASK_TO_CHAR[LEFT] = HORIZONTAL_LINE;
+		MASK_TO_CHAR[RIGHT] = HORIZONTAL_LINE;
+
+		MASK_TO_CHAR[UP | DOWN] = VERTICAL_LINE;
+		MASK_TO_CHAR[LEFT | RIGHT] = HORIZONTAL_LINE;
+
+		// Corners
+		MASK_TO_CHAR[RIGHT | DOWN] = TOP_LEFT_CORNER;
+		MASK_TO_CHAR[LEFT | DOWN] = TOP_RIGHT_CORNER;
+		MASK_TO_CHAR[RIGHT | UP] = BOTTOM_LEFT_CORNER;
+		MASK_TO_CHAR[LEFT | UP] = BOTTOM_RIGHT_CORNER;
+
+		// T-Junctions
+		MASK_TO_CHAR[LEFT | RIGHT | UP] = T_UP;
+		MASK_TO_CHAR[LEFT | RIGHT | DOWN] = T_DOWN;
+		MASK_TO_CHAR[UP | DOWN | LEFT] = T_LEFT;
+		MASK_TO_CHAR[UP | DOWN | RIGHT] = T_RIGHT;
+
+		// Cross
+		MASK_TO_CHAR[UP | DOWN | LEFT | RIGHT] = CROSS;
+
+		CHAR_TO_MASK.put(HORIZONTAL_LINE, LEFT | RIGHT);
+		CHAR_TO_MASK.put(VERTICAL_LINE, UP | DOWN);
+
+		CHAR_TO_MASK.put(TOP_LEFT_CORNER, RIGHT | DOWN);
+		CHAR_TO_MASK.put(TOP_RIGHT_CORNER, LEFT | DOWN);
+		CHAR_TO_MASK.put(BOTTOM_LEFT_CORNER, RIGHT | UP);
+		CHAR_TO_MASK.put(BOTTOM_RIGHT_CORNER, LEFT | UP);
+
+		CHAR_TO_MASK.put(T_UP, LEFT | RIGHT | UP);
+		CHAR_TO_MASK.put(T_DOWN, LEFT | RIGHT | DOWN);
+		CHAR_TO_MASK.put(T_LEFT, UP | DOWN | LEFT);
+		CHAR_TO_MASK.put(T_RIGHT, UP | DOWN | RIGHT);
+
+		CHAR_TO_MASK.put(CROSS, UP | DOWN | LEFT | RIGHT);
+	}
 
 	/**
 	 * Draws a horizontal line with the given length at the specified coordinates. If it
