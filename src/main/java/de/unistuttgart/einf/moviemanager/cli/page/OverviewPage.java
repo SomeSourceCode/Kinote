@@ -10,6 +10,7 @@ import de.unistuttgart.einf.moviemanager.cli.api.widget.TableView;
 import de.unistuttgart.einf.moviemanager.cli.api.widget.Text;
 import de.unistuttgart.einf.moviemanager.model.Media;
 import de.unistuttgart.einf.moviemanager.model.TopLevelMedia;
+import de.unistuttgart.einf.moviemanager.service.MediaFilter;
 import de.unistuttgart.einf.moviemanager.service.MediaService;
 import de.unistuttgart.einf.moviemanager.service.search.MediaSearchService;
 
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * The overview page. Displays a table of all media items that
@@ -33,6 +35,8 @@ public class OverviewPage extends Page {
 	private static final int SEARCH_THRESHOLD = 60;
 	private String searchQuery;
 	private final HashMap<TopLevelMedia, Integer> mediaToScore = new HashMap<>();
+
+	private MediaFilter filter;
 
 	/**
 	 * Constructs a new overview page for the given media service.
@@ -136,15 +140,53 @@ public class OverviewPage extends Page {
 			return;
 		}
 		this.searchQuery = searchQuery;
-		filterText.setHidden(searchQuery == null);
-		if (searchQuery != null) {
-			filterText.setText("Query: " + searchQuery);
-		}
+		updateFilterText();
 		refreshItems();
 	}
 
+	/**
+	 * Resets the search query.
+	 */
 	public void resetSearchQuery() {
 		setSearchQuery(null);
+	}
+
+	/**
+	 * Returns the active filter.
+	 *
+	 * @return the filter
+	 */
+	public MediaFilter getFilter() {
+		return filter;
+	}
+
+	/**
+	 * Sets the active filter.
+	 *
+	 * @param filter the filter
+	 */
+	public void setFilter(MediaFilter filter) {
+		if (Objects.equals(this.filter, filter)) {
+			return;
+		}
+		this.filter = filter;
+		updateFilterText();
+		refreshItems();
+	}
+
+	private void updateFilterText() {
+		filterText.setHidden(searchQuery == null && filter == null);
+		String description = "";
+		if (searchQuery != null) {
+			description += "Search: " + searchQuery;
+		}
+		if (filter != null) {
+			if (!description.isBlank()) {
+				description += " | ";
+			}
+			description += "Filter: " + filter.toString();
+		}
+		filterText.setText(description);
 	}
 
 	/**
@@ -163,7 +205,7 @@ public class OverviewPage extends Page {
 			return desc1.compareToIgnoreCase(desc2);
 		};
 
-		if (searchQuery == null) {
+		if (searchQuery == null && filter == null) {
 			tableView.setItems(mediaService.getAllMedia().stream()
 					.sorted(lexicalComparator)
 					.toList());
@@ -171,7 +213,19 @@ public class OverviewPage extends Page {
 			return;
 		}
 
-		final Set<MediaSearchService.ScoredMedia> scoredMedia = MediaSearchService.search(searchQuery, mediaService.getAllMedia(), SEARCH_THRESHOLD);
+		final Set<TopLevelMedia> filteredMedia = filter == null ? mediaService.getAllMedia() : mediaService.getAllMedia().stream()
+				.filter(media -> filter.test(media))
+				.collect(Collectors.toSet());
+
+		if (searchQuery == null) {
+			tableView.setItems(filteredMedia.stream()
+					.sorted(lexicalComparator)
+					.toList());
+			mediaToScore.clear();
+			return;
+		}
+
+		final Set<MediaSearchService.ScoredMedia> scoredMedia = MediaSearchService.search(searchQuery, filteredMedia, SEARCH_THRESHOLD);
 
 		tableView.setItems(scoredMedia.stream()
 				.sorted(Comparator.comparingInt(MediaSearchService.ScoredMedia::score).reversed()
