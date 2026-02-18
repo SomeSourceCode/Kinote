@@ -350,13 +350,21 @@ public class TableView<T> extends InteractableBase {
 				}
 			}
 			case Tab -> {
-				if (moveSelectionRight() || moveSelectionDown()) {
+				if (moveSelectionRight()) {
+					return InputResult.HANDLED;
+				}
+				if (moveSelectionDown()) {
+					moveToColumn(0);
 					return InputResult.HANDLED;
 				}
 				return InputResult.UNHANDLED;
 			}
 			case ReverseTab -> {
-				if (moveSelectionLeft() || moveSelectionUp()) {
+				if (moveSelectionLeft()) {
+					return InputResult.HANDLED;
+				}
+				if (moveSelectionUp()) {
+					moveToColumn(columns.size() - 1);
 					return InputResult.HANDLED;
 				}
 				return InputResult.UNHANDLED;
