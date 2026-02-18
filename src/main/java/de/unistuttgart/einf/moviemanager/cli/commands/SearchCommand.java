@@ -23,32 +23,21 @@ public class SearchCommand {
 	public static void register(CommandDispatcher dispatcher, Cli cli) {
 		dispatcher.register(Command.create("search")
 				.then(StringArgument.create("query")
-						.executes(context -> {
-							if (Objects.equals(cli.getPage(), cli.getOverviewPage())) {
-								executeSearch(context, cli);
-								return;
-							}
-							cli.showConfirmationDialog("Search is only available on the overview page. Do you want to navigate there now?", () -> {
-								cli.navigateToOverview();
-								executeSearch(context, cli);
-							});
-						}))
+						.executes(context -> executeSearch(context, cli)))
 				.then(LiteralArgument.create("reset")
-						.executes(context -> {
-							if (Objects.equals(cli.getPage(), cli.getOverviewPage())) {
-								cli.getOverviewPage().setSearchQuery("");
-								return;
-							}
-							cli.showConfirmationDialog("Search is only available on the overview page. Do you want to navigate there now?", () -> {
-								cli.navigateToOverview();
-								cli.getOverviewPage().setSearchQuery("");
-							});
-						})));
+						.executes(context -> executeSearch(context, cli))));
 	}
 
 	private static void executeSearch(ExecutionContext context, Cli cli) {
-		final String query = context.getString("query");
-		cli.getOverviewPage().setSearchQuery(query);
+		final String query = context.getOptional("query", String.class).orElse("");
+		if (Objects.equals(cli.getPage(), cli.getOverviewPage())) {
+			cli.getOverviewPage().setSearchQuery(query);
+			return;
+		}
+		cli.showConfirmationDialog("Search is only available on the overview page. Do you want to navigate there now?", () -> {
+			cli.navigateToOverview();
+			cli.getOverviewPage().setSearchQuery(query);
+		});
 	}
 
 }
