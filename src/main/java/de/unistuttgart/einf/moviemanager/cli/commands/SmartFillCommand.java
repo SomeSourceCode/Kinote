@@ -124,8 +124,7 @@ public class SmartFillCommand {
 			throw Command.fail("Failed to fill movie '" + movie.getTitle() + "' from TMDb (id " + tmdbId + "). Is it the correct ID? Is it a movie? Do you have a stable internet connection?");
 		}
 
-		cli.getOverviewPage().moveTo(movie);
-		cli.navigateToOverview();
+		cli.refresh();
 	}
 
 	private static void performSmartFillSeries(Cli cli, Series series, int tmdbId, Language language) {
@@ -138,8 +137,7 @@ public class SmartFillCommand {
 			throw Command.fail("Failed to fill series '" + series.getTitle() + "' from TMDb (id " + tmdbId + "). Is it the correct ID? Is it a series? Do you have a stable internet connection?");
 		}
 
-		cli.getOverviewPage().moveTo(series);
-		cli.navigateToOverview();
+		cli.refresh();
 	}
 
 	private static void performSmartFillSeason(Cli cli, Series series, int seasonNumber, int tmdbId, Language language) {
@@ -157,7 +155,7 @@ public class SmartFillCommand {
 			throw Command.fail("Failed to fill season " + seasonNumber + " of series '" + series.getTitle() + "' from TMDb (id " + tmdbId + "). Is it the correct ID? Do you have a stable internet connection?");
 		}
 
-		cli.navigateBack();
+		cli.refresh();
 	}
 
 	private static void performSmartFillEpisode(Cli cli, Series series, int seasonNumber, int episodeNumber, int tmdbId, Language language) {
@@ -180,7 +178,7 @@ public class SmartFillCommand {
 			throw Command.fail("Failed to fill episode " + episodeNumber + " of season " + seasonNumber + " of series '" + series.getTitle() + "' from TMDb (id " + tmdbId + "). Is it the correct ID? Do you have a stable internet connection?");
 		}
 
-		cli.navigateBack();
+		cli.refresh();
 	}
 
 	private static MovieImporter createMovieImporter(String apiKey) {
