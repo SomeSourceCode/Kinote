@@ -101,6 +101,7 @@ public class Scene {
 			return;
 		}
 		popover.setScene(null);
+		popover.fireOnClosed();
 	}
 
 	/**
@@ -145,7 +146,6 @@ public class Scene {
 			for (Popover popover : new ArrayList<>(popovers)) {
 				if (popover.hasFocusedChild()) {
 					closePopover(popover);
-					popover.fireOnClosed();
 					return true;
 				}
 			}

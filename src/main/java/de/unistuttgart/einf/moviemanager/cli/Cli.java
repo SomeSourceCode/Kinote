@@ -371,6 +371,18 @@ public class Cli {
 		final ConfirmationDialog dialog = new ConfirmationDialog(info);
 		dialog.setConfirmLabel("Ok");
 		dialog.setCancelButtonVisible(false);
+
+		final Interactable currentFocus = scene.getFocusManager().getCurrentFocus();
+		if (currentPage.isChild(currentFocus)) {
+			currentPage.setFocusCache(currentFocus);
+		}
+
+		dialog.setOnClosed(() -> {
+			if (currentPage.isChild(currentPage.getFocusCache())) {
+				currentPage.getFocusCache().requestFocus();
+			}
+		});
+
 		dialog.show(scene);
 	}
 
@@ -385,6 +397,18 @@ public class Cli {
 		dialog.setConfirmLabel("Yes");
 		dialog.setCancelLabel("No");
 		dialog.setOnConfirm(onConfirm);
+
+		final Interactable currentFocus = scene.getFocusManager().getCurrentFocus();
+		if (currentPage.isChild(currentFocus)) {
+			currentPage.setFocusCache(currentFocus);
+		}
+
+		dialog.setOnClosed(() -> {
+			if (currentPage.isChild(currentPage.getFocusCache())) {
+				currentPage.getFocusCache().requestFocus();
+			}
+		});
+
 		dialog.show(scene);
 	}
 

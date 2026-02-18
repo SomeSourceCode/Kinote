@@ -365,7 +365,7 @@ public class DetailsPage extends Page {
 			getCli().navigateBack();
 			return;
 		}
-		if (media instanceof Series series && !getCli().getMediaService().getAllMedia().contains(series)) {
+		if (media instanceof TopLevelMedia topLevelMedia && !getCli().getMediaService().getAllMedia().contains(topLevelMedia)) {
 			getCli().navigateToOverview();
 			return;
 		}
