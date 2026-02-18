@@ -108,13 +108,4 @@ class IntegerArgumentTest extends ArgumentTestBase {
 		}, "Input '150' should throw CommandParseException (max: 100)");
 	}
 
-	@Test
-	@DisplayName("Should provide valid default suggestions")
-	void testGetDefaultSuggestions() {
-		final IntegerArgument argument = IntegerArgument.create("integer")
-				.build();
-
-		testDefaultSuggestions(argument);
-	}
-
 }

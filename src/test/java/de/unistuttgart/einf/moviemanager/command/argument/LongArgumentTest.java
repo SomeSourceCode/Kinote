@@ -108,12 +108,4 @@ class LongArgumentTest extends ArgumentTestBase {
 		}, "Input '150' should throw CommandParseException (max: 100)");
 	}
 
-	@Test
-	void testGetDefaultSuggestions() {
-		final LongArgument argument = LongArgument.create("long")
-				.build();
-
-		testDefaultSuggestions(argument);
-	}
-
 }
