@@ -217,8 +217,8 @@ public class TableView<T> extends InteractableBase {
 			scrollOffset = selectedRowIndex - (height - (showHeader ? 2 : 0)) + 1;
 		}
 
-		if (scrollOffset > items.size() - height) {
-			scrollOffset = items.size() - height;
+		if (scrollOffset > items.size() - height + (showHeader ? 2 : 0)) {
+			scrollOffset = items.size() - height + (showHeader ? 2 : 0);
 		}
 		if (scrollOffset < 0) {
 			scrollOffset = 0;
