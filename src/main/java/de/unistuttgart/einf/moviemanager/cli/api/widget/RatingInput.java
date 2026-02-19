@@ -102,6 +102,7 @@ public class RatingInput extends Parent {
 		this.rating = rating;
 
 		fireOnRatingChange(rating);
+		inputArea.setText(formatValue(rating));
 	}
 
 	/**

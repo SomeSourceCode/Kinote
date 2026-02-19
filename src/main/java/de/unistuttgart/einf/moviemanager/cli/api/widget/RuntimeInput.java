@@ -89,6 +89,7 @@ public class RuntimeInput extends Parent {
 		this.runtime = runtime;
 
 		fireOnRuntimeChange(runtime);
+		inputArea.setText(formatRuntime(runtime));
 	}
 
 	/**
