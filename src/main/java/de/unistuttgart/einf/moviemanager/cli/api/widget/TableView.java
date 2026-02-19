@@ -10,6 +10,7 @@ import de.unistuttgart.einf.moviemanager.cli.api.TextAlignment;
 import de.unistuttgart.einf.moviemanager.cli.api.util.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -72,6 +73,15 @@ public class TableView<T> extends InteractableBase {
 	public void removeColumn(TableColumn<T> column) {
 		this.columns.remove(column);
 		ensureValidSelection();
+	}
+
+	/**
+	 * Returns an unmodifiable view of the items.
+	 *
+	 * @return the items
+	 */
+	public List<T> getItems() {
+		return Collections.unmodifiableList(items);
 	}
 
 	/**
@@ -178,6 +188,12 @@ public class TableView<T> extends InteractableBase {
 	 *                           Navigation                            *
 	 * *************************************************************** */
 
+	@Override
+	public void setHeight(int height) {
+		super.setHeight(height);
+		ensureSelectionVisible();
+	}
+
 	private void ensureValidSelection() {
 		if (items.isEmpty()) {
 			selectedRowIndex = 0;
@@ -199,6 +215,13 @@ public class TableView<T> extends InteractableBase {
 			scrollOffset = selectedRowIndex;
 		} else if (selectedRowIndex >= scrollOffset + height - (showHeader ? 2 : 0)) {
 			scrollOffset = selectedRowIndex - (height - (showHeader ? 2 : 0)) + 1;
+		}
+
+		if (scrollOffset > items.size() - height) {
+			scrollOffset = items.size() - height;
+		}
+		if (scrollOffset < 0) {
+			scrollOffset = 0;
 		}
 	}
 

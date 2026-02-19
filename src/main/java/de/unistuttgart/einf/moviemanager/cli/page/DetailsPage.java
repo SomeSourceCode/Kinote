@@ -338,6 +338,20 @@ public class DetailsPage extends Page {
 	}
 
 	@Override
+	public void layoutChildren() {
+		super.layoutChildren();
+
+		if (episodeTable == null) {
+			return;
+		}
+
+		episodeTable.setHeight(Math.min(
+				episodeTable.getItems().size() + episodeTable.getPadding().getTop() + episodeTable.getPadding().getBottom() + (episodeTable.isShowBorders() ? 2 : 0),
+				getHeight() - episodeTable.getY() - getPadding().getBottom()
+		));
+	}
+
+	@Override
 	public Media getActiveMedia() {
 		final Interactable effectiveFocus = getEffectiveFocus();
 		if (effectiveFocus == null) {
