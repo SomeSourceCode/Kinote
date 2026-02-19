@@ -79,6 +79,9 @@ public class EpisodeImporter extends MediaImporter {
 							continue;
 						}
 						AgeRating rating = AgeRating.max(getAgeRatingsBySystem(ageRatings, ratingSystem));
+						if (rating == null) {
+							continue;
+						}
 						episode.setAgeRating(rating);
 					}
 				}
@@ -128,6 +131,9 @@ public class EpisodeImporter extends MediaImporter {
 								continue;
 							}
 							AgeRating rating = AgeRating.max(getAgeRatingsBySystem(ageRatings, ratingSystem));
+							if (rating == null) {
+								continue;
+							}
 							episode.setAgeRating(rating);
 						}
 					}

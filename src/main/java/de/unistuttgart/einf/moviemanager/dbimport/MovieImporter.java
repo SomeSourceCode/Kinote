@@ -80,6 +80,9 @@ public class MovieImporter extends MediaImporter{
 								continue;
 							}
 							AgeRating rating = AgeRating.max(getAgeRatingsBySystem(ageRatings, ratingSystem));
+							if (rating == null) {
+								continue;
+							}
 							movie.setAgeRating(rating);
 						}
 					}
