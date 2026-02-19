@@ -8,35 +8,92 @@ import java.util.function.Predicate;
 
 public class MediaFilter {
 
+	private enum Type {
+
+		OR(1),
+		AND(2),
+		NOT(3),
+		LEAF(4);
+
+		final int precedence;
+
+		Type(int precedence) {
+			this.precedence = precedence;
+		}
+
+	}
+
 	private final Predicate<TopLevelMedia> predicate;
-	private final String description;
+	private final Type type;
+	private final String leafDescription;
+	private final MediaFilter left;
+	private final MediaFilter right;
+
+	private MediaFilter(Predicate<TopLevelMedia> predicate, Type type, MediaFilter left, MediaFilter right) {
+		this.predicate = predicate;
+		this.type = type;
+		this.leafDescription = null;
+		this.left = left;
+		this.right = right;
+	}
 
 	private MediaFilter(Predicate<TopLevelMedia> predicate, String description) {
 		this.predicate = predicate;
-		this.description = description;
+		this.type = Type.LEAF;
+		this.leafDescription = description;
+		this.left = null;
+		this.right = null;
 	}
 
-	@Override
-	public String toString() {
-		return description;
-	}
-	
 	public boolean test(TopLevelMedia media) {
 		return predicate.test(media);
 	}
 
-	public MediaFilter and(MediaFilter other) {
-		Predicate<TopLevelMedia> andPredicate = this.predicate.and(other.predicate);
-		String andDescription = this.description + " AND " + other.description;
-		return new MediaFilter(andPredicate, andDescription);
+	public MediaFilter negate() {
+		if (this.type == Type.NOT) {
+			return this.left;
+		}
+		return new MediaFilter(this.predicate.negate(), Type.NOT, this, null);
 	}
 
+	public MediaFilter and(MediaFilter other) {
+		if (other == null) {
+			return this;
+		}
+		return new MediaFilter(this.predicate.and(other.predicate), Type.AND, this, other);
+	}
+
+	public MediaFilter or(MediaFilter other) {
+		if (other == null) {
+			return this;
+		}
+		return new MediaFilter(this.predicate.or(other.predicate), Type.OR, this, other);
+	}
+
+	@Override
+	public String toString() {
+		return toString(0);
+	}
+
+	private String toString(int parentPrecedence) {
+		String text;
+		switch (type) {
+			case LEAF -> text = leafDescription;
+			case NOT -> text = "NOT " + left.toString(type.precedence);
+			case AND -> text = left.toString(type.precedence) + " AND " + right.toString(type.precedence);
+			case OR -> text = left.toString(type.precedence) + " OR " + right.toString(type.precedence);
+			default -> text = "";
+		}
+		if (type.precedence < parentPrecedence) {
+			return "(" + text + ")";
+		}
+		return text;
+	}
 
 	public static MediaFilter isMovie() {
 		Predicate<TopLevelMedia> predicate =  media -> media instanceof Movie;
 		String description = "isMovie";
 		return new MediaFilter(predicate, description);
-
 	}
 
 	public static MediaFilter isSeries() {
@@ -84,6 +141,30 @@ public class MediaFilter {
 
 		};
 		String description = "AgeRating <= " + rating.getLabel();
+		return new MediaFilter(predicate, description);
+	}
+
+	public static MediaFilter isAgeRatingAtLeast(int rating, SettingsService settingsService) {
+		Predicate<TopLevelMedia> predicate = media -> {
+			final RatingSystem system = settingsService.getSettings().getRatingSystem();
+			if (!media.hasAgeRating()) {
+				return true;
+			}
+			return media.getAgeRating(system).getMinimumAge() >= rating;
+		};
+		String description = "AgeRating >= " + rating;
+		return new MediaFilter(predicate, description);
+	}
+
+	public static MediaFilter isAgeRatingAtMost(int rating, SettingsService settingsService) {
+		Predicate<TopLevelMedia> predicate = media -> {
+			final RatingSystem system = settingsService.getSettings().getRatingSystem();
+			if (!media.hasAgeRating()) {
+				return true;
+			}
+			return media.getAgeRating(system).getMinimumAge() <= rating;
+		};
+		String description = "AgeRating <= " + rating;
 		return new MediaFilter(predicate, description);
 	}
 
