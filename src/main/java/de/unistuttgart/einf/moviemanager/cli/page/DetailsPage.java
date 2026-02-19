@@ -174,10 +174,12 @@ public class DetailsPage extends Page {
 			container.addChild(genreChips);
 
 			refreshActions.add(() -> {
+				genreChips.setOnOptionDeselected(null);
 				Arrays.stream(Genre.values()).forEach(genreChips::deselect);
 				for (Genre genre : asTopLevelMedia.getGenres()) {
 					genreChips.select(genre);
 				}
+				genreChips.setOnOptionDeselected(asTopLevelMedia::removeGenre);
 			});
 		} else {
 			final Text genreText = new Text(MediaFormatter.genres(media));
