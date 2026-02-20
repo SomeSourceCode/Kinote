@@ -21,7 +21,7 @@ Before working on the code base for the first time, clone the repository:
    ```bash
    git clone <repository-url>
    ```
-   Where `<repository-url>` is `https://github.tik.uni-stuttgart.de/st197289/film-manager.git` for HTTPS or `git@github.tik.uni-stuttgart.de:st197289/film-manager.git` for ssh. The URL can also be copied from the green **Code** button on the repository page.
+   Where `<repository-url>` is `https://github.com/SomeSourceCode/Kinote.git` for HTTPS or `git@github.com:SomeSourceCode/Kinote.git` for ssh. The URL can also be copied from the green **Code** button on the repository page.
 3. Navigate into the cloned repository:
    ```bash
    cd film-manager
@@ -226,7 +226,8 @@ You could use following pattern:
 - `fix`: Bug fix or typo correction
 - `style`: Formatting, whitespace, missing semicolons, etc.
 - `docs`: Documentation added or updated
-- `chore`: Maintenance tasks, e.g. updating README, pom.xml, etc.
+- `chore`: Maintenance tasks, e.g. updating README etc.
+- `build`: Changes that affect the build system or external dependencies
 - `test`: Added modified test
 
 ### Scope (optional)
