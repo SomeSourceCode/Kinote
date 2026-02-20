@@ -84,3 +84,11 @@ Here's a non-exhaustive list of the most important features:
 ## Data Storage
 
 Kinote stores your library and settings locally. The save fails are located at `~/.kinote`.
+
+## Attribution
+
+This application uses [The Movie Database (TMDb)](https://www.themoviedb.org/) to fetch media metadata.
+
+![tmdb logo](tmdb-logo.svg)
+
+*This application uses the TMDb APIs but is not endorsed certified, or otherwise approved by TMDb.*

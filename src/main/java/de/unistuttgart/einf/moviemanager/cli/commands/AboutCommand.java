@@ -13,7 +13,7 @@ public class AboutCommand {
 			Kinote (MoVim) Version 1.0.0
 			Developed as the final project for the course "Einführung in die Informatik (EInf)" at the University of Stuttgart.
 			
-			Imports are supported via TMDb (www.themoviedb.org)
+			Imports are supported via TMDb (www.themoviedb.org). This application uses the TMDb APIs but is not endorsed certified, or otherwise approved by TMDb.
 			""";
 
 	/**
