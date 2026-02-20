@@ -1,0 +1,172 @@
+package de.unistuttgart.einf.moviemanager.model;
+
+import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
+import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
+
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * A season of a series.
+ */
+public class Season extends ChildMedia<Series, Season> implements ParentMedia<Episode> {
+
+	private final MediaContainer<Season, Episode> episodes = new MediaContainer<>(this);
+
+	/**
+	 * Constructs a new Season with the given season number, title and description.
+	 *
+	 * @param seasonNumber the season number (must be at least 1)
+	 * @param title the title
+	 * @param description the description
+	 * @throws IllegalArgumentException if seasonNumber is less than 1
+	 */
+	public Season(int seasonNumber, String title, String description) {
+		if (seasonNumber < 1) {
+			throw new IllegalArgumentException("Season number must be at least 1");
+		}
+		setNumber(seasonNumber);
+		setTitle(title);
+		setDescription(description);
+	}
+
+	/**
+	 * Constructs a new Season with the given season number and title.
+	 *
+	 * @param seasonNumber the season number (must be at least 1)
+	 * @param title the title
+	 * @throws IllegalArgumentException if seasonNumber is less than 1
+	 */
+	public Season(int seasonNumber, String title) {
+		this(seasonNumber, title, null);
+	}
+
+	/**
+	 * Constructs a new Season with the given season number.
+	 *
+	 * @param seasonNumber the season number (must be at least 1)
+	 * @throws IllegalArgumentException if seasonNumber is less than 1
+	 */
+	public Season(int seasonNumber) {
+		this(seasonNumber, null, null);
+	}
+
+	@Override
+	public List<Episode> getChildren() {
+		return episodes.getChildren();
+	}
+
+	@Override
+	public Episode getChild(int number) {
+		return episodes.getChild(number);
+	}
+
+	@Override
+	public void addChild(Episode child) {
+		episodes.addChild(child);
+	}
+
+	@Override
+	public void removeChild(int number) {
+		episodes.removeChild(number);
+	}
+
+	@Override
+	public Iterator<Episode> iterator() {
+		return episodes.iterator();
+	}
+
+	@Override
+	public Status getStatus() {
+		final int watchedEpisodeCount = (int) episodes.getChildren().stream()
+				.filter(episode -> episode.getStatus() == Status.WATCHED)
+				.count();
+		if (watchedEpisodeCount == 0) {
+			return Status.UNWATCHED;
+		}
+		if (watchedEpisodeCount == episodes.getChildren().size()) {
+			return Status.WATCHED;
+		}
+		return Status.WATCHING;
+	}
+
+	@Override
+	public int getRating() {
+		int rating = 0;
+		int counter = 0;
+		for (Episode episode : this) {
+			if (episode.getRating() == -1) {
+				continue;
+			}
+			rating += episode.getRating();
+			counter++;
+		}
+		if (counter == 0) {
+			return -1;
+		}
+		return rating / counter;
+	}
+
+	@Override
+	public boolean hasRating() {
+		return this.getChildren().stream()
+				.anyMatch(Episode::hasRating);
+	}
+
+	@Override
+	public int getRuntime() {
+		if (!hasRuntime()) {
+			return -1;
+		}
+		return getChildren().stream()
+				.mapToInt(Media::getRuntime)
+				.sum();
+	}
+
+	@Override
+	public boolean hasRuntime() {
+		return getChildren().stream()
+				.anyMatch(Episode::hasRuntime);
+	}
+
+	@Override
+	public Set<Genre> getGenres() {
+		final Media parent = getParent();
+		return parent == null ? EnumSet.noneOf(Genre.class) : parent.getGenres();
+	}
+
+	@Override
+	public boolean hasGenre(Genre genre) {
+		final Media parent = getParent();
+		return parent != null && parent.hasGenre(genre);
+	}
+
+	@Override
+	public AgeRating getAgeRating(RatingSystem system) {
+		return AgeRating.max(getChildren().stream()
+				.map(episode -> episode.getAgeRating(system))
+				.toList());
+	}
+
+	@Override
+	public boolean hasAgeRating() {
+		return getChildren().stream().anyMatch(Media::hasAgeRating);
+	}
+
+	@Override
+	public boolean hasAgeRating(RatingSystem system) {
+		return getChildren().stream().anyMatch(episode -> episode.hasAgeRating(system));
+	}
+
+	@Override
+	public String toString() {
+		final String title = getTitle();
+		if (title != null && !title.isBlank()) {
+			return "Season " + getNumber() + ": " + title;
+		}
+		return "Season " + getNumber();
+	}
+
+}

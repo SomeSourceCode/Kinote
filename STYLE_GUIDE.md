@@ -221,8 +221,3 @@ Use the diamond operator `<>` to infer generic types where possible (e.g. `List<
 ### 6.5. Interface preference
 
 Prefer interfaces (e.g. `List`, `Map`, `Set`) over concrete implementations (e.g. `ArrayList`, `HashMap`, `HashSet`) when declaring variables, return types, and parameters.
-
-## Name ideas:
-
-- Kinote
-- ...
