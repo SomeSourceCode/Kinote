@@ -83,7 +83,7 @@ Here's a non-exhaustive list of the most important features:
 
 ## Data Storage
 
-Kinote stores your library and settings locally. The save fails are located at `~/.kinote`.
+Kinote stores your library and settings locally. The save files are located at `~/.kinote`.
 
 ## Attribution
 
