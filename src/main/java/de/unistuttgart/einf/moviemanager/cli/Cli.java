@@ -167,8 +167,12 @@ public class Cli {
 			long time = System.currentTimeMillis();
 
 			while (running) {
-				final KeyStroke key = terminal.pollInput();
-				final boolean keyHandled = handleGlobalInput(key);
+				KeyStroke key;
+				boolean keyHandled = false;
+
+				while ((key = terminal.pollInput()) != null) {
+					keyHandled |= handleGlobalInput(key);
+				}
 
 				if (screen.doResizeIfNecessary() != null || System.currentTimeMillis() - time > FRAME_TIME_MS || keyHandled) {
 					time = System.currentTimeMillis();
