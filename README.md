@@ -35,6 +35,21 @@ You can verify your Java version by running `java --version` in your terminal.
    > Note that on Windows you'll have to use `javaw` because running it directly in the Terminal usually causes
    > problems. By doing so, an emulated terminal window will be launched that allows the app to work properly.
 
+### Installation script
+
+If you don't want to manually startup the `*.jar` file, you can use the install scripts that download the latest
+Kinote version and create a global `kinote` command to launch the TUI from anywhere.
+
+**Linux/macOS:**
+```bash
+curl -sSL https://raw.githubusercontent.com/SomeSourceCode/kinote/main/install.sh | bash
+```
+
+**Windows:**
+```bash
+irm https://raw.githubusercontent.com/SomeSourceCode/kinote/main/install.ps1 | iex
+```
+
 ## How does it work?
 
 The application is a TUI (Terminal User Interface) that operates in three distinct modes.
