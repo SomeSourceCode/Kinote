@@ -852,6 +852,26 @@ public class TextArea extends InteractableBase {
 			switch (key.getKeyType()) {
 				case Character -> {
 					switch (key.getCharacter()) {
+						case 'k' -> {
+							if (moveUp()) {
+								return InputResult.HANDLED;
+							}
+						}
+						case 'j' -> {
+							if (moveDown()) {
+								return InputResult.HANDLED;
+							}
+						}
+						case 'h' -> {
+							if (moveLeft()) {
+								return InputResult.HANDLED;
+							}
+						}
+						case 'l' -> {
+							if (moveRight()) {
+								return InputResult.HANDLED;
+							}
+						}
 						case 'I' -> {
 							moveToLineStart();
 							return InputResult.ENTER_EDIT_MODE;
