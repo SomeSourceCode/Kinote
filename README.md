@@ -4,7 +4,7 @@ The movie manager originally created as the final project for EInf ("Einführung
 at the University of Stuttgart.
 
 Kinote is a terminal application utilizing Vim-style keybindings and distinct operational modes for fast navigation and
-management or your local movie and series library.
+management of your local movies and series library.
 
 ![demo](demo.gif)
 
@@ -22,7 +22,7 @@ You can verify your Java version by running `java --version` in your terminal.
 2. Navigate into the directory of the downloaded `jar` file.
 3. Run the following command in the terminal:
 
-   **Linux/maxOS:**
+   **Linux/MacOS:**
    ```bash
    java -jar Kinote.jar
    ```
@@ -37,17 +37,17 @@ You can verify your Java version by running `java --version` in your terminal.
 
 ### Installation script
 
-If you don't want to manually startup the `*.jar` file, you can use the install scripts that download the latest
+If you don't want to manually start up the `*.jar` file, you can use the install scripts that download the latest
 Kinote version and create a global `kinote` command to launch the TUI from anywhere.
 
 **Linux/macOS:**
 ```bash
-curl -sSL https://raw.githubusercontent.com/SomeSourceCode/kinote/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/SomeSourceCode/Kinote/main/install.sh | bash
 ```
 
 **Windows:**
 ```bash
-irm https://raw.githubusercontent.com/SomeSourceCode/kinote/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/SomeSourceCode/Kinote/main/install.ps1 | iex
 ```
 
 ## How does it work?
@@ -75,7 +75,7 @@ modify content normally.
 Pressing <kbd>:</kbd> enters command mode at the bottom of the screen. This allows you to type commands to perform actions.
 
 - <kbd>⇥</kbd> (Tab): Autocomplete commands.
-- <kbd>Esc</kbd>: Cancel the command and return to Navigation mode.
+- <kbd>Esc</kbd>: Cancel the command and return to `NAVIGATION` mode.
 
 ### Key Commands
 
@@ -98,7 +98,7 @@ Here's a non-exhaustive list of the most important features:
 
 ## Data Storage
 
-Kinote stores your library and settings locally. The save fails are located at `~/.kinote`.
+Kinote stores your library and settings locally. The save files are located at `~/.kinote`.
 
 ## Attribution
 
@@ -106,4 +106,4 @@ This application uses [The Movie Database (TMDb)](https://www.themoviedb.org/) t
 
 ![tmdb logo](tmdb-logo.svg)
 
-*This application uses the TMDb APIs but is not endorsed certified, or otherwise approved by TMDb.*
+*This application uses the TMDb APIs but is not endorsed, certified, or otherwise approved by TMDb.*
