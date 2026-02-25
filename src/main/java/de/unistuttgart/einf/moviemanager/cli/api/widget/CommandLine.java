@@ -35,6 +35,7 @@ public class CommandLine extends InteractableBase {
 	private final AnchoredPlacement popoverPlacement;
 	private final ListView<String> suggestionsListView;
 
+	private Consumer<String> onExecute;
 	private Consumer<String> onFail;
 	private Consumer<String> onSuccess;
 
@@ -391,7 +392,13 @@ public class CommandLine extends InteractableBase {
 		moveHistory(historyPos + 1);
 	}
 
-	private void addToHistory(String command) {
+	/**
+	 * Adds the given command to the history. This method does not add empty or null commands,
+	 * and does not add duplicate consecutive entries.
+	 *
+	 * @param command the command to add
+	 */
+	public void addToHistory(String command) {
 		if (command == null || command.isBlank()) {
 			return;
 		}
@@ -399,6 +406,18 @@ public class CommandLine extends InteractableBase {
 			return;
 		}
 		history.add(command);
+	}
+
+	/**
+	 * Adds the given commands to the history. This method does not add empty or null commands,
+	 * and does not add duplicate consecutive entries.
+	 *
+	 * @param commands the commands to add
+	 */
+	public void addToHistory(Collection<String> commands) {
+		for (String command : commands) {
+			addToHistory(command);
+		}
 	}
 
 	/* *************************************************************** *
@@ -637,6 +656,36 @@ public class CommandLine extends InteractableBase {
 	}
 
 	/**
+	 * Returns the consumer that is called when a command is executed. It takes the executed command as parameter.
+	 *
+	 * @return the consumer
+	 */
+	public Consumer<String> getOnExecute() {
+		return onExecute;
+	}
+
+	/**
+	 * Sets the consumer that is called when a command is executed. It takes the executed command as parameter.
+	 *
+	 * @param onExecute the consumer
+	 */
+	public void setOnExecute(Consumer<String> onExecute) {
+		this.onExecute = onExecute;
+	}
+
+	/**
+	 * Fires the consumer set by {@link #setOnExecute(Consumer)}.
+	 *
+	 * @param command the executed command
+	 */
+	public void fireOnExecute(String command) {
+		if (onExecute == null) {
+			return;
+		}
+		onExecute.accept(command);
+	}
+
+	/**
 	 * Returns the consumer that is called when a command
 	 * execution fails.
 	 *
@@ -703,6 +752,7 @@ public class CommandLine extends InteractableBase {
 	private void executeCurrentCommand() {
 		final CommandDispatcher.ExecutionResult result = dispatcher.execute(content);
 
+		fireOnExecute(content);
 		if (result.success()) {
 			fireOnSuccess(result.message());
 		} else {

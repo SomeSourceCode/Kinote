@@ -3,7 +3,9 @@ package de.unistuttgart.einf.moviemanager;
 import de.unistuttgart.einf.moviemanager.cli.Cli;
 import de.unistuttgart.einf.moviemanager.io.FileRepository;
 import de.unistuttgart.einf.moviemanager.io.SettingsSerializer;
+import de.unistuttgart.einf.moviemanager.io.StringListSerializer;
 import de.unistuttgart.einf.moviemanager.io.TopLevelMediaSetSerializer;
+import de.unistuttgart.einf.moviemanager.service.CommandHistoryService;
 import de.unistuttgart.einf.moviemanager.service.MediaService;
 import de.unistuttgart.einf.moviemanager.service.SettingsService;
 
@@ -23,6 +25,7 @@ public class Main {
 
 		final Path mediaFile = appDataDir.resolve("media.json");
 		final Path settingsFile = appDataDir.resolve("settings.json");
+		final Path commandHistoryFile = appDataDir.resolve("command-history.json");
 
 		final MediaService mediaService = new MediaService(
 				new FileRepository<>(mediaFile, new TopLevelMediaSetSerializer())
@@ -34,7 +37,12 @@ public class Main {
 		);
 		Runtime.getRuntime().addShutdownHook(new Thread(settingsService::save));
 
-		new Cli(mediaService, settingsService).run();
+		final CommandHistoryService commandHistoryService = new CommandHistoryService(
+				new FileRepository<>(commandHistoryFile, new StringListSerializer())
+		);
+		Runtime.getRuntime().addShutdownHook(new Thread(commandHistoryService::save));
+
+		new Cli(mediaService, settingsService, commandHistoryService).run();
 	}
 
 }
