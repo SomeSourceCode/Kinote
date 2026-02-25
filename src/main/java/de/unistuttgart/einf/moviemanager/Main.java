@@ -2,6 +2,7 @@ package de.unistuttgart.einf.moviemanager;
 
 import de.unistuttgart.einf.moviemanager.cli.Cli;
 import de.unistuttgart.einf.moviemanager.io.*;
+import de.unistuttgart.einf.moviemanager.model.Settings;
 import de.unistuttgart.einf.moviemanager.service.CommandHistoryService;
 import de.unistuttgart.einf.moviemanager.service.MediaService;
 import de.unistuttgart.einf.moviemanager.service.SettingsService;
@@ -30,7 +31,7 @@ public class Main {
 		Runtime.getRuntime().addShutdownHook(new Thread(mediaService::save));
 
 		final SettingsService settingsService = new SettingsService(
-				new FileRepository<>(settingsFile, new SettingsSerializer())
+				new FileRepository<>(settingsFile, DefaultGsonSerializer.createFor(Settings.class))
 		);
 		Runtime.getRuntime().addShutdownHook(new Thread(settingsService::save));
 

@@ -1,8 +1,8 @@
 package de.unistuttgart.einf.moviemanager.service;
 
 import de.unistuttgart.einf.moviemanager.dbimport.Language;
+import de.unistuttgart.einf.moviemanager.io.DefaultGsonSerializer;
 import de.unistuttgart.einf.moviemanager.io.FileRepository;
-import de.unistuttgart.einf.moviemanager.io.SettingsSerializer;
 import de.unistuttgart.einf.moviemanager.model.Settings;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ class SettingsServiceTest {
 	@BeforeEach
 	void setup() {
 		file = tempDir.resolve("settings.json");
-		fileRepository= new FileRepository<>(file, new SettingsSerializer());
+		fileRepository= new FileRepository<>(file, DefaultGsonSerializer.createFor(Settings.class));
 		settingsService = new SettingsService(fileRepository);
 
 		settings = new Settings();
