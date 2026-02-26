@@ -3,7 +3,6 @@ package de.unistuttgart.einf.moviemanager.dbimport;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.unistuttgart.einf.moviemanager.model.Genre;
 import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
