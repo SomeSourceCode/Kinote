@@ -1,5 +1,6 @@
 package de.unistuttgart.einf.moviemanager.model.age;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -9,6 +10,7 @@ class RatingSystemTest {
 
 	@ParameterizedTest
 	@EnumSource(RatingSystem.class)
+	@DisplayName("Should return exact match when estimating age ratings's minimum age")
 	void testEstimationExactMatch(RatingSystem system) {
 		for (AgeRating rating : system.getRatings()) {
 			final AgeRating estimated = system.getEstimation(rating.getMinimumAge());
@@ -19,6 +21,7 @@ class RatingSystemTest {
 
 	@ParameterizedTest
 	@EnumSource(RatingSystem.class)
+	@DisplayName("Should return minimum age rating for negative ages")
 	void testNegativeAges(RatingSystem system) {
 		final AgeRating rating = system.getEstimation(-5);
 
@@ -28,6 +31,7 @@ class RatingSystemTest {
 
 	@ParameterizedTest
 	@EnumSource(RatingSystem.class)
+	@DisplayName("Estimation should be monotonic")
 	void testEstimationMonotonicity(RatingSystem system) {
 		AgeRating previous = null;
 		for (int age = 0; age <= 30; age++) {
