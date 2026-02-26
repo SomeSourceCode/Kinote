@@ -1,42 +1,25 @@
 package de.unistuttgart.einf.moviemanager.dbimport;
 
-import de.unistuttgart.einf.moviemanager.model.Genre;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import de.unistuttgart.einf.moviemanager.model.Season;
 import de.unistuttgart.einf.moviemanager.model.Series;
-import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
-import info.movito.themoviedbapi.TmdbTvSeries;
-import info.movito.themoviedbapi.model.core.IdElement;
-import info.movito.themoviedbapi.model.tv.core.TvSeason;
-import info.movito.themoviedbapi.model.tv.series.TvSeriesDb;
-import info.movito.themoviedbapi.tools.TmdbException;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-public class SeriesImporter extends MediaImporter {
+/**
+ * Used to import series data from TMDb.
+ */
+public class SeriesImporter extends MediaImporter<Series> {
 
 	private SeasonImporter seasonImporter;
 
 	/**
-	 * Creates a new SeriesImporter with the given TMDb API key.
+	 * Constructs a new series importer with the given TMDb client.
 	 *
-	 * @param apiKey the TMDb API key
+	 * @param client the TMDb client to use for API requests
 	 */
-	public SeriesImporter(String apiKey) {
-		super(apiKey);
-	}
-
-	/**
-	 * Creates a new SeriesImporter with the given TMDb API key
-	 * and also sets the configuration for season imports.
-	 *
-	 * @param apiKey the TMDb API key
-	 * @param seasonImporter the configuration used for season imports
-	 */
-	public SeriesImporter(String apiKey, SeasonImporter seasonImporter) {
-		super(apiKey);
-		this.seasonImporter = seasonImporter;
+	public SeriesImporter(TmdbClient client) {
+		super(client);
 	}
 
 	/**
@@ -58,76 +41,59 @@ public class SeriesImporter extends MediaImporter {
 		this.seasonImporter = seasonImporter;
 	}
 
+	@Override
+	protected void initializeStrategy() {
+		strategies.put(ImportableAttribute.TITLE, createStringStrategy("name", Series::getTitle, Series::setTitle));
+		strategies.put(ImportableAttribute.DESCRIPTION, createStringStrategy("overview", Series::getDescription, Series::setDescription));
+		strategies.put(ImportableAttribute.GENRE, createGenreStrategy("genres", Series::addGenre));
+	}
+
 	/**
-	 * Runs the import with the current configuration for the given series and TMDB ID.
+	 * Fills the given series with data from TMDb for the given series ID.
 	 *
-	 * @param series the series to import data into
-	 * @param seriesId the TMDB ID of the series
-	 * @throws MediaImportException if the import fails due to a TMDb API error
+	 * @param series the series to fill
+	 * @param tmdbId the TMDb ID of the series to import
+	 * @throws MediaImportException if an error occurs during the import process
 	 */
-	public void importData(Series series, int seriesId) throws MediaImportException {
-		final TmdbTvSeries tmdbTvSeries = tmdbApi.getTvSeries();
+	public void fill(Series series, int tmdbId) throws MediaImportException {
+		final JsonObject json = client.get("tv/" + tmdbId, language, "content_ratings");
+		final JsonObject contentRatings = json.getAsJsonObject("content_ratings");
+		final ImportContext context = new ImportContext(tmdbId, parseSeriesAgeRatings(contentRatings));
+		applyAttributes(series, json, context);
 
-		try {
-			TvSeriesDb tmdbSeries = tmdbTvSeries.getDetails(seriesId, language.getCode());
-
-			included.forEach(attribute -> {
-				switch (attribute) {
-					case TITLE -> {
-						String tmdbTitle = tmdbSeries.getName();
-						String title = series.getTitle();
-						
-						if (tmdbTitle != null && (overridden.contains(attribute) || title == null || title.isBlank())) {
-							series.setTitle(tmdbTitle);
-						}
-					}
-					case DESCRIPTION -> {
-						String tmdbDescription = tmdbSeries.getOverview();
-						String description = series.getDescription();
-						
-						if (tmdbDescription != null && (overridden.contains(attribute) || description == null ||description.isBlank())) {
-							series.setDescription(tmdbDescription);
-						}
-					}
-					case GENRE -> {
-						Set<Genre> genres = mapGenres(tmdbSeries.getGenres().stream()
-								.map(IdElement::getId)
-								.collect(Collectors.toSet()));
-
-						for (Genre genre : genres) {
-							if (!overridden.contains(attribute) && series.hasGenre(genre)) {
-								continue;
-							}
-							series.addGenre(genre);
-						}
-					}
-
-				}
-			});
-
-			if (seasonImporter == null) {
-				return;
-			}
-
-			List<TvSeason> seasons = tmdbSeries.getSeasons();
-			Set<AgeRating> ageRatings = fetchAgeRatingsFromSeries(seriesId);
-			for (TvSeason tmdbSeason : seasons) {
-				if (tmdbSeason.getSeasonNumber() < 1) {
-					continue;
-				}
-				int seasonNumber = tmdbSeason.getSeasonNumber();
-				Season season = series.getChild(seasonNumber);
-				if (season == null) {
-					season = new Season(seasonNumber);
-					series.addChild(season);
-				}
-				seasonImporter.importData(season, seriesId, seasonNumber, ageRatings);
-			}
-
-		} catch (TmdbException e) {
-			throw new MediaImportException("Error while trying to import series data from TMDb", e);
+		if (seasonImporter == null || !json.has("seasons")) {
+			return;
 		}
 
+		final JsonArray seasonsArray = json.getAsJsonArray("seasons");
+		for (JsonElement seasonElement : seasonsArray) {
+			final JsonObject seasonObject = seasonElement.getAsJsonObject();
+			final int seasonNumber = seasonObject.get("season_number").getAsInt();
+
+			if (seasonNumber < 1) {
+				continue;
+			}
+
+			Season season = series.getChild(seasonNumber);
+			if (season == null) {
+				season = new Season(seasonNumber);
+				series.addChild(season);
+			}
+			seasonImporter.fill(season, seasonObject, context);
+		}
+	}
+
+	/**
+	 * Creates a new series and fills it with data from TMDb for the given TMDb ID.
+	 *
+	 * @param tmdbId the TMDb ID of the series to import
+	 * @return the newly create series
+	 * @throws MediaImportException if an error occurs during the import process
+	 */
+	public Series create(int tmdbId) throws MediaImportException {
+		final Series series = new Series();
+		fill(series, tmdbId);
+		return series;
 	}
 
 }

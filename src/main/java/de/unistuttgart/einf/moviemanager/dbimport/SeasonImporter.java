@@ -1,43 +1,31 @@
 package de.unistuttgart.einf.moviemanager.dbimport;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import de.unistuttgart.einf.moviemanager.model.Episode;
+import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.Season;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
-import info.movito.themoviedbapi.TmdbTvSeasons;
-import info.movito.themoviedbapi.TmdbTvSeries;
-import info.movito.themoviedbapi.model.tv.season.TvSeasonDb;
-import info.movito.themoviedbapi.model.tv.season.TvSeasonEpisode;
-import info.movito.themoviedbapi.model.tv.series.TvSeriesDb;
-import info.movito.themoviedbapi.tools.TmdbException;
 
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class SeasonImporter extends MediaImporter {
+/**
+ * Used to import season data from TMDb.
+ */
+public class SeasonImporter extends MediaImporter<Season> {
 
 	private EpisodeImporter episodeImporter;
 	private static final Pattern TITLE_PREFIX_PATTERN = Pattern.compile("((Season)|(Staffel)) \\d+[:\\-\\s]*");
 
 	/**
-	 * Creates a new SeasonImporter with the given TMDb API key.
+	 * Constructs a new season importer with the given TMDb client.
 	 *
-	 * @param apiKey the TMDb API key
+	 * @param client the TMDb client to use for API requests.
 	 */
-	public SeasonImporter(String apiKey) {
-		super(apiKey);
-	}
-
-	/**
-	 * Creates a new SeasonImporter with the given TMDb API key
-	 * and also sets the configuration for episode imports.
-	 *
-	 * @param apiKey the TMDb API key
-	 * @param episodeImporter the configuration used for episode imports
-	 */
-	public SeasonImporter(String apiKey, EpisodeImporter episodeImporter) {
-		super(apiKey);
-		this.episodeImporter = episodeImporter;
+	public SeasonImporter(TmdbClient client) {
+		super(client);
 	}
 
 	/**
@@ -59,87 +47,79 @@ public class SeasonImporter extends MediaImporter {
 		this.episodeImporter = episodeImporter;
 	}
 
-	/**
-	 * Runs the import with the current configuration for the given season and TMDB series ID.
-	 *
-	 * @param season the season to import data into
-	 * @param seriesId the TMDB ID of the series
-	 * @param seasonNumber the season number
-	 * @throws MediaImportException if the import fails due to a TMDb API error
-	 */
-	public void importData(Season season, int seriesId, int seasonNumber) throws MediaImportException {
-		TmdbTvSeries tmdbTvSeries = tmdbApi.getTvSeries();
+	@Override
+	protected void initializeStrategy() {
+		strategies.put(ImportableAttribute.TITLE, createStringStrategy("name", Season::getTitle, Season::setTitle, title -> TITLE_PREFIX_PATTERN.matcher(title).replaceFirst("")));
+		strategies.put(ImportableAttribute.DESCRIPTION, createStringStrategy("overview", Season::getDescription, Season::setDescription));
+	}
 
-		try {
-			TvSeriesDb tmdbSeries =  tmdbTvSeries.getDetails(seriesId, language.getCode());
-			importData(season, seriesId, seasonNumber, fetchAgeRatingsFromSeries(seriesId));
-		} catch (TmdbException e) {
-			throw new MediaImportException("Error while trying to import season data from TMDb", e);
+	protected void fill(Season season, JsonObject json, ImportContext context) throws MediaImportException {
+		if (episodeImporter == null || context == null) {
+			applyAttributes(season, json, context);
+			return;
 		}
 
+		json = client.get("tv/" + context.seriesId() + "/season/" + season.getNumber(), language, "content_ratings");
+
+		final Set<AgeRating> seriesAgeRatings;
+		if (context.seriesAgeRatings() == null) {
+			seriesAgeRatings = fetchSeriesAgeRatings(context.seriesId());
+		} else {
+			seriesAgeRatings = context.seriesAgeRatings();
+		}
+
+		context = new ImportContext(context.seriesId(), seriesAgeRatings);
+
+		applyAttributes(season, json, context);
+		if (!json.has("episodes")) {
+			return;
+		}
+
+		final JsonArray episodesArray = json.getAsJsonArray("episodes");
+		for (JsonElement episodeElement : episodesArray) {
+			final JsonObject episodeObject = episodeElement.getAsJsonObject();
+			final int episodeNumber = episodeObject.get("episode_number").getAsInt();
+
+			if (episodeNumber < 1) {
+				continue;
+			}
+
+			Episode episode = season.getChild(episodeNumber);
+			if (episode == null) {
+				episode = new Episode(episodeNumber);
+				season.addChild(episode);
+			}
+			episodeImporter.fill(episode, episodeObject, context);
+		}
 	}
 
 	/**
-	 * Runs the import with the current configuration for the given season, TMDB series ID and age ratings.
+	 * Fills the given season with data from TMDb for the given series ID and season number.
 	 *
-	 * @param season the season to import data into
-	 * @param seriesId the TMDB ID of the series
+	 * @param season the season to fill
+	 * @param seriesTmdbId the TMDb ID of the parent series
 	 * @param seasonNumber the season number
-	 * @param ageRatings the age ratings of the series
-	 * @throws MediaImportException if the import fails due to a TMDb API error
+	 * @throws MediaImportException if an error occurs during the import process
 	 */
-	protected void importData(Season season, int seriesId, int seasonNumber, Set<AgeRating> ageRatings) throws MediaImportException {
-		final TmdbTvSeasons tmdbSeasons = tmdbApi.getTvSeasons();
+	public void fill(Season season, int seriesTmdbId, int seasonNumber) throws MediaImportException {
+		final JsonObject json = client.get("tv/" + seriesTmdbId + "/season/" + seasonNumber, language, "content_ratings");
+		final Set<AgeRating> ageRatings = fetchSeriesAgeRatings(seriesTmdbId);
+		final ImportContext context = new ImportContext(seriesTmdbId, ageRatings);
+		fill(season, json, context);
+	}
 
-		try {
-			TvSeasonDb tmdbSeason = tmdbSeasons.getDetails(seriesId, seasonNumber, language.getCode());
-
-			included.forEach(attribute -> {
-				switch (attribute) {
-					case TITLE -> {
-						String tmdbTitle = tmdbSeason.getName();
-						if (tmdbTitle == null) {
-							break;
-						}
-						tmdbTitle = TITLE_PREFIX_PATTERN.matcher(tmdbTitle).replaceFirst("");
-						String title = season.getTitle();
-
-						if (!tmdbTitle.isBlank() && (overridden.contains(attribute) || title == null || title.isBlank())) {
-							season.setTitle(tmdbTitle);
-						}
-					}
-					case DESCRIPTION -> {
-						String tmdbDescription = tmdbSeason.getOverview();
-						String description = season.getDescription();
-
-						if (tmdbDescription != null && (overridden.contains(attribute) || description == null || description.isBlank())) {
-							season.setDescription(tmdbDescription);
-						}
-					}
-				}
-			});
-
-			if (episodeImporter == null) {
-				return;
-			}
-
-			List<TvSeasonEpisode> tmdbEpisodes = tmdbSeason.getEpisodes();
-			for (TvSeasonEpisode tmdbEpisode : tmdbEpisodes) {
-				if (tmdbEpisode.getEpisodeNumber() < 1) {
-					continue;
-				}
-				int episodeNumber = tmdbEpisode.getEpisodeNumber();
-				Episode episode = season.getChild(episodeNumber);
-				if (episode == null) {
-					episode = new Episode(episodeNumber);
-					season.addChild(episode);
-				}
-				episodeImporter.importData(episode, tmdbEpisode, ageRatings);
-			}
-
-		} catch (TmdbException e) {
-			throw new MediaImportException("Error while trying to import season data from TMDb", e);
-		}
+	/**
+	 * Creates a new season and fills it with data from TMDb for the given series ID and season number.
+	 *
+	 * @param seriesTmdbId the TMDb ID of the parent series
+	 * @param seasonNumber the season number
+	 * @return the newly created season
+	 * @throws MediaImportException if an error occurs during the import process
+	 */
+	public Season create(int seriesTmdbId, int seasonNumber) throws MediaImportException {
+		final Season season = new Season(seasonNumber);
+		fill(season, seriesTmdbId, seasonNumber);
+		return season;
 	}
 
 }

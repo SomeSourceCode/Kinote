@@ -1,109 +1,105 @@
 package de.unistuttgart.einf.moviemanager.dbimport;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import de.unistuttgart.einf.moviemanager.model.Genre;
 import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import de.unistuttgart.einf.moviemanager.model.age.RatingSystem;
-import info.movito.themoviedbapi.TmdbMovies;
-import info.movito.themoviedbapi.model.core.IdElement;
-import info.movito.themoviedbapi.model.movies.MovieDb;
-import info.movito.themoviedbapi.model.movies.ReleaseType;
-import info.movito.themoviedbapi.tools.TmdbException;
 
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-public class MovieImporter extends MediaImporter{
+/**
+ * Used to import movie data from TMDb.
+ */
+public class MovieImporter extends MediaImporter<Movie> {
 
 	/**
-	 * Creates a new MovieImporter with the given TMDb API key.
+	 * Constructs a new movie importer with the given TMDb client.
 	 *
-	 * @param apiKey the TMDb API key
+	 * @param client the TMDb client to use for API requests
 	 */
-	public MovieImporter(String apiKey) {
-		super(apiKey);
+	public MovieImporter(TmdbClient client) {
+		super(client);
 	}
 
-	/**
-	 * Runs the import with the current configuration for the given movie and TMDB ID.
-	 *
-	 * @param movie the to import data into
-	 * @param tmdbId the TMDB ID of the movie
-	 * @throws MediaImportException if the import fails due to a TMDb API error
-	 */
-	public void importData(Movie movie, int tmdbId) throws MediaImportException {
-		final TmdbMovies tmdbMovies = tmdbApi.getMovies();
+	@Override
+	protected void initializeStrategy() {
+		strategies.put(ImportableAttribute.TITLE, createStringStrategy("title", Movie::getTitle, Movie::setTitle));
+		strategies.put(ImportableAttribute.DESCRIPTION, createStringStrategy("overview", Movie::getDescription, Movie::setDescription));
+		strategies.put(ImportableAttribute.RUNTIME, createRuntimeStrategy("runtime", Movie::hasRuntime, Movie::setRuntime));
+		strategies.put(ImportableAttribute.GENRE, createGenreStrategy("genres", Movie::addGenre));
 
-		try {
-			MovieDb tmdbMovie = tmdbMovies.getDetails(tmdbId, language.getCode());
+		strategies.put(ImportableAttribute.AGE_RATING, (movie, json, context, override) -> {
+			if (!json.has("release_dates")) {
+				return;
+			}
+			final Set<AgeRating> ageRatings = new HashSet<>();
+			final JsonArray countries = json.getAsJsonObject("release_dates").getAsJsonArray("results");
 
-			for (ImportableAttribute attribute : included) {
-				switch (attribute) {
-					case TITLE -> {
-						String tmdbTitle = tmdbMovie.getTitle();
-						String title = movie.getTitle();
+			for (JsonElement countryElement : countries) {
+				final JsonObject countryObject = countryElement.getAsJsonObject();
+				final String iso31661 = countryObject.get("iso_3166_1").getAsString();
+				final JsonArray releaseDates = countryObject.getAsJsonArray("release_dates");
 
-						if (tmdbTitle != null && (overridden.contains(attribute) || title == null || title.isBlank())) {
-							movie.setTitle(tmdbTitle);
-						}
+				for (JsonElement dateElement : releaseDates) {
+					final JsonObject dateObject = dateElement.getAsJsonObject();
+					final int releaseType = dateObject.get("type").getAsInt();
+					if (releaseType != 3) {
+						continue;
 					}
-					case DESCRIPTION -> {
-						String tmdbDescription = tmdbMovie.getOverview();
-						String description = movie.getDescription();
 
-						if (tmdbDescription != null && (overridden.contains(attribute) || description == null || description.isBlank())) {
-							movie.setDescription(tmdbDescription);
-						}
+					final String certification = dateObject.get("certification").getAsString();
+					final AgeRating rating = mapAgeRating(iso31661, certification);
+					if (rating == null) {
+						continue;
 					}
-					case RUNTIME -> {
-						Integer tmdbRuntime = tmdbMovie.getRuntime();
-
-						if (tmdbRuntime != null && (overridden.contains(attribute) || !movie.hasRuntime())) {
-							movie.setRuntime(tmdbRuntime);
-						}
-					}
-					case AGE_RATING -> {
-						Set<AgeRating> ageRatings = tmdbMovies.getReleaseDates(tmdbId).getResults().stream()
-								.flatMap(country -> country.getReleaseDates().stream()
-										.filter(releaseDate -> releaseDate.getType() == ReleaseType.THEATRICAL)
-										.map(releaseDate -> mapAgeRating(country.getIso31661(), releaseDate.getCertification())))
-								.filter(Objects::nonNull)
-								.collect(Collectors.toSet());
-
-						if (ageRatings.isEmpty()) {
-							continue;
-						}
-
-						for (RatingSystem ratingSystem : RatingSystem.values()) {
-							if (!overridden.contains(attribute) && movie.hasAgeRating(ratingSystem)) {
-								continue;
-							}
-							AgeRating rating = AgeRating.max(getAgeRatingsBySystem(ageRatings, ratingSystem));
-							if (rating == null) {
-								continue;
-							}
-							movie.setAgeRating(rating);
-						}
-					}
-					case GENRE -> {
-						Set<Genre> genres = mapGenres(tmdbMovie.getGenres().stream()
-								.map(IdElement::getId)
-								.collect(Collectors.toSet()));
-
-						for (Genre genre : genres) {
-							if (!overridden.contains(attribute) && movie.hasGenre(genre)) {
-								continue;
-							}
-							movie.addGenre(genre);
-						}
-					}
+					ageRatings.add(rating);
 				}
 			}
 
-		} catch (TmdbException e) {
-			throw new MediaImportException("Error while trying to import movie data from TMDb", e);
-		}
+			if (ageRatings.isEmpty()) {
+				return;
+			}
+
+			for (RatingSystem ratingSystem : RatingSystem.values()) {
+				if (!override && movie.hasAgeRating(ratingSystem)) {
+					continue;
+				}
+				final AgeRating rating = AgeRating.max(getAgeRatingsBySystem(ageRatings, ratingSystem));
+				if (rating == null) {
+					continue;
+				}
+				movie.setAgeRating(rating);
+			}
+		});
+	}
+
+	/**
+	 * Fills the given movie with data from TMDb for the given TMDb ID.
+	 *
+	 * @param movie the movie to fill
+	 * @param tmdbId the TMDb ID of the movie to import
+	 * @throws MediaImportException if an error occurs during the import process
+	 */
+	public void fill(Movie movie, int tmdbId) throws MediaImportException {
+		final JsonObject json = client.get("movie/" + tmdbId, language, "release_dates");
+		applyAttributes(movie, json, null);
+	}
+
+	/**
+	 * Creates a new movie and fills it with data from TMDb for the given TMDb ID.
+	 *
+	 * @param tmdbId the TMDb ID of the movie to import
+	 * @return the newly created movie
+	 * @throws MediaImportException if an error occurs during the import process
+	 */
+	public Movie create(int tmdbId) throws MediaImportException {
+		final Movie movie = new Movie();
+		fill(movie, tmdbId);
+		return movie;
 	}
 
 }
