@@ -18,6 +18,7 @@ import de.unistuttgart.einf.moviemanager.cli.page.OverviewPage;
 import de.unistuttgart.einf.moviemanager.cli.page.Page;
 import de.unistuttgart.einf.moviemanager.command.CommandDispatcher;
 import de.unistuttgart.einf.moviemanager.model.*;
+import de.unistuttgart.einf.moviemanager.service.CommandHistoryService;
 import de.unistuttgart.einf.moviemanager.service.MediaService;
 import de.unistuttgart.einf.moviemanager.service.SettingsService;
 
@@ -41,6 +42,7 @@ public class Cli {
 	// services
 	private final MediaService mediaService;
 	private final SettingsService settingsService;
+	private final CommandHistoryService commandHistoryService;
 
 	// components
 	private final VerticalBorderPane mainContainer;
@@ -60,9 +62,11 @@ public class Cli {
 	 * Constructs a new Cli for the given media service.
 	 *
 	 * @param mediaService the media service
-	 * @throws IllegalArgumentException if mediaService is null
+	 * @param settingsService the settings service
+	 * @param commandHistoryService the command history service
+	 * @throws IllegalArgumentException if any service is null
 	 */
-	public Cli(MediaService mediaService, SettingsService settingsService) {
+	public Cli(MediaService mediaService, SettingsService settingsService, CommandHistoryService commandHistoryService) {
 		if (mediaService == null) {
 			throw new IllegalArgumentException("mediaService must be non-null");
 		}
@@ -71,6 +75,10 @@ public class Cli {
 			throw new IllegalArgumentException("settingsService must be non-null");
 		}
 		this.settingsService = settingsService;
+		if (commandHistoryService == null) {
+			throw new IllegalArgumentException("commandHistoryService must be non-null");
+		}
+		this.commandHistoryService = commandHistoryService;
 
 		scene = new Scene();
 
@@ -122,6 +130,8 @@ public class Cli {
 		commandLine.setPrefix(":");
 		commandLine.setPadding(new Insets(0, 2));
 
+		commandLine.addToHistory(commandHistoryService.getCommandHistory());
+		commandLine.setOnExecute(commandHistoryService::addCommand);
 		commandLine.setOnFail(this::showInfoDialog);
 
 		rootLayout.setBottom(commandLine);
