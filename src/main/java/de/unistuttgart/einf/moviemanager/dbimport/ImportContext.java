@@ -5,7 +5,7 @@ import de.unistuttgart.einf.moviemanager.model.age.AgeRating;
 import java.util.Set;
 
 /**
- * The import context used to pass information between importes in order to reduce
+ * The import context used to pass information between imports in order to reduce
  * the number of API requests.
  *
  * @param seriesId the TMDb ID of the series being imported, used by season and episode importers
