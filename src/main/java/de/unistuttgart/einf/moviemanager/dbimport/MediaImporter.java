@@ -3,42 +3,36 @@ package de.unistuttgart.einf.moviemanager.dbimport;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import de.unistuttgart.einf.moviemanager.model.Genre;
+import de.unistuttgart.einf.moviemanager.model.Media;
 import de.unistuttgart.einf.moviemanager.model.age.*;
-import info.movito.themoviedbapi.TmdbApi;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Abstract class for importing media data from TMDb.
  */
-public abstract class MediaImporter {
+public abstract class MediaImporter<T extends Media> {
 
-	protected final String apiKey;
-	protected final TmdbApi tmdbApi;
+	protected final TmdbClient client;
 	protected Language language;
 
 	protected final EnumSet<ImportableAttribute> included;
 	protected final EnumSet<ImportableAttribute> overridden;
+	protected final Map<ImportableAttribute, ImportStrategy<? super T>> strategies;
 
-	/**
-	 * Creates a new MediaImporter with the given TMDb API key.
-	 *
-	 * @param apiKey the TMDb API key
-	 */
-	public MediaImporter(String apiKey) {
-		this.apiKey = apiKey;
-		tmdbApi = new TmdbApi(apiKey);
+	public MediaImporter(TmdbClient client) {
+		this.client = client;
 		this.language = Language.ENGLISH;
-		included = EnumSet.noneOf(ImportableAttribute.class);
-		overridden = EnumSet.noneOf(ImportableAttribute.class);
+
+		this.included = EnumSet.noneOf(ImportableAttribute.class);
+		this.overridden = EnumSet.noneOf(ImportableAttribute.class);
+		this.strategies = new EnumMap<>(ImportableAttribute.class);
+
+		initializeStrategy();
 	}
 
 	/**
@@ -111,6 +105,66 @@ public abstract class MediaImporter {
 		return Collections.unmodifiableSet(overridden);
 	}
 
+	protected void applyAttributes(T media, JsonObject json, ImportContext context) {
+		for (ImportableAttribute attribute : included) {
+			final ImportStrategy<? super T> strategy = strategies.get(attribute);
+			if (strategy == null) {
+				continue;
+			}
+			strategy.apply(media, json, context, overridden.contains(attribute));
+		}
+	}
+
+	protected String getStringOrNull(JsonObject json, String key) {
+		if (!json.has(key) || json.get(key).isJsonNull()) {
+			return null;
+		}
+		return json.get(key).getAsString();
+	}
+
+	protected Integer getIntOrNull(JsonObject json, String key) {
+		if (!json.has(key) || json.get(key).isJsonNull()) {
+			return null;
+		}
+		return json.get(key).getAsInt();
+	}
+
+	protected Set<AgeRating> parseSeriesAgeRatings(JsonObject json) {
+		final Set<AgeRating> ageRatings = new HashSet<>();
+
+		if (!json.has("results")) {
+			return ageRatings;
+		}
+
+		final JsonArray results = json.getAsJsonArray("results");
+		for (JsonElement countryElement : results) {
+			final JsonObject countryObject = countryElement.getAsJsonObject();
+			final String iso31661 = countryObject.get("iso_3166_1").getAsString();
+			final String ratingString = countryObject.get("rating").getAsString();
+
+			if (!ratingString.isBlank()) {
+				final AgeRating ageRating = mapAgeRating(iso31661, ratingString);
+				if (ageRating != null) {
+					ageRatings.add(ageRating);
+				}
+			}
+		}
+
+		return ageRatings;
+	}
+
+	/**
+	 * Fetches age ratings for the given series ID from TMDb.
+	 *
+	 * @param seriesId the TMDb series ID
+	 * @return a set of age ratings
+	 */
+	protected Set<AgeRating> fetchSeriesAgeRatings(int seriesId) throws MediaImportException {
+		final Set<AgeRating> ageRatings = new HashSet<>();
+		final JsonObject jsonObject = client.get("tv/" + seriesId + "/content_ratings", language, null);
+		return parseSeriesAgeRatings(jsonObject);
+	}
+
 	/**
 	 * Maps the given country and age rating string to an AgeRating object.
 	 *
@@ -160,56 +214,8 @@ public abstract class MediaImporter {
 	}
 
 	/**
-	 * Fetches age ratings for the given series ID from TMDb.
-	 *
-	 * @param seriesId the TMDb series ID
-	 * @return a set of age ratings
-	 */
-	protected Set<AgeRating> fetchAgeRatingsFromSeries(int seriesId) throws MediaImportException {
-		Set<AgeRating> ageRatings = new HashSet<>();
-
-		try (HttpClient client = HttpClient.newHttpClient()) {
-			HttpRequest request = HttpRequest.newBuilder()
-					.GET()
-					.uri(new URI("https://api.themoviedb.org/3/tv/" + seriesId + "/content_ratings"))
-					.setHeader("accept", "application/json")
-					.setHeader("Authorization", "Bearer " + apiKey)
-					.build();
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-
-			JsonObject jsonObject = JsonParser.parseString(response.body()).getAsJsonObject();
-			JsonArray results = jsonObject.getAsJsonArray("results");
-
-			for (JsonElement country : results) {
-				JsonObject object = country.getAsJsonObject();
-
-				String iso31661 = object.get("iso_3166_1").getAsString();
-				String rating = object.get("rating").getAsString();
-
-				if (rating.isBlank()) {
-					continue;
-				}
-
-				AgeRating ageRating = mapAgeRating(iso31661, rating);
-				if (ageRating != null) {
-					ageRatings.add(ageRating);
-				}
-			}
-
-		} catch (IOException | URISyntaxException e) {
-			throw new MediaImportException("Error while trying to fetch the series' age ratings" + "e");
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new MediaImportException("Error while trying to fetch the series' age ratings" + "e");
-		}
-
-		return ageRatings;
-	}
-
-	/**
 	 * Returns all genres from the given set of TMDb gerne ids.
-	 * The mappings were found here: https://www.themoviedb.org/talk/5daf6eb0ae36680011d7e6ee
+	 * The mappings were found <a href="https://www.themoviedb.org/talk/5daf6eb0ae36680011d7e6ee">here</a>.
 	 *
 	 * @param ids the set of TMDb genre ids
 	 * @return the set of mapped genres
@@ -263,6 +269,57 @@ public abstract class MediaImporter {
 			}
 		}
 		return genres;
+	}
+
+	protected abstract void initializeStrategy();
+
+	protected ImportStrategy<T> createStringStrategy(String key, Function<? super T, String> getter, BiConsumer<? super T, String> setter) {
+		return createStringStrategy(key, getter, setter, null);
+	}
+
+	protected ImportStrategy<T> createStringStrategy(String key, Function<? super T, String> getter, BiConsumer<? super T, String> setter, Function<String, String> mapper) {
+		return (media, json, context, override) -> {
+			String tmdbValue = getStringOrNull(json, key);
+			if (tmdbValue == null) {
+				return;
+			}
+
+			if (mapper != null) {
+				tmdbValue = mapper.apply(tmdbValue);
+			}
+
+			final String currentValue = getter.apply(media);
+			if (tmdbValue.isBlank() || (!override && currentValue != null && !currentValue.isBlank())) {
+				return;
+			}
+			setter.accept(media, tmdbValue);
+		};
+	}
+
+	protected ImportStrategy<T> createRuntimeStrategy(String key, Predicate<? super T> hasRuntime, BiConsumer<? super T, Integer> setter) {
+		return (media, json, context, override) -> {
+			final Integer tmdbRuntime = getIntOrNull(json, key);
+			if (tmdbRuntime == null || (!override && hasRuntime.test(media))) {
+				return;
+			}
+			setter.accept(media, tmdbRuntime);
+		};
+	}
+
+	protected ImportStrategy<T> createGenreStrategy(String key, BiConsumer<? super T, Genre> addGenre) {
+		return (media, json, context, override) -> {
+			if (!json.has(key)) {
+				return;
+			}
+			final Set<Integer> genreIds = new HashSet<>();
+			for (JsonElement element : json.getAsJsonArray(key)) {
+				genreIds.add(element.getAsJsonObject().get("id").getAsInt());
+			}
+			final Set<Genre> genres = mapGenres(genreIds);
+			for (Genre genre : genres) {
+				addGenre.accept(media, genre);
+			}
+		};
 	}
 
 }

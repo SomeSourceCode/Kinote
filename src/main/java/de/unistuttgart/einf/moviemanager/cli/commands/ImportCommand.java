@@ -136,12 +136,12 @@ public class ImportCommand {
 	}
 
 	private static void performImportMovie(Cli cli, int tmdbId, Language language) {
-		final MovieImporter importer = createMovieImporter(getApiKey(cli));
+		final MovieImporter importer = createMovieImporter(cli);
 		importer.setLanguage(language);
 
-		final Movie movie = new Movie();
+		final Movie movie;
 		try {
-			importer.importData(movie, tmdbId);
+			movie = importer.create(tmdbId);
 		} catch (MediaImportException exception) {
 			throw Command.fail("Failed to import movie with id '" + tmdbId + "'. Is it the correct ID? Is it a movie? Do you have a stable internet connection?");
 		}
@@ -153,13 +153,12 @@ public class ImportCommand {
 	}
 
 	private static void performImportSeries(Cli cli, int tmdbId, Language language) {
-		final SeriesImporter importer = createSeriesImporter(getApiKey(cli));
+		final SeriesImporter importer = createSeriesImporter(cli);
 		importer.setLanguage(language);
 
-		final Series series = new Series();
+		final Series series;
 		try {
-			importer.importData(series, tmdbId);
-			cli.getMediaService().save();
+			series = importer.create(tmdbId);
 		} catch (MediaImportException exception) {
 			throw Command.fail("Failed to import series with id '" + tmdbId + "'. Is it the correct ID? Is it a series? Do you have a stable internet connection?");
 		}
@@ -175,12 +174,12 @@ public class ImportCommand {
 			throw Command.fail("Season " + seasonNumber + " already exists in series '" + series.getTitle() + "'.");
 		}
 
-		final SeasonImporter importer = createSeasonImporter(getApiKey(cli));
+		final SeasonImporter importer = createSeasonImporter(cli);
 		importer.setLanguage(language);
 
-		final Season season = new Season(seasonNumber);
+		final Season season;
 		try {
-			importer.importData(season, seriesTmdbId, seasonNumber);
+			season = importer.create(seriesTmdbId, seasonNumber);
 		} catch (MediaImportException exception) {
 			throw Command.fail("Failed to import season " + seasonNumber + " (Series ID: " + seriesTmdbId + ").");
 		}
@@ -199,22 +198,18 @@ public class ImportCommand {
 			throw Command.fail("Episode " + episodeNumber + " already exists in season " + seasonNumber + ".");
 		}
 
-		final EpisodeImporter importer = createEpisodeImporter(getApiKey(cli));
+		final EpisodeImporter importer = createEpisodeImporter(cli);
 		importer.setLanguage(language);
 
-		final Episode episode = new Episode(episodeNumber);
+		final Episode episode;
 		try {
-			importer.importData(episode, seriesTmdbId, seasonNumber, episodeNumber);
+			episode = importer.create(seriesTmdbId, seasonNumber, episodeNumber);
 		} catch (MediaImportException exception) {
 			throw Command.fail("Failed to import episode " + episodeNumber + " (S" + seasonNumber + ", Series ID: " + seriesTmdbId + ").");
 		}
 
 		season.addChild(episode);
 		cli.refresh();
-	}
-
-	private static String getApiKey(Cli cli) {
-		return cli.getSettingsService().getSettings().getTmdbApiKey();
 	}
 
 	private static Language getLanguage(ExecutionContext context, Cli cli) {
@@ -236,28 +231,28 @@ public class ImportCommand {
 		throw Command.fail("Target series could not be determined. Either specify it explicitly as an argument or open a series/season/episode to provide context.");
 	}
 
-	private static MovieImporter createMovieImporter(String apiKey) {
-		final MovieImporter movieImporter = new MovieImporter(apiKey);
+	private static MovieImporter createMovieImporter(Cli cli) {
+		final MovieImporter movieImporter = new MovieImporter(cli.getTmdbClient());
 		movieImporter.include(ImportableAttribute.values());
 		return movieImporter;
 	}
 
-	private static SeriesImporter createSeriesImporter(String apiKey) {
-		final SeriesImporter seriesImporter = new SeriesImporter(apiKey);
+	private static SeriesImporter createSeriesImporter(Cli cli) {
+		final SeriesImporter seriesImporter = new SeriesImporter(cli.getTmdbClient());
 		seriesImporter.include(ImportableAttribute.values());
-		seriesImporter.setSeasonImporter(createSeasonImporter(apiKey));
+		seriesImporter.setSeasonImporter(createSeasonImporter(cli));
 		return seriesImporter;
 	}
 
-	private static SeasonImporter createSeasonImporter(String apiKey) {
-		final SeasonImporter seasonImporter = new SeasonImporter(apiKey);
+	private static SeasonImporter createSeasonImporter(Cli cli) {
+		final SeasonImporter seasonImporter = new SeasonImporter(cli.getTmdbClient());
 		seasonImporter.include(ImportableAttribute.values());
-		seasonImporter.setEpisodeImporter(createEpisodeImporter(apiKey));
+		seasonImporter.setEpisodeImporter(createEpisodeImporter(cli));
 		return seasonImporter;
 	}
 
-	private static EpisodeImporter createEpisodeImporter(String apiKey) {
-		final EpisodeImporter episodeImporter = new EpisodeImporter(apiKey);
+	private static EpisodeImporter createEpisodeImporter(Cli cli) {
+		final EpisodeImporter episodeImporter = new EpisodeImporter(cli.getTmdbClient());
 		episodeImporter.include(ImportableAttribute.values());
 		return episodeImporter;
 	}

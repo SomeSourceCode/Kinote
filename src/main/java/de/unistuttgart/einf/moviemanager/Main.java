@@ -1,6 +1,7 @@
 package de.unistuttgart.einf.moviemanager;
 
 import de.unistuttgart.einf.moviemanager.cli.Cli;
+import de.unistuttgart.einf.moviemanager.dbimport.TmdbClient;
 import de.unistuttgart.einf.moviemanager.io.*;
 import de.unistuttgart.einf.moviemanager.model.Settings;
 import de.unistuttgart.einf.moviemanager.service.CommandHistoryService;
@@ -40,7 +41,9 @@ public class Main {
 		);
 		Runtime.getRuntime().addShutdownHook(new Thread(commandHistoryService::save));
 
-		new Cli(mediaService, settingsService, commandHistoryService).run();
+		final TmdbClient tmdbClient = new TmdbClient(() -> settingsService.getSettings().getTmdbApiKey());
+
+		new Cli(mediaService, settingsService, commandHistoryService, tmdbClient).run();
 	}
 
 }

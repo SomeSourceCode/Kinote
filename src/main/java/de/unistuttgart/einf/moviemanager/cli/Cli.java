@@ -17,6 +17,7 @@ import de.unistuttgart.einf.moviemanager.cli.page.DetailsPage;
 import de.unistuttgart.einf.moviemanager.cli.page.OverviewPage;
 import de.unistuttgart.einf.moviemanager.cli.page.Page;
 import de.unistuttgart.einf.moviemanager.command.CommandDispatcher;
+import de.unistuttgart.einf.moviemanager.dbimport.TmdbClient;
 import de.unistuttgart.einf.moviemanager.model.*;
 import de.unistuttgart.einf.moviemanager.service.CommandHistoryService;
 import de.unistuttgart.einf.moviemanager.service.MediaService;
@@ -44,6 +45,8 @@ public class Cli {
 	private final SettingsService settingsService;
 	private final CommandHistoryService commandHistoryService;
 
+	private final TmdbClient tmdbClient;
+
 	// components
 	private final VerticalBorderPane mainContainer;
 	private final Text dateDisplay;
@@ -59,14 +62,14 @@ public class Cli {
 	private final Deque<Page> pageStack = new ArrayDeque<>();
 
 	/**
-	 * Constructs a new Cli for the given media service.
+	 * Constructs a new Cli for the given services and tmdb client.
 	 *
 	 * @param mediaService the media service
 	 * @param settingsService the settings service
 	 * @param commandHistoryService the command history service
-	 * @throws IllegalArgumentException if any service is null
+	 * @throws IllegalArgumentException if any service or the tmdb client is null
 	 */
-	public Cli(MediaService mediaService, SettingsService settingsService, CommandHistoryService commandHistoryService) {
+	public Cli(MediaService mediaService, SettingsService settingsService, CommandHistoryService commandHistoryService, TmdbClient tmdbClient) {
 		if (mediaService == null) {
 			throw new IllegalArgumentException("mediaService must be non-null");
 		}
@@ -79,6 +82,10 @@ public class Cli {
 			throw new IllegalArgumentException("commandHistoryService must be non-null");
 		}
 		this.commandHistoryService = commandHistoryService;
+		if (tmdbClient == null) {
+			throw new IllegalArgumentException("tmdbClient must be non-null");
+		}
+		this.tmdbClient = tmdbClient;
 
 		scene = new Scene();
 
@@ -240,6 +247,15 @@ public class Cli {
 	 */
 	public SettingsService getSettingsService() {
 		return settingsService;
+	}
+
+	/**
+	 * Returns the tmdb client.
+	 *
+	 * @return the tmdb client
+	 */
+	public TmdbClient getTmdbClient() {
+		return tmdbClient;
 	}
 
 	/**
