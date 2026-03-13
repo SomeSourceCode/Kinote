@@ -8,7 +8,6 @@ import me.xdrop.fuzzywuzzy.FuzzySearch;
 public class ChildMediaScorer {
 
 	public int calculateBestChildScore(Series series, String query) {
-
 		int best = 0;
 
 		for (Season season : series.getChildren()) {
@@ -21,20 +20,22 @@ public class ChildMediaScorer {
 			}
 		}
 		return best;
-
 	}
 
 	private int scoreTitle(String query, String title) {
-		String normalizedTitle = TextNormalizer.normalize(title);
-		if (normalizedTitle.isEmpty())
+		final String normalizedTitle = TextNormalizer.normalize(title);
+		if (normalizedTitle.isEmpty()) {
 			return 0;
+		}
 		return FuzzySearch.weightedRatio(query, normalizedTitle);
 	}
 
 	private int scoreDescription(String query, String description) {
-		String normalizedDesc = TextNormalizer.normalize(description);
-		if (normalizedDesc.isEmpty())
+		final String normalizedDesc = TextNormalizer.normalize(description);
+		if (normalizedDesc.isEmpty()) {
 			return 0;
+		}
 		return FuzzySearch.partialRatio(query, normalizedDesc);
 	}
+
 }

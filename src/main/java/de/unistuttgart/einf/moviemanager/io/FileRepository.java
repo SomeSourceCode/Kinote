@@ -23,10 +23,12 @@ public class FileRepository<T> {
 	 * @param serializer the serializer
 	 */
 	public FileRepository(Path path, DataSerializer<T> serializer) {
-		if (path == null)
+		if (path == null) {
 			throw new IllegalArgumentException("path must not be null");
-		if (serializer == null)
+		}
+		if (serializer == null) {
 			throw new IllegalArgumentException("serializer must not be null");
+		}
 
 		this.path = path;
 		this.serializer = serializer;

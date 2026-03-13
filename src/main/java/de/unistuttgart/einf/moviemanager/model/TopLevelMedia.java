@@ -30,4 +30,5 @@ public sealed interface TopLevelMedia extends Media permits Movie, Series {
 	 * @return the uuid
 	 */
 	UUID getId();
+
 }

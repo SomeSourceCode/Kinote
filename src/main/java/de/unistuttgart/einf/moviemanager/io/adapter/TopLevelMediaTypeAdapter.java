@@ -36,4 +36,5 @@ public class TopLevelMediaTypeAdapter implements JsonDeserializer<TopLevelMedia>
 			default -> throw new JsonParseException("Unknown TopLevelMedia type: " + type);
 		};
 	}
+
 }

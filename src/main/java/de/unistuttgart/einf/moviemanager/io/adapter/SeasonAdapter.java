@@ -66,5 +66,4 @@ public class SeasonAdapter implements JsonSerializer<Season>, JsonDeserializer<S
 		return season;
 	}
 
-
 }

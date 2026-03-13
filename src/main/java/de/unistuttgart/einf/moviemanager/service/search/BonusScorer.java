@@ -14,38 +14,39 @@ public class BonusScorer {
 	private static final int BONUS = 6;
 
 	public double topLevelMediaTypeBonus(String query, TopLevelMedia media) {
-		if (media instanceof Movie)
-			if (containsAny(query, MOVIE_WORDS))
-				return BONUS;
-
-		if (media instanceof Series)
-			if (containsAny(query, SERIES_WORDS))
-				return BONUS;
-
+		if (media instanceof Movie && containsAny(query, MOVIE_WORDS)) {
+			return BONUS;
+		}
+		if (media instanceof Series && containsAny(query, SERIES_WORDS)) {
+			return BONUS;
+		}
 		return 0;
 	}
 
 	public double genreBonus(String query, Genre genre) {
-		if (genre == null)
+		if (genre == null) {
 			return 0;
+		}
 
 		for (String key : genre.getKeywords()) {
-			String normalizedKey = TextNormalizer.normalize(key);
-
-			if (normalizedKey.isEmpty())
+			final String normalizedKey = TextNormalizer.normalize(key);
+			if (normalizedKey.isEmpty()) {
 				continue;
+			}
 
-			if (query.contains(normalizedKey))
+			if (query.contains(normalizedKey)) {
 				return BONUS;
+			}
 		}
 		return 0;
 	}
 
 	private boolean containsAny(String query, List<String> words) {
-		for (String w : words)
-			if (query.contains(w))
+		for (String word : words) {
+			if (query.contains(word)) {
 				return true;
-
+			}
+		}
 		return false;
 	}
 

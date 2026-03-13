@@ -36,10 +36,7 @@ public final class Series extends MediaBase implements ParentMedia<Season>, TopL
 		setTitle(title);
 		setDescription(description);
 
-		if (id == null)
-			this.id = UUID.randomUUID();
-		else
-			this.id = id;
+		this.id = id == null ? UUID.randomUUID() : id;
 	}
 
 	/**

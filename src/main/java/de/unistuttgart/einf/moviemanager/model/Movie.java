@@ -45,10 +45,7 @@ public final class Movie extends MediaBase implements TopLevelMedia, LeafMedia {
 		setDescription(description);
 		this.watched = watched;
 
-		if (id == null)
-			this.id = UUID.randomUUID();
-		else
-			this.id = id;
+		this.id = id == null ? UUID.randomUUID() : id;
 	}
 
 	/**

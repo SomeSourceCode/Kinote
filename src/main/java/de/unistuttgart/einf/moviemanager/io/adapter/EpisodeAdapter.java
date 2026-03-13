@@ -52,4 +52,5 @@ public class EpisodeAdapter implements JsonSerializer<Episode>, JsonDeserializer
 
 		return episode;
 	}
+
 }

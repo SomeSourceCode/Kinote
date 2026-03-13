@@ -46,8 +46,8 @@ public class TopLevelMediaSetSerializer implements DataSerializer<Set<TopLevelMe
 	public void serialize(OutputStream outputStream, Set<TopLevelMedia> data) {
 		try (Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
 			gson.toJson(data, SET_TLM_TYPE, writer);
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to serialize JSON", e);
+		} catch (IOException exception) {
+			throw new RuntimeException("Failed to serialize JSON", exception);
 		}
 	}
 
@@ -62,11 +62,12 @@ public class TopLevelMediaSetSerializer implements DataSerializer<Set<TopLevelMe
 	public Set<TopLevelMedia> deserialize(InputStream data) {
 		try (Reader reader = new InputStreamReader(data, StandardCharsets.UTF_8)) {
 			Set<TopLevelMedia> loaded = gson.fromJson(reader, SET_TLM_TYPE);
-			if (loaded == null) return null;
+			if (loaded == null) {
+				return null;
+			}
 			return new HashSet<>(loaded);
-
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to deserialize JSON", e);
+		} catch (IOException exception) {
+			throw new RuntimeException("Failed to deserialize JSON", exception);
 		}
 	}
 
@@ -81,8 +82,8 @@ public class TopLevelMediaSetSerializer implements DataSerializer<Set<TopLevelMe
 	private static ExclusionStrategy skipParentField() {
 		return new ExclusionStrategy() {
 			@Override
-			public boolean shouldSkipField(FieldAttributes f) {
-				return f.getName().equals("parent");
+			public boolean shouldSkipField(FieldAttributes field) {
+				return field.getName().equals("parent");
 			}
 
 			@Override

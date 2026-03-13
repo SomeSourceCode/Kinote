@@ -54,4 +54,5 @@ public class MovieAdapter implements JsonSerializer<Movie>, JsonDeserializer<Mov
 
 		return movie;
 	}
+
 }

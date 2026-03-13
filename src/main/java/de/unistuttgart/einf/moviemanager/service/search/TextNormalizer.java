@@ -8,10 +8,11 @@ public class TextNormalizer {
 
 	private TextNormalizer() {}
 
-	public static String normalize(String s) {
-		if (s == null)
+	public static String normalize(String text) {
+		if (text == null) {
 			return "";
-		return s.toLowerCase(Locale.ROOT)
+		}
+		return text.toLowerCase(Locale.ROOT)
 				.replaceAll("[^\\p{L}\\p{Nd}\\s]+", " ")
 				.replaceAll("\\s+", " ")
 				.trim();
@@ -24,8 +25,8 @@ public class TextNormalizer {
 			Pattern.CASE_INSENSITIVE
 	);
 
-	public static String stripIntentWords(String normalizedQuery) {
-		return INTENT_PATTERN.matcher(normalizedQuery)
+	public static String stripIntentWords(String query) {
+		return INTENT_PATTERN.matcher(query)
 				.replaceAll(" ")
 				.replaceAll("\\s+", " ")
 				.trim();
