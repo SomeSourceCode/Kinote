@@ -31,17 +31,21 @@ public class HelpCommand {
 				""");
 
 		commandToHelpMessage.put("import", """
-				Imports media from The Movie Database (TMDb). You can either provide a direct URL or an ID.
+				Imports media from The Movie Database (TMDb). You can search, or provide a direct URL or an ID.
 				
-				1. Using a URL (easiest):
+				1. Searching
+				:import search [movie|series] <query>
+				Example: :import search movie Matrix
+				
+				2. Using a URL (easiest):
 				:import <tmdb-url> [<language>]
-				Example: :import https://www.themoviedb.org/movie/603-the-matrix
+				Example: :import "https://www.themoviedb.org/movie/603-the-matrix" 
 				
-				2. Using an ID:
+				3. Using an ID:
 				:import movie|series <tmdb-id> [<language>]
 				Example: :import movie 603
 				
-				3. Importing Seasons/Episodes:
+				4. Importing Seasons/Episodes:
 				:import season [<series>] <season-number> <series-tmdb-id>
 				:import episode [<series>] <season-number> <episode-number> <series-tmdb-id>
 				
