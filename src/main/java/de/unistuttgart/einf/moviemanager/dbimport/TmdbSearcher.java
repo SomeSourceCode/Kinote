@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class TmdbSearcher {
 		this.client = client;
 	}
 
-	public record SearchResult(int id, String title, MediaType type) {}
+	public record SearchResult(int id, String title, MediaType type, LocalDate releaseDate) {}
 
 	private List<SearchResult> executeSearchRequest(String endpoint, String query, Language language, java.util.function.Function<JsonObject, MediaType> mediaTypeExtractor) throws MediaImportException {
 		final JsonObject json = client.get(endpoint, language, Map.of("query", query));
@@ -46,7 +47,16 @@ public class TmdbSearcher {
 			final int identifier = searchResultObject.get("id").getAsInt();
 			final String title = searchResultObject.get("title").getAsString();
 
-			results.add(new SearchResult(identifier, title, mediaType));
+			final LocalDate releaseDate;
+			if (searchResultObject.has("release_date") && !searchResultObject.get("release_date").getAsString().isEmpty()) {
+				releaseDate = LocalDate.parse(searchResultObject.get("release_date").getAsString());
+			} else if (searchResultObject.has("first_air_date") && !searchResultObject.get("first_air_date").getAsString().isEmpty()) {
+				releaseDate = LocalDate.parse(searchResultObject.get("first_air_date").getAsString());
+			} else {
+				releaseDate = null;
+			}
+
+			results.add(new SearchResult(identifier, title, mediaType, releaseDate));
 		}
 
 		return results;

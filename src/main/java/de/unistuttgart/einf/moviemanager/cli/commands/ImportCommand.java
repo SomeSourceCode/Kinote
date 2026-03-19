@@ -354,7 +354,7 @@ public class ImportCommand {
 						case SERIES -> "[S]";
 						default -> "[?]";
 					};
-					return prefix + " " + result.title() + " (ID: " + result.id() + ")";
+					return prefix + " " + result.title() + (result.releaseDate() == null ? "" : " (" + result.releaseDate().getYear() + ")") + " [id: " + result.id() + "]";
 				},
 				(selectedResult, language) -> {
 					switch (selectedResult.type()) {
@@ -371,7 +371,7 @@ public class ImportCommand {
 				context,
 				cli,
 				TmdbSearcher::searchMovies,
-				result -> result.title() + " (ID: " + result.id() + ")",
+				result -> result.title() + (result.releaseDate() == null ? "" : " (" + result.releaseDate().getYear() + ")") + " [id: " + result.id() + "]",
 				(selectedResult, language) -> performImportMovie(cli, selectedResult.id(), language),
 				"Failed to search for movies with query"
 		);
@@ -382,7 +382,7 @@ public class ImportCommand {
 				context,
 				cli,
 				TmdbSearcher::searchSeries,
-				result -> result.title() + " (ID: " + result.id() + ")",
+				result -> result.title() + (result.releaseDate() == null ? "" : " (" + result.releaseDate().getYear() + ")") + " [id: " + result.id() + "]",
 				(selectedResult, language) -> performImportSeries(cli, selectedResult.id(), language),
 				"Failed to search for series with query"
 		);
