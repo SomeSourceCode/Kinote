@@ -67,7 +67,7 @@ public class EpisodeImporter extends MediaImporter<Episode> {
 	 * @throws MediaImportException if an error occurs during the import process
 	 */
 	public void fill(Episode episode, int seriesId, int seasonNumber, int episodeNumber) throws MediaImportException {
-		final JsonObject json = client.get("tv/" + seriesId + "/season/" + seasonNumber + "/episode/" + episodeNumber, language, null);
+		final JsonObject json = client.get("tv/" + seriesId + "/season/" + seasonNumber + "/episode/" + episodeNumber, language);
 		final Set<AgeRating> ageRatings = fetchSeriesAgeRatings(seriesId);
 		final ImportContext context = new ImportContext(seriesId, ageRatings);
 		applyAttributes(episode, json, context);

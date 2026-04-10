@@ -1,19 +1,25 @@
 package de.unistuttgart.einf.moviemanager.cli.commands;
 
 import de.unistuttgart.einf.moviemanager.cli.Cli;
+import de.unistuttgart.einf.moviemanager.cli.api.Insets;
+import de.unistuttgart.einf.moviemanager.cli.api.popover.CenteredPlacement;
+import de.unistuttgart.einf.moviemanager.cli.api.popover.Popover;
 import de.unistuttgart.einf.moviemanager.cli.api.util.TextUtils;
+import de.unistuttgart.einf.moviemanager.cli.api.widget.ListView;
 import de.unistuttgart.einf.moviemanager.command.Command;
 import de.unistuttgart.einf.moviemanager.command.CommandDispatcher;
+import de.unistuttgart.einf.moviemanager.command.CommandExecutionException;
 import de.unistuttgart.einf.moviemanager.command.ExecutionContext;
-import de.unistuttgart.einf.moviemanager.command.argument.EnumArgument;
-import de.unistuttgart.einf.moviemanager.command.argument.IntegerArgument;
-import de.unistuttgart.einf.moviemanager.command.argument.LiteralArgument;
-import de.unistuttgart.einf.moviemanager.command.argument.SeriesArgument;
+import de.unistuttgart.einf.moviemanager.command.argument.*;
 import de.unistuttgart.einf.moviemanager.dbimport.*;
 import de.unistuttgart.einf.moviemanager.model.Episode;
 import de.unistuttgart.einf.moviemanager.model.Movie;
 import de.unistuttgart.einf.moviemanager.model.Season;
 import de.unistuttgart.einf.moviemanager.model.Series;
+
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * The command to import media from TMDb.
@@ -81,7 +87,26 @@ public class ImportCommand {
 										.then(IntegerArgument.create("series-tmdb-id").withMin(0)
 												.executes(context -> executeImportEpisode(context, cli))
 												.then(EnumArgument.create("language", Language.class)
-														.executes(context -> executeImportEpisode(context, cli))))))));
+														.executes(context -> executeImportEpisode(context, cli)))))))
+				// import [movie|series] search <query> [<language>]
+				.then(LiteralArgument.create("search")
+						// search <query> [<language>]
+						.then(StringArgument.create("query")
+								.executes(context -> executeSearch(context, cli))
+								.then(EnumArgument.create("language", Language.class)
+										.executes(context -> executeSearch(context, cli))))
+						// search movie <query> [<language>]
+						.then(LiteralArgument.create("movie")
+								.then(StringArgument.create("query")
+										.executes(context -> executeSearchMovies(context, cli))
+										.then(EnumArgument.create("language", Language.class)
+												.executes(context -> executeSearchMovies(context, cli)))))
+						// search series <query> [<language>]
+						.then(LiteralArgument.create("series")
+								.then(StringArgument.create("query")
+										.executes(context -> executeSearchSeries(context, cli))
+										.then(EnumArgument.create("language", Language.class)
+												.executes(context -> executeSearchSeries(context, cli)))))));
 	}
 
 	private static void executeImportUrl(ExecutionContext context, Cli cli) {
@@ -255,6 +280,112 @@ public class ImportCommand {
 		final EpisodeImporter episodeImporter = new EpisodeImporter(cli.getTmdbClient());
 		episodeImporter.include(ImportableAttribute.values());
 		return episodeImporter;
+	}
+
+	@FunctionalInterface
+	private interface SearchProvider {
+		List<TmdbSearcher.SearchResult> search(TmdbSearcher searcher, String query, Language language) throws MediaImportException;
+	}
+
+	private static void executeGenericSearch(ExecutionContext context, Cli cli, SearchProvider searchProvider,
+			Function<TmdbSearcher.SearchResult, String> displayFunction, BiConsumer<TmdbSearcher.SearchResult, Language> importAction, String errorMessage) {
+		final String query = context.getString("query");
+		final Language language = getLanguage(context, cli);
+
+		final TmdbSearcher searcher = new TmdbSearcher(cli.getTmdbClient());
+		final List<TmdbSearcher.SearchResult> results;
+		try {
+			results = searchProvider.search(searcher, query, language);
+		} catch (MediaImportException exception) {
+			throw Command.fail(errorMessage + " '" + query + "'. Do you have a stable internet connection? Is the TMDb API key set and valid?");
+		}
+
+		if (results.isEmpty()) {
+			cli.showInfoDialog("No results found for query: " + query);
+			return;
+		}
+
+		final ListView<TmdbSearcher.SearchResult> resultListView = new ListView<>(displayFunction);
+		resultListView.setItems(results);
+		resultListView.setPadding(new Insets(0, 1));
+
+		final int maximumAllowedHeight = 15;
+		final int calculatedHeight = Math.min(maximumAllowedHeight, results.size());
+		resultListView.setHeight(calculatedHeight);
+
+		final int maximumAllowedWidth = 80;
+		int calculatedWidth = 20;
+		for (TmdbSearcher.SearchResult result : results) {
+			final String displayString = displayFunction.apply(result);
+			if (displayString.length() > calculatedWidth) {
+				calculatedWidth = displayString.length();
+			}
+		}
+		calculatedWidth = Math.min(maximumAllowedWidth, calculatedWidth);
+		resultListView.setWidth(calculatedWidth + 2);
+
+		final CenteredPlacement placementStrategy = new CenteredPlacement();
+		final Popover searchPopover = new Popover(resultListView, placementStrategy);
+		searchPopover.setShowBorders(true);
+
+		resultListView.setOnItemSelected((selectedResult, index) -> {
+			if (resultListView.getScene() != null) {
+				resultListView.getScene().attemptClosePopover();
+			}
+			try {
+				importAction.accept(selectedResult, language);
+			} catch (CommandExecutionException exception) {
+				cli.showInfoDialog(exception.getMessage());
+			}
+		});
+
+		cli.showPopover(searchPopover);
+		resultListView.requestFocus();
+	}
+
+	private static void executeSearch(ExecutionContext context, Cli cli) {
+		executeGenericSearch(
+				context,
+				cli,
+				TmdbSearcher::searchMedia,
+				result -> {
+					final String prefix = switch (result.type()) {
+						case MOVIE -> "[M]";
+						case SERIES -> "[S]";
+						default -> "[?]";
+					};
+					return prefix + " " + result.title() + (result.releaseDate() == null ? "" : " (" + result.releaseDate().getYear() + ")") + " [id: " + result.id() + "]";
+				},
+				(selectedResult, language) -> {
+					switch (selectedResult.type()) {
+						case MOVIE -> performImportMovie(cli, selectedResult.id(), language);
+						case SERIES -> performImportSeries(cli, selectedResult.id(), language);
+					}
+				},
+				"Failed to search for media with query"
+		);
+	}
+
+	private static void executeSearchMovies(ExecutionContext context, Cli cli) {
+		executeGenericSearch(
+				context,
+				cli,
+				TmdbSearcher::searchMovies,
+				result -> result.title() + (result.releaseDate() == null ? "" : " (" + result.releaseDate().getYear() + ")") + " [id: " + result.id() + "]",
+				(selectedResult, language) -> performImportMovie(cli, selectedResult.id(), language),
+				"Failed to search for movies with query"
+		);
+	}
+
+	private static void executeSearchSeries(ExecutionContext context, Cli cli) {
+		executeGenericSearch(
+				context,
+				cli,
+				TmdbSearcher::searchSeries,
+				result -> result.title() + (result.releaseDate() == null ? "" : " (" + result.releaseDate().getYear() + ")") + " [id: " + result.id() + "]",
+				(selectedResult, language) -> performImportSeries(cli, selectedResult.id(), language),
+				"Failed to search for series with query"
+		);
 	}
 
 }

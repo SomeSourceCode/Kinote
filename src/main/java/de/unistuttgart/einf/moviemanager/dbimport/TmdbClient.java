@@ -5,6 +5,8 @@ import com.google.gson.JsonParser;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -34,6 +36,18 @@ public class TmdbClient {
 	}
 
 	/**
+	 * Performs a GET request to the TMDb API with the given endpoint and language.
+	 *
+	 * @param endpoint the API endpoint to call, e.g. "movie/550" or "tv/1399"
+	 * @param language the language for the response (default: English)
+	 * @return the JSON response from the TMDb API as a JsonObject
+	 * @throws MediaImportException if the API key is missing or invalid, if the endpoint is null, if the HTTP request fails, or if a network error occurs
+	 */
+	public JsonObject get(String endpoint, Language language) throws MediaImportException {
+		return get(endpoint, language, (Map<String, String>) null);
+	}
+
+	/**
 	 * Performs a GET request to the TMDb API with the given endpoint, language and appendToResponse parameters.
 	 *
 	 * @param endpoint the API endpoint to call, e.g. "movie/550" or "tv/1399"
@@ -43,6 +57,25 @@ public class TmdbClient {
 	 * @throws MediaImportException if the API key is missing or invalid, if the endpoint is null, if the HTTP request fails, or if a network error occurs
 	 */
 	public JsonObject get(String endpoint, Language language, String appendToResponse) throws MediaImportException {
+		final Map<String, String> queryParameters = new HashMap<>();
+
+		if (appendToResponse != null && !appendToResponse.isBlank()) {
+			queryParameters.put("append_to_response", appendToResponse);
+		}
+
+		return get(endpoint, language, queryParameters);
+	}
+
+	/**
+	 * Performs a GET request to the TMDb API with the given endpoint, language and custom query parameters.
+	 *
+	 * @param endpoint the API endpoint to call, e.g. "search/movie"
+	 * @param language the language for the response (default: English)
+	 * @param queryParameters a map of additional query parameters to include in the request
+	 * @return the JSON response from the TMDb API as a JsonObject
+	 * @throws MediaImportException if the API key is missing or invalid, if the endpoint is null, if the HTTP request fails, or if a network error occurs
+	 */
+	public JsonObject get(String endpoint, Language language, Map<String, String> queryParameters) throws MediaImportException {
 		if (endpoint == null) {
 			throw new IllegalArgumentException("Endpoint cannot be null");
 		}
@@ -61,8 +94,8 @@ public class TmdbClient {
 				.addPathSegments(endpoint)
 				.addQueryParameter("language", language.getCode());
 
-		if (appendToResponse != null && !appendToResponse.isBlank()) {
-			urlBuilder.addQueryParameter("append_to_response", appendToResponse);
+		if (queryParameters != null) {
+			queryParameters.forEach(urlBuilder::addQueryParameter);
 		}
 
 		final Request request = new Request.Builder()

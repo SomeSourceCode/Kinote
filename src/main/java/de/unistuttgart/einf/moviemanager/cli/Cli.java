@@ -9,6 +9,7 @@ import com.googlecode.lanterna.terminal.Terminal;
 import de.unistuttgart.einf.moviemanager.cli.api.*;
 import de.unistuttgart.einf.moviemanager.cli.api.layout.HorizontalBorderPane;
 import de.unistuttgart.einf.moviemanager.cli.api.layout.VerticalBorderPane;
+import de.unistuttgart.einf.moviemanager.cli.api.popover.Popover;
 import de.unistuttgart.einf.moviemanager.cli.api.widget.CommandLine;
 import de.unistuttgart.einf.moviemanager.cli.api.widget.ConfirmationDialog;
 import de.unistuttgart.einf.moviemanager.cli.api.widget.Text;
@@ -444,6 +445,32 @@ public class Cli {
 		});
 
 		dialog.show(scene);
+	}
+
+	/**
+	 * Shows the given popover.
+	 *
+	 * @param popover the popover to show
+	 */
+	public void showPopover(Popover popover) {
+		final Interactable currentFocus = scene.getFocusManager().getCurrentFocus();
+		if (currentPage.isChild(currentFocus)) {
+			currentPage.setFocusCache(currentFocus);
+		}
+
+		final Runnable existingOnClosed = popover.getOnClosed();
+
+		popover.setOnClosed(() -> {
+			if (existingOnClosed != null) {
+				existingOnClosed.run();
+			}
+
+			if (currentPage.isChild(currentPage.getFocusCache())) {
+				currentPage.getFocusCache().requestFocus();
+			}
+		});
+
+		scene.showPopover(popover);
 	}
 
 	/* *************************************************************** *

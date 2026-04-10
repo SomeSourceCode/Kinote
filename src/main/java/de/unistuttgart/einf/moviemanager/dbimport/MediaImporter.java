@@ -161,7 +161,7 @@ public abstract class MediaImporter<T extends Media> {
 	 */
 	protected Set<AgeRating> fetchSeriesAgeRatings(int seriesId) throws MediaImportException {
 		final Set<AgeRating> ageRatings = new HashSet<>();
-		final JsonObject jsonObject = client.get("tv/" + seriesId + "/content_ratings", language, null);
+		final JsonObject jsonObject = client.get("tv/" + seriesId + "/content_ratings", language);
 		return parseSeriesAgeRatings(jsonObject);
 	}
 
