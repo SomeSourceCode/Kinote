@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * A helper class to search for media on TMDb.
@@ -35,7 +36,7 @@ public class TmdbSearcher {
 	 */
 	public record SearchResult(int id, String title, MediaType type, LocalDate releaseDate) {}
 
-	private List<SearchResult> executeSearchRequest(String endpoint, String query, Language language, java.util.function.Function<JsonObject, MediaType> mediaTypeExtractor) throws MediaImportException {
+	private List<SearchResult> executeSearchRequest(String endpoint, String query, Language language, Function<JsonObject, MediaType> mediaTypeExtractor) throws MediaImportException {
 		final JsonObject json = client.get(endpoint, language, Map.of("query", query));
 
 		if (!json.has("results") || !json.get("results").isJsonArray()) {
